@@ -1,0 +1,20 @@
+{
+  "data_path": "data/wdc/wdcproducts80cc20rnd100un_gs.json.gz",
+  "model": "gpt-5-mini-2025-08-07",
+  "fields": [
+    "title",
+    "brand",
+    "description",
+    "price",
+    "priceCurrency"
+  ],
+  "max_field_len": 350,
+  "n_pairs": 4500,
+  "agents": [
+    "precision",
+    "balanced",
+    "recall"
+  ],
+  "n_requests": 13500,
+  "batch_input": "output/multi_agent_single_batch/run_20260219_170127/batch_input.jsonl"
+}

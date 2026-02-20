@@ -1,0 +1,1846 @@
+"""
+Entity matching evaluation and cluster analysis tools.
+
+This module provides comprehensive evaluation capabilities for entity matching
+results, including precision/recall/F1 metrics, cluster consistency analysis,
+and threshold analysis for parameter tuning.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import os
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Optional, Set, Tuple
+
+import networkx as nx
+import numpy as np
+import pandas as pd
+
+from PyDI.utils.cluster_stats import (
+    cluster_size_distribution_from_sizes,
+    log_cluster_size_distribution,
+)
+from .base import CorrespondenceSet
+from .blocking.base import BaseBlocker
+
+
+class EntityMatchingEvaluator:
+    """Static methods for entity matching evaluation and analysis.
+
+    This evaluator provides comprehensive analysis of entity matching results
+    including standard classification metrics, entity-specific metrics like
+    candidate recall and pair reduction, and advanced cluster consistency
+    analysis using graph-based approaches.
+
+    All methods follow PyDI principles by returning file paths for downstream
+    consumption and supporting structured output directories.
+    """
+
+    @staticmethod
+    def _normalize_labels(test_pairs: pd.DataFrame) -> Tuple[pd.Series, pd.Series]:
+        """Normalize label column to handle various formats (1/0, "1"/"0", True/False, "True"/"False").
+
+        Parameters
+        ----------
+        test_pairs : pandas.DataFrame
+            DataFrame containing label column to normalize.
+
+        Returns
+        -------
+        Tuple[pd.Series, pd.Series]
+            Tuple of (positive_mask, negative_mask) boolean Series indicating
+            which rows are positive (1/True) and negative (0/False) matches.
+
+        Raises
+        ------
+        ValueError
+            If label column contains unrecognized values.
+        """
+        if "label" not in test_pairs.columns:
+            logging.info(
+                "No 'label' column found in test pairs - treating all test pairs as positive matches"
+            )
+            return pd.Series(
+                [True] * len(test_pairs), index=test_pairs.index
+            ), pd.Series([False] * len(test_pairs), index=test_pairs.index)
+
+        labels = test_pairs["label"]
+
+        # Handle different label formats
+        positive_mask = pd.Series([False] * len(test_pairs), index=test_pairs.index)
+        negative_mask = pd.Series([False] * len(test_pairs), index=test_pairs.index)
+
+        for idx, label in labels.items():
+            if pd.isna(label):
+                continue
+
+            # Convert to string for consistent comparison
+            label_str = str(label).strip().lower()
+
+            # Check for positive values
+            if label_str in ["1", "1.0", "true", "yes", "match"]:
+                positive_mask.iloc[idx] = True
+            # Check for negative values
+            elif label_str in ["0", "0.0", "false", "no", "no_match", "nomatch"]:
+                negative_mask.iloc[idx] = True
+            # Check for boolean/numeric types directly
+            elif isinstance(label, (bool, int, float)):
+                if bool(label) and label != 0:
+                    positive_mask.iloc[idx] = True
+                else:
+                    negative_mask.iloc[idx] = True
+            else:
+                raise ValueError(
+                    f"Unrecognized label value: '{label}' at index {idx}. "
+                    f"Supported formats: 1/0 (int/float), '1'/'0' (string), "
+                    f"True/False (bool), 'true'/'false' (string), 'yes'/'no', 'match'/'no_match'"
+                )
+
+        return positive_mask, negative_mask
+
+    @staticmethod
+    def _fast_pair_intersection_count(
+        pairs1_id1: np.ndarray,
+        pairs1_id2: np.ndarray,
+        pairs2_id1: np.ndarray,
+        pairs2_id2: np.ndarray,
+    ) -> int:
+        """Count intersection of two pair sets using NumPy for maximum speed.
+
+        Uses a hash-based approach with NumPy vectorized operations.
+        For millions of pairs, this is orders of magnitude faster than Python sets.
+
+        Parameters
+        ----------
+        pairs1_id1, pairs1_id2 : np.ndarray
+            First set of pairs (id1 and id2 arrays).
+        pairs2_id1, pairs2_id2 : np.ndarray
+            Second set of pairs (id1 and id2 arrays).
+
+        Returns
+        -------
+        int
+            Number of pairs present in both sets.
+        """
+        if len(pairs1_id1) == 0 or len(pairs2_id1) == 0:
+            return 0
+
+        # Convert to string arrays for consistent hashing
+        p1_id1 = pairs1_id1.astype(str)
+        p1_id2 = pairs1_id2.astype(str)
+        p2_id1 = pairs2_id1.astype(str)
+        p2_id2 = pairs2_id2.astype(str)
+
+        # Create composite keys using a separator unlikely to appear in IDs
+        sep = "\x00"
+        keys1 = np.char.add(np.char.add(p1_id1, sep), p1_id2)
+        keys2 = np.char.add(np.char.add(p2_id1, sep), p2_id2)
+
+        # Use numpy's intersect1d for fast set intersection
+        intersection = np.intersect1d(keys1, keys2, assume_unique=False)
+        return len(intersection)
+
+    @staticmethod
+    def _df_to_numpy_pairs(df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
+        """Extract id1 and id2 columns as numpy arrays efficiently."""
+        return df["id1"].to_numpy(), df["id2"].to_numpy()
+
+    @staticmethod
+    def evaluate_blocking(
+        candidate_pairs: pd.DataFrame,
+        test_pairs: pd.DataFrame,
+        blocker: "BaseBlocker" = None,
+        *,
+        total_possible_pairs: Optional[int] = None,
+        out_dir: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Evaluate blocking strategy performance.
+
+        Computes blocking-specific metrics including pair completeness (recall),
+        pair quality (precision), and reduction ratio to assess how well the
+        blocking strategy balances efficiency and effectiveness.
+
+        Parameters
+        ----------
+        candidate_pairs : pandas.DataFrame
+            Candidate pairs generated by blocking strategy. Must have
+            columns id1, id2.
+        test_pairs : pandas.DataFrame
+            Ground truth test pairs. Should have columns id1, id2, and
+            optionally a label column (1 for positive, 0 for negative).
+            If no label column, assumes all pairs are positive matches.
+        blocker : BaseBlocker, optional
+            Blocker instance used to calculate total_possible_pairs automatically.
+            Either blocker or total_possible_pairs must be provided.
+        total_possible_pairs : int, optional
+            Total number of possible pairs (Cartesian product size). If not
+            provided, calculated from blocker.df_left and blocker.df_right.
+        out_dir : str, optional
+            Directory to write blocking evaluation results.
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary containing blocking evaluation metrics:
+            - pair_completeness: float, fraction of true matches found in candidates (blocking recall)
+            - pair_quality: float, fraction of candidates that are true matches (blocking precision)
+            - reduction_ratio: float, reduction from total possible pairs (1 - candidates/total)
+            - total_candidates: int, number of candidate pairs generated
+            - total_possible_pairs: int, total possible pairs in search space
+            - true_positives_found: int, number of true matches in candidate set
+            - total_true_pairs: int, total number of true matches in test set
+            - evaluation_timestamp: str, ISO timestamp of evaluation
+
+        Raises
+        ------
+        ValueError
+            If required columns are missing or data formats are invalid.
+        """
+        # Calculate total_possible_pairs from blocker or use provided value
+        if total_possible_pairs is None:
+            if blocker is None:
+                raise ValueError("Either blocker or total_possible_pairs must be provided")
+            total_possible_pairs = len(blocker.df_left) * len(blocker.df_right)
+
+        # Input validation
+        if candidate_pairs.empty:
+            logging.warning("Empty candidate_pairs DataFrame provided")
+
+        if test_pairs.empty:
+            raise ValueError("Empty test_pairs DataFrame provided")
+
+        if total_possible_pairs <= 0:
+            raise ValueError("total_possible_pairs must be positive")
+
+        # Validate required columns
+        candidate_required = ["id1", "id2"]
+        for col in candidate_required:
+            if col not in candidate_pairs.columns:
+                raise ValueError(f"Candidate pairs missing required column: {col}")
+
+        test_required = ["id1", "id2"]
+        for col in test_required:
+            if col not in test_pairs.columns:
+                raise ValueError(f"Test pairs missing required column: {col}")
+
+        # Extract numpy arrays for fast vectorized operations
+        cand_id1, cand_id2 = EntityMatchingEvaluator._df_to_numpy_pairs(candidate_pairs)
+
+        # Process test pairs using flexible label handling
+        positive_mask, negative_mask = EntityMatchingEvaluator._normalize_labels(
+            test_pairs
+        )
+        has_labels = "label" in test_pairs.columns
+
+        if has_labels:
+            pos_df = test_pairs[positive_mask]
+            pos_id1, pos_id2 = EntityMatchingEvaluator._df_to_numpy_pairs(pos_df)
+        else:
+            # Assume all test pairs are positive
+            pos_id1, pos_id2 = EntityMatchingEvaluator._df_to_numpy_pairs(test_pairs)
+
+        # Compute blocking metrics using fast NumPy intersection
+        true_positives_found = EntityMatchingEvaluator._fast_pair_intersection_count(
+            cand_id1, cand_id2, pos_id1, pos_id2
+        )
+        total_candidates = len(cand_id1)
+        total_true_pairs = len(pos_id1)
+
+        # Pair completeness (blocking recall): fraction of true matches found
+        pair_completeness = true_positives_found / max(total_true_pairs, 1)
+
+        # Pair quality (blocking precision): fraction of candidates that are true matches
+        pair_quality = true_positives_found / max(total_candidates, 1)
+
+        # Reduction ratio: how much we reduced the search space
+        reduction_ratio = 1.0 - (total_candidates / max(total_possible_pairs, 1))
+
+        # Build results dictionary
+        results = {
+            "pair_completeness": pair_completeness,
+            "pair_quality": pair_quality,
+            "reduction_ratio": reduction_ratio,
+            "total_candidates": total_candidates,
+            "total_possible_pairs": total_possible_pairs,
+            "true_positives_found": true_positives_found,
+            "total_true_pairs": total_true_pairs,
+            "evaluation_timestamp": datetime.now().isoformat(),
+        }
+
+        # Write results to files if output directory provided
+        output_files = []
+        if out_dir is not None:
+            # Build sets only when needed for detailed output (lazy evaluation)
+            candidate_set = set(zip(candidate_pairs["id1"], candidate_pairs["id2"]))
+            if has_labels:
+                pos_df = test_pairs[positive_mask]
+                neg_df = test_pairs[negative_mask]
+                positive_set = set(zip(pos_df["id1"], pos_df["id2"]))
+                negative_set = set(zip(neg_df["id1"], neg_df["id2"]))
+            else:
+                positive_set = set(zip(test_pairs["id1"], test_pairs["id2"]))
+                negative_set = set()
+
+            output_files = EntityMatchingEvaluator._write_blocking_results(
+                results,
+                candidate_pairs,
+                test_pairs,
+                positive_set,
+                negative_set,
+                candidate_set,
+                out_dir,
+            )
+            results["output_files"] = output_files
+
+        # Log blocking information
+        logging.info(f"  Pair Completeness: {pair_completeness:.3f}")
+        logging.info(f"  Pair Quality:      {pair_quality:.3f}")
+        logging.info(f"  Reduction Ratio:   {reduction_ratio:.6f}")
+        logging.info(f"  True Matches Found: {true_positives_found}/{total_true_pairs}")
+
+        logging.info("Blocking evaluation complete!")
+        return results
+
+    @staticmethod
+    def evaluate_blocking_batched(
+        blocker: "BaseBlocker",
+        test_pairs: pd.DataFrame,
+        *,
+        out_dir: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Evaluate blocking strategy performance using batch processing.
+
+        Memory-efficient version that processes candidate pairs in batches
+        without materializing all pairs at once. Suitable for large datasets
+        that exceed memory limits.
+
+        Parameters
+        ----------
+        blocker : BaseBlocker
+            Blocker instance that yields candidate pair batches and is used to
+            calculate total_possible_pairs automatically.
+        test_pairs : pandas.DataFrame
+            Ground truth test pairs. Should have columns id1, id2, and
+            optionally a label column (1 for positive, 0 for negative).
+            If no label column, assumes all pairs are positive matches.
+        out_dir : str, optional
+            Directory to write blocking evaluation results.
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary containing blocking evaluation metrics:
+            - pair_completeness: float, fraction of true matches found in candidates (blocking recall)
+            - pair_quality: float, fraction of candidates that are true matches (blocking precision)
+            - reduction_ratio: float, reduction from total possible pairs (1 - candidates/total)
+            - total_candidates: int, number of candidate pairs generated
+            - total_possible_pairs: int, total possible pairs in search space
+            - true_positives_found: int, number of true matches in candidate set
+            - total_true_pairs: int, total number of true matches in test set
+            - batches_processed: int, number of batches processed
+            - evaluation_timestamp: str, ISO timestamp of evaluation
+
+        Raises
+        ------
+        ValueError
+            If required columns are missing or data formats are invalid.
+        """
+        # Calculate total_possible_pairs from blocker
+        total_possible_pairs = len(blocker.df_left) * len(blocker.df_right)
+
+        # Input validation
+        if test_pairs.empty:
+            raise ValueError("Empty test_pairs DataFrame provided")
+
+        if total_possible_pairs <= 0:
+            raise ValueError("total_possible_pairs must be positive")
+
+        # Validate required columns
+        test_required = ["id1", "id2"]
+        for col in test_required:
+            if col not in test_pairs.columns:
+                raise ValueError(f"Test pairs missing required column: {col}")
+
+        # Process test pairs using flexible label handling
+        positive_mask, negative_mask = EntityMatchingEvaluator._normalize_labels(
+            test_pairs
+        )
+        has_labels = "label" in test_pairs.columns
+
+        if has_labels:
+            pos_df = test_pairs[positive_mask]
+            neg_df = test_pairs[negative_mask]
+            positive_set = set(zip(pos_df["id1"], pos_df["id2"]))
+            negative_set = set(zip(neg_df["id1"], neg_df["id2"]))
+        else:
+            # Assume all test pairs are positive
+            positive_set = set(zip(test_pairs["id1"], test_pairs["id2"]))
+            negative_set = set()
+
+        # Initialize counters for batch processing
+        total_candidates = 0
+        true_positives_found = 0
+        batches_processed = 0
+        candidate_set = set()  # Keep track of seen candidates for detailed output
+
+        logging.info("Starting batched blocking evaluation...")
+
+        # Process candidate pairs in batches
+        for batch in blocker:
+            if batch.empty:
+                continue
+
+            batches_processed += 1
+
+            # Validate batch columns
+            batch_required = ["id1", "id2"]
+            for col in batch_required:
+                if col not in batch.columns:
+                    raise ValueError(f"Candidate batch missing required column: {col}")
+
+            # Convert pairs in this batch to set (zip is orders of magnitude faster than iterrows)
+            batch_set = set(zip(batch["id1"], batch["id2"]))
+
+            # Update counters
+            total_candidates += len(batch_set)
+            batch_true_positives = len(positive_set & batch_set)
+            true_positives_found += batch_true_positives
+
+            # Track candidates for detailed output
+            if out_dir is not None:
+                candidate_set.update(batch_set)
+
+            # Log progress periodically
+            if batches_processed % 10 == 0:
+                logging.info(
+                    f"Processed {batches_processed} batches, {total_candidates} pairs, {true_positives_found} true matches"
+                )
+
+        total_true_pairs = len(positive_set)
+
+        # Compute blocking metrics
+        pair_completeness = true_positives_found / max(total_true_pairs, 1)
+        pair_quality = true_positives_found / max(total_candidates, 1)
+        reduction_ratio = 1.0 - (total_candidates / max(total_possible_pairs, 1))
+
+        # Build results dictionary
+        results = {
+            "pair_completeness": pair_completeness,
+            "pair_quality": pair_quality,
+            "reduction_ratio": reduction_ratio,
+            "total_candidates": total_candidates,
+            "total_possible_pairs": total_possible_pairs,
+            "true_positives_found": true_positives_found,
+            "total_true_pairs": total_true_pairs,
+            "batches_processed": batches_processed,
+            "evaluation_timestamp": datetime.now().isoformat(),
+        }
+
+        # Write results to files if output directory provided
+        output_files = []
+        if out_dir is not None:
+            # Create a dummy candidate pairs DataFrame for compatibility
+            candidate_pairs_for_output = pd.DataFrame(
+                [{"id1": pair[0], "id2": pair[1]} for pair in candidate_set]
+            )
+
+            output_files = EntityMatchingEvaluator._write_blocking_results(
+                results,
+                candidate_pairs_for_output,
+                test_pairs,
+                positive_set,
+                negative_set,
+                candidate_set,
+                out_dir,
+            )
+            results["output_files"] = output_files
+
+        # Log blocking information
+        logging.info(f"  Pair Completeness: {pair_completeness:.3f}")
+        logging.info(f"  Pair Quality:      {pair_quality:.3f}")
+        logging.info(f"  Reduction Ratio:   {reduction_ratio:.6f}")
+        logging.info(f"  True Matches Found: {true_positives_found}/{total_true_pairs}")
+        logging.info(f"  Batches Processed:  {batches_processed}")
+
+        logging.info("Blocking evaluation complete!")
+        return results
+
+    @staticmethod
+    def evaluate_matching(
+        correspondences: CorrespondenceSet,
+        test_pairs: pd.DataFrame,
+        *,
+        threshold: Optional[float] = None,
+        out_dir: Optional[str] = None,
+        debug_info: Optional[pd.DataFrame] = None,
+        matcher_instance: Optional[object] = None,
+        max_logged_instances: Optional[int] = 500,
+    ) -> Dict[str, Any]:
+        """Evaluate entity matching correspondences against ground truth.
+
+        Computes classification metrics (precision, recall, F1) for entity
+        matching results, with optional similarity threshold filtering.
+        Can optionally write debug results if debug information is provided.
+
+        Parameters
+        ----------
+        correspondences : CorrespondenceSet
+            DataFrame with columns id1, id2, score, notes containing
+            entity correspondences to evaluate.
+        test_pairs : pandas.DataFrame
+            Ground truth test pairs. Should have columns id1, id2, and
+            optionally a label column (1 for positive, 0 for negative).
+            If no label column, assumes all pairs are positive matches.
+        threshold : float, optional
+            Similarity threshold to apply to correspondences. If None,
+            uses all correspondences regardless of score.
+        out_dir : str, optional
+            Directory to write matching evaluation results.
+        debug_info : pandas.DataFrame, optional
+            DataFrame with detailed comparator results from matcher debug mode.
+            If provided, debug results will be written to out_dir.
+            Expected columns: id1, id2, comparator_name, record1_value,
+            record2_value, record1_preprocessed, record2_preprocessed,
+            similarity, postprocessed_similarity.
+        matcher_instance : object, optional
+            The matcher instance used to generate the correspondences.
+            Used to automatically determine the matching rule name for debug output.
+        max_logged_instances : int, optional
+            Maximum number of per-pair debug log entries to emit when detailed
+            logging is enabled. Defaults to 500. Set to None for no limit or 0
+            to suppress per-pair debug logging completely.
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary containing matching evaluation metrics:
+            - precision: float, precision score
+            - recall: float, recall score
+            - f1: float, F1 score
+            - accuracy: float, accuracy score (if negatives available)
+            - true_positives: int, number of correct matches found
+            - false_positives: int, number of incorrect matches found
+            - false_negatives: int, number of missed correct matches
+            - true_negatives: int, number of correct non-matches (if available)
+            - threshold_used: float, threshold applied to correspondences
+            - total_correspondences: int, total correspondences before threshold
+            - filtered_correspondences: int, correspondences after threshold
+            - evaluation_timestamp: str, ISO timestamp of evaluation
+            - debug_files: Tuple[str, str], paths to debug files (if debug_info provided)
+
+        Raises
+        ------
+        ValueError
+            If required columns are missing, data formats are invalid,
+            or neither total_possible_pairs nor blocker are provided.
+        """
+        # Input validation
+        if correspondences.empty:
+            logging.warning("Empty correspondence set provided")
+
+        if test_pairs.empty:
+            raise ValueError("Empty test_pairs DataFrame provided")
+
+        # Validate required columns
+        corr_required = ["id1", "id2", "score"]
+        for col in corr_required:
+            if col not in correspondences.columns:
+                raise ValueError(f"Correspondence set missing required column: {col}")
+
+        test_required = ["id1", "id2"]
+        for col in test_required:
+            if col not in test_pairs.columns:
+                raise ValueError(f"Test pairs missing required column: {col}")
+
+        # Apply threshold filtering if provided
+        original_corr_count = len(correspondences)
+        if threshold is not None:
+            corr_filtered = correspondences[
+                correspondences["score"] >= threshold
+            ].copy()
+            filtered_count = len(corr_filtered)
+            logging.info(
+                f"Applied threshold {threshold}: {original_corr_count} -> {filtered_count} correspondences"
+            )
+        else:
+            corr_filtered = correspondences.copy()
+            filtered_count = len(corr_filtered)
+            threshold = 0.0  # For reporting
+
+        # Convert pairs to set for fast lookup (zip is orders of magnitude faster than iterrows)
+        predicted_set = set(zip(corr_filtered["id1"], corr_filtered["id2"]))
+
+        # Process test pairs using flexible label handling
+        positive_mask, negative_mask = EntityMatchingEvaluator._normalize_labels(
+            test_pairs
+        )
+        has_labels = "label" in test_pairs.columns
+
+        if has_labels:
+            pos_df = test_pairs[positive_mask]
+            neg_df = test_pairs[negative_mask]
+            positive_set = set(zip(pos_df["id1"], pos_df["id2"]))
+            negative_set = set(zip(neg_df["id1"], neg_df["id2"]))
+        else:
+            # Assume all test pairs are positive
+            positive_set = set(zip(test_pairs["id1"], test_pairs["id2"]))
+            negative_set = set()
+
+        # Create a set of all test pairs (both positive and negative) for debug logging
+        all_test_pairs = positive_set | negative_set
+
+        # Create a set of evaluated pairs from debug_info if available
+        evaluated_pairs = set()
+        if debug_info is not None and not debug_info.empty:
+            evaluated_pairs = set(zip(debug_info["id1"], debug_info["id2"]))
+
+        # Configure debug logging throttling to avoid excessive runtime overhead
+        if max_logged_instances is None:
+            log_limit = None
+        else:
+            if max_logged_instances < 0:
+                raise ValueError("max_logged_instances must be non-negative or None")
+            log_limit = int(max_logged_instances)
+
+        logged_debug_entries = 0
+        log_limit_notice_emitted = False
+        log_limit_reached = False
+
+        def _log_debug_entry(message: str) -> None:
+            nonlocal logged_debug_entries, log_limit_notice_emitted, log_limit_reached
+            if log_limit is None:
+                logging.debug(message)
+                return
+            if log_limit <= 0:
+                log_limit_reached = True
+                return
+            if logged_debug_entries < log_limit:
+                logging.debug(message)
+                logged_debug_entries += 1
+                if logged_debug_entries >= log_limit and not log_limit_notice_emitted:
+                    logging.debug(
+                        "Maximum debug log entries reached (%s); suppressing further entries.",
+                        log_limit,
+                    )
+                    log_limit_notice_emitted = True
+                    log_limit_reached = True
+            else:
+                if not log_limit_notice_emitted:
+                    logging.debug(
+                        "Maximum debug log entries reached (%s); suppressing further entries.",
+                        log_limit,
+                    )
+                    log_limit_notice_emitted = True
+                log_limit_reached = True
+
+        logging_enabled = (log_limit is None) or (log_limit > 0)
+
+        # Add DEBUG level logging for individual correspondence evaluations (only for pairs in test set)
+        if logging_enabled:
+            logging.debug("Individual correspondence evaluations:")
+            for _, row in corr_filtered.iterrows():
+                if log_limit_reached:
+                    break
+                pair = (row["id1"], row["id2"])
+                score = row["score"]
+
+                # Only log pairs that are actually in the test set
+                if pair in all_test_pairs:
+                    if pair in positive_set:
+                        classification = "correct"
+                        label = "TRUE"
+                    elif pair in negative_set:
+                        classification = "wrong"
+                        label = "FALSE"
+                    else:
+                        # This shouldn't happen given the logic above, but just in case
+                        continue
+
+                    _log_debug_entry(
+                        f"[{classification}] {row['id1']},{row['id2']},{label},sim:{score:.4f}"
+                    )
+                    if log_limit_reached:
+                        break
+
+            # Log false negatives - distinguish between evaluated and missing
+            if not log_limit_reached:
+                missing_pairs = positive_set - predicted_set
+                for pair in missing_pairs:
+                    if log_limit_reached:
+                        break
+                    if pair in evaluated_pairs:
+                        # Pair was evaluated but scored below threshold - calculate actual score from debug_info
+                        pair_debug = debug_info[(debug_info["id1"] == pair[0]) & (debug_info["id2"] == pair[1])]
+                        if not pair_debug.empty:
+                            # Calculate weighted similarity from debug info
+                            # Get unique comparators for this pair and sum their postprocessed similarities
+                            # This assumes equal weighting - ideally we'd have weights from matcher
+                            # But since the pair didn't make it to correspondences, we estimate the score
+                            comparator_sims = pair_debug.groupby('comparator_name')['postprocessed_similarity'].first()
+                            estimated_score = comparator_sims.mean() if len(comparator_sims) > 0 else 0.0
+                            _log_debug_entry(
+                                f"[wrong] {pair[0]},{pair[1]},TRUE,sim:{estimated_score:.4f}"
+                            )
+                        else:
+                            # Not in debug info, must have been blocked
+                            _log_debug_entry(f"[missing] {pair[0]},{pair[1]},TRUE,sim:N/A")
+                    else:
+                        # Pair was never evaluated (not in candidate set)
+                        _log_debug_entry(f"[missing] {pair[0]},{pair[1]},TRUE,sim:N/A")
+
+            # Log true negatives (correctly rejected non-matches)
+            if has_labels and negative_set and not log_limit_reached:
+                correctly_rejected = negative_set - predicted_set
+                for pair in correctly_rejected:
+                    if log_limit_reached:
+                        break
+                    # Check if this pair was in candidate set but correctly rejected
+                    if pair in evaluated_pairs:
+                        # Pair was evaluated - calculate actual score from debug_info
+                        pair_debug = debug_info[(debug_info["id1"] == pair[0]) & (debug_info["id2"] == pair[1])]
+                        if not pair_debug.empty:
+                            comparator_sims = pair_debug.groupby('comparator_name')['postprocessed_similarity'].first()
+                            estimated_score = comparator_sims.mean() if len(comparator_sims) > 0 else 0.0
+                            _log_debug_entry(
+                                f"[correct] {pair[0]},{pair[1]},FALSE,sim:{estimated_score:.4f}"
+                            )
+                        else:
+                            _log_debug_entry(f"[correct] {pair[0]},{pair[1]},FALSE,sim:N/A")
+                    else:
+                        # Pair was never in candidate set (blocked out)
+                        _log_debug_entry(f"[correct] {pair[0]},{pair[1]},FALSE,sim:N/A")
+        else:
+            logging.debug(
+                "Individual correspondence evaluations suppressed (max_logged_instances=%s)",
+                max_logged_instances,
+            )
+
+        # Compute classification metrics
+        true_positives = len(predicted_set & positive_set)
+        false_positives = len(predicted_set & negative_set)  # Only count predictions that are explicitly labeled as negative
+        false_negatives = len(positive_set - predicted_set)
+
+        if has_labels:
+            true_negatives = len(negative_set - predicted_set)
+        else:
+            true_negatives = 0
+
+        # Calculate metrics with zero division protection
+        precision = true_positives / max(true_positives + false_positives, 1)
+        recall = true_positives / max(true_positives + false_negatives, 1)
+        f1 = (2 * precision * recall) / max(precision + recall, 1e-10)
+
+        if has_labels:
+            accuracy = (true_positives + true_negatives) / max(
+                true_positives + false_positives + false_negatives + true_negatives, 1
+            )
+        else:
+            accuracy = None
+
+        # Build results dictionary
+        results = {
+            "precision": precision,
+            "recall": recall,
+            "f1": f1,
+            "accuracy": accuracy,
+            "true_positives": true_positives,
+            "false_positives": false_positives,
+            "false_negatives": false_negatives,
+            "true_negatives": true_negatives,
+            "threshold_used": threshold,
+            "total_correspondences": original_corr_count,
+            "filtered_correspondences": filtered_count,
+            "evaluation_timestamp": datetime.now().isoformat(),
+        }
+
+        # Write results to files if output directory provided
+        output_files = []
+        if out_dir is not None:
+            output_files = EntityMatchingEvaluator._write_matching_results(
+                results, corr_filtered, test_pairs, positive_set, negative_set, predicted_set, out_dir
+            )
+            results["output_files"] = output_files
+
+        # Write debug results if debug_info provided
+        if debug_info is not None and out_dir is not None:
+            try:
+                full_debug_path, short_debug_path = EntityMatchingEvaluator.write_debug_results(
+                    correspondences=correspondences,
+                    debug_results=debug_info,
+                    out_dir=out_dir,
+                    matcher_instance=matcher_instance,
+                    test_pairs=test_pairs,
+                )
+                results["debug_files"] = (full_debug_path, short_debug_path)
+                # Logging already done inside write_debug_results()
+            except Exception as e:
+                logging.warning(f"Failed to write debug results: {e}")
+                results["debug_files"] = None
+
+        # Log confusion matrix first
+        logging.info(f"Confusion Matrix:")
+        logging.info(f"  True Positives:  {true_positives}")
+        logging.info(f"  True Negatives:  {true_negatives}")
+        logging.info(f"  False Positives: {false_positives}")
+        logging.info(f"  False Negatives: {false_negatives}")
+
+        # Log performance metrics
+        logging.info(f"Performance Metrics:")
+        logging.info(
+            f"  Accuracy:  {accuracy:.3f}"
+            if accuracy is not None
+            else "  Accuracy:  N/A"
+        )
+        logging.info(f"  Precision: {precision:.3f}")
+        logging.info(f"  Recall:    {recall:.3f}")
+        logging.info(f"  F1-Score:  {f1:.3f}")
+        
+        return results
+
+    @staticmethod
+    def create_cluster_consistency_report(
+        correspondences: CorrespondenceSet,
+        *,
+        out_dir: Optional[str] = None,
+    ) -> pd.DataFrame:
+        """Analyze cluster consistency using graph-based transitivity analysis.
+
+        Creates a detailed report of cluster consistency by analyzing the
+        transitivity properties of entity correspondences. Uses NetworkX
+        to find connected components and checks if each cluster has complete
+        internal connections (transitive closure).
+
+        Parameters
+        ----------
+        correspondences : CorrespondenceSet
+            DataFrame with id1, id2, score, notes columns containing
+            entity correspondences to analyze.
+        out_dir : str, optional
+            Directory to write consistency report. If provided, saves
+            the report as CSV and detailed JSON analysis.
+
+        Returns
+        -------
+        pandas.DataFrame
+            DataFrame with cluster-level consistency analysis:
+            - cluster_id: int, unique cluster identifier
+            - cluster_size: int, number of entities in cluster
+            - total_edges: int, number of correspondences in cluster
+            - expected_edges: int, number of edges in complete graph
+            - consistency_ratio: float, total_edges / expected_edges
+            - is_consistent: bool, whether cluster is fully transitive
+            - avg_similarity: float, average similarity score in cluster
+            - min_similarity: float, minimum similarity score in cluster
+            - max_similarity: float, maximum similarity score in cluster
+            - entities: str, comma-separated list of entity IDs in cluster
+
+        Raises
+        ------
+        ValueError
+            If correspondence set is empty or missing required columns.
+        """
+        if correspondences.empty:
+            raise ValueError("Empty correspondence set provided")
+
+        required_cols = ["id1", "id2", "score"]
+        for col in required_cols:
+            if col not in correspondences.columns:
+                raise ValueError(f"Correspondences missing required column: {col}")
+
+        # Create graph from correspondences
+        G = nx.Graph()
+
+        # Add edges with similarity scores
+        for _, row in correspondences.iterrows():
+            G.add_edge(row["id1"], row["id2"], weight=row["score"])
+
+        # Find connected components (clusters)
+        clusters = list(nx.connected_components(G))
+
+        cluster_reports = []
+
+        for i, cluster in enumerate(clusters):
+            cluster_nodes = list(cluster)
+            cluster_size = len(cluster_nodes)
+
+            # Get subgraph for this cluster
+            subgraph = G.subgraph(cluster_nodes)
+            total_edges = subgraph.number_of_edges()
+
+            # Calculate expected edges for complete graph
+            expected_edges = cluster_size * (cluster_size - 1) // 2
+
+            # Calculate consistency ratio
+            consistency_ratio = total_edges / max(expected_edges, 1)
+            is_consistent = (
+                consistency_ratio >= 0.999
+            )  # Allow for floating point errors
+
+            # Calculate similarity statistics
+            if total_edges > 0:
+                edge_weights = [
+                    data["weight"] for _, _, data in subgraph.edges(data=True)
+                ]
+                avg_similarity = sum(edge_weights) / len(edge_weights)
+                min_similarity = min(edge_weights)
+                max_similarity = max(edge_weights)
+            else:
+                avg_similarity = min_similarity = max_similarity = 0.0
+
+            cluster_reports.append(
+                {
+                    "cluster_id": i,
+                    "cluster_size": cluster_size,
+                    "total_edges": total_edges,
+                    "expected_edges": expected_edges,
+                    "consistency_ratio": consistency_ratio,
+                    "is_consistent": is_consistent,
+                    "avg_similarity": avg_similarity,
+                    "min_similarity": min_similarity,
+                    "max_similarity": max_similarity,
+                    "entities": ",".join(sorted(cluster_nodes)),
+                }
+            )
+
+        # Create DataFrame report
+        report_df = pd.DataFrame(cluster_reports)
+
+        # Add summary statistics
+        total_clusters = len(clusters)
+        consistent_clusters = sum(1 for r in cluster_reports if r["is_consistent"])
+        inconsistent_clusters = total_clusters - consistent_clusters
+
+        logging.info(f"Cluster analysis complete: {total_clusters} clusters found")
+        logging.info(
+            f"Consistent: {consistent_clusters}, Inconsistent: {inconsistent_clusters}"
+        )
+
+        # Write to files if output directory provided
+        if out_dir is not None:
+            EntityMatchingEvaluator._write_cluster_report(
+                report_df, correspondences, out_dir
+            )
+
+        return report_df
+
+    @staticmethod
+    def write_record_groups_by_consistency(
+        out_path: str,
+        correspondences: CorrespondenceSet,
+    ) -> str:
+        """Export entity record groups organized by cluster consistency.
+
+        Creates a structured JSON file containing entity records grouped
+        by their cluster consistency status. This is useful for manual
+        inspection of matching quality and debugging inconsistent clusters.
+
+        Parameters
+        ----------
+        out_path : str
+            Full path to output JSON file.
+        correspondences : CorrespondenceSet
+            DataFrame with id1, id2, score, notes columns.
+
+        Returns
+        -------
+        str
+            Path to the written JSON file.
+
+        Raises
+        ------
+        ValueError
+            If correspondences are empty or path is invalid.
+        """
+        if correspondences.empty:
+            raise ValueError("Empty correspondence set provided")
+
+        # Create output directory if needed
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+        # Get cluster consistency report
+        cluster_report = EntityMatchingEvaluator.create_cluster_consistency_report(
+            correspondences
+        )
+
+        # Organize data by consistency
+        consistent_groups = []
+        inconsistent_groups = []
+
+        for _, cluster_info in cluster_report.iterrows():
+            cluster_data = {
+                "cluster_id": int(cluster_info["cluster_id"]),
+                "cluster_size": int(cluster_info["cluster_size"]),
+                "consistency_ratio": float(cluster_info["consistency_ratio"]),
+                "avg_similarity": float(cluster_info["avg_similarity"]),
+                "entities": cluster_info["entities"].split(","),
+                "total_edges": int(cluster_info["total_edges"]),
+                "expected_edges": int(cluster_info["expected_edges"]),
+            }
+
+            if cluster_info["is_consistent"]:
+                consistent_groups.append(cluster_data)
+            else:
+                inconsistent_groups.append(cluster_data)
+
+        # Create output structure
+        output_data = {
+            "metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "total_correspondences": len(correspondences),
+                "total_clusters": len(cluster_report),
+                "consistent_clusters": len(consistent_groups),
+                "inconsistent_clusters": len(inconsistent_groups),
+            },
+            "consistent_clusters": consistent_groups,
+            "inconsistent_clusters": inconsistent_groups,
+        }
+
+        # Write JSON file
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(output_data, f, indent=2, ensure_ascii=False)
+
+        logging.info(f"Record groups written to {out_path}")
+        return out_path
+
+    @staticmethod
+    def threshold_sweep(
+        corr: CorrespondenceSet,
+        test_pairs: pd.DataFrame,
+        thresholds: Optional[list] = None,
+        *,
+        out_dir: Optional[str] = None,
+    ) -> pd.DataFrame:
+        """Analyze performance across multiple similarity thresholds.
+
+        Performs threshold sweep analysis to generate precision-recall
+        curves and identify optimal thresholds for entity matching.
+
+        Parameters
+        ----------
+        corr : CorrespondenceSet
+            DataFrame with correspondence results.
+        test_pairs : pandas.DataFrame
+            Ground truth test pairs.
+        thresholds : list, optional
+            List of thresholds to evaluate. If None, uses default range.
+        out_dir : str, optional
+            Directory to write threshold analysis results.
+
+        Returns
+        -------
+        pandas.DataFrame
+            DataFrame with threshold analysis results containing columns:
+            threshold, precision, recall, f1, true_positives, false_positives,
+            false_negatives, correspondences_count.
+        """
+        if thresholds is None:
+            thresholds = [i * 0.1 for i in range(0, 11)]  # 0.0 to 1.0 in 0.1 steps
+
+        results = []
+
+        for threshold in thresholds:
+            try:
+                eval_result = EntityMatchingEvaluator.evaluate(
+                    corr, test_pairs, threshold=threshold
+                )
+
+                results.append(
+                    {
+                        "threshold": threshold,
+                        "precision": eval_result["precision"],
+                        "recall": eval_result["recall"],
+                        "f1": eval_result["f1"],
+                        "true_positives": eval_result["true_positives"],
+                        "false_positives": eval_result["false_positives"],
+                        "false_negatives": eval_result["false_negatives"],
+                        "correspondences_count": eval_result[
+                            "filtered_correspondences"
+                        ],
+                    }
+                )
+            except Exception as e:
+                logging.warning(f"Error evaluating threshold {threshold}: {e}")
+                continue
+
+        sweep_df = pd.DataFrame(results)
+
+        if out_dir is not None:
+            out_path = os.path.join(out_dir, "threshold_sweep.csv")
+            os.makedirs(out_dir, exist_ok=True)
+            sweep_df.to_csv(out_path, index=False)
+            logging.info(f"Threshold sweep results written to {out_path}")
+
+        return sweep_df
+
+    @staticmethod
+    def _write_blocking_results(
+        results: Dict[str, Any],
+        candidate_pairs: pd.DataFrame,
+        test_pairs: pd.DataFrame,
+        positive_set: Set[Tuple[str, str]],
+        negative_set: Set[Tuple[str, str]],
+        candidate_set: Set[Tuple[str, str]],
+        out_dir: str,
+    ) -> list:
+        """Write detailed blocking evaluation results to files."""
+        os.makedirs(out_dir, exist_ok=True)
+        output_files = []
+
+        # Write summary JSON
+        json_path = os.path.join(out_dir, "blocking_evaluation_summary.json")
+        with open(json_path, "w") as f:
+            json.dump(results, f, indent=2, default=str)
+        output_files.append(json_path)
+
+        # Write detailed candidate pair analysis
+        detailed_results = []
+        for _, row in candidate_pairs.iterrows():
+            pair = (row["id1"], row["id2"])
+
+            # Only classify if pair is in the test set (has a known label)
+            if pair in positive_set:
+                is_true_match = True
+                classification = "TP"
+            elif pair in negative_set:
+                is_true_match = False
+                classification = "FP"
+            else:
+                # Pair not in test set - unknown label
+                is_true_match = None
+                classification = ""
+
+            detailed_results.append(
+                {
+                    "id1": row["id1"],
+                    "id2": row["id2"],
+                    "is_true_match": is_true_match,
+                    "classification": classification,
+                }
+            )
+
+        detailed_df = pd.DataFrame(detailed_results)
+        csv_path = os.path.join(out_dir, "blocking_detailed_results.csv")
+        detailed_df.to_csv(csv_path, index=False)
+        output_files.append(csv_path)
+
+        return output_files
+
+    @staticmethod
+    def _write_matching_results(
+        results: Dict[str, Any],
+        correspondences: pd.DataFrame,
+        test_pairs: pd.DataFrame,
+        positive_set: Set[Tuple[str, str]],
+        negative_set: Set[Tuple[str, str]],
+        predicted_set: Set[Tuple[str, str]],
+        out_dir: str,
+    ) -> list:
+        """Write detailed matching evaluation results to files."""
+        os.makedirs(out_dir, exist_ok=True)
+        output_files = []
+
+        # Write summary JSON
+        json_path = os.path.join(out_dir, "matching_evaluation_summary.json")
+        with open(json_path, "w") as f:
+            json.dump(results, f, indent=2, default=str)
+        output_files.append(json_path)
+
+        # Write detailed correspondence analysis
+        detailed_results = []
+        for _, row in correspondences.iterrows():
+            pair = (row["id1"], row["id2"])
+
+            # Only classify if pair is in the test set (has a known label)
+            if pair in positive_set:
+                is_correct = True
+                classification = "TP"
+            elif pair in negative_set:
+                is_correct = False
+                classification = "FP"
+            else:
+                # Pair not in test set - unknown label
+                is_correct = None
+                classification = ""
+
+            detailed_results.append(
+                {
+                    "id1": row["id1"],
+                    "id2": row["id2"],
+                    "score": row["score"],
+                    "is_correct": is_correct,
+                    "classification": classification,
+                }
+            )
+
+        detailed_df = pd.DataFrame(detailed_results)
+        csv_path = os.path.join(out_dir, "matching_detailed_results.csv")
+        detailed_df.to_csv(csv_path, index=False)
+        output_files.append(csv_path)
+
+        return output_files
+
+    @staticmethod
+    def _write_evaluation_results(
+        results: Dict[str, Any],
+        correspondences: pd.DataFrame,
+        test_pairs: pd.DataFrame,
+        positive_set: Set[Tuple[str, str]],
+        negative_set: Set[Tuple[str, str]],
+        predicted_set: Set[Tuple[str, str]],
+        out_dir: str,
+    ) -> list:
+        """Write detailed evaluation results to files."""
+        os.makedirs(out_dir, exist_ok=True)
+        output_files = []
+
+        # Write summary JSON
+        json_path = os.path.join(out_dir, "evaluation_summary.json")
+        with open(json_path, "w") as f:
+            json.dump(results, f, indent=2, default=str)
+        output_files.append(json_path)
+
+        # Write detailed correspondence analysis
+        detailed_results = []
+        for _, row in correspondences.iterrows():
+            pair = (row["id1"], row["id2"])
+
+            # Only classify if pair is in the test set (has a known label)
+            if pair in positive_set:
+                is_correct = True
+                classification = "TP"
+            elif pair in negative_set:
+                is_correct = False
+                classification = "FP"
+            else:
+                # Pair not in test set - unknown label
+                is_correct = None
+                classification = ""
+
+            detailed_results.append(
+                {
+                    "id1": row["id1"],
+                    "id2": row["id2"],
+                    "score": row["score"],
+                    "is_correct": is_correct,
+                    "classification": classification,
+                }
+            )
+
+        detailed_df = pd.DataFrame(detailed_results)
+        csv_path = os.path.join(out_dir, "detailed_results.csv")
+        detailed_df.to_csv(csv_path, index=False)
+        output_files.append(csv_path)
+
+        return output_files
+
+    @staticmethod
+    def _write_cluster_report(
+        report_df: pd.DataFrame,
+        correspondences: pd.DataFrame,
+        out_dir: str,
+    ) -> None:
+        """Write cluster consistency report to files."""
+        os.makedirs(out_dir, exist_ok=True)
+
+        # Write CSV report
+        csv_path = os.path.join(out_dir, "cluster_consistency_report.csv")
+        report_df.to_csv(csv_path, index=False)
+
+        # Write summary JSON
+        summary = {
+            "total_clusters": len(report_df),
+            "consistent_clusters": int(report_df["is_consistent"].sum()),
+            "inconsistent_clusters": int((~report_df["is_consistent"]).sum()),
+            "avg_cluster_size": float(report_df["cluster_size"].mean()),
+            "avg_consistency_ratio": float(report_df["consistency_ratio"].mean()),
+            "generated_at": datetime.now().isoformat(),
+        }
+
+        json_path = os.path.join(out_dir, "cluster_analysis_summary.json")
+        with open(json_path, "w") as f:
+            json.dump(summary, f, indent=2)
+
+        logging.info(f"Cluster report written to {out_dir}")
+
+    @staticmethod
+    def create_cluster_size_distribution(
+        correspondences: CorrespondenceSet,
+        *,
+        out_dir: Optional[str] = None,
+    ) -> pd.DataFrame:
+        """Create cluster size distribution from correspondences.
+
+        Analyzes the distribution of cluster sizes by creating connected components
+        from the correspondences and counting the frequency of each cluster size.
+        This follows the Winter framework approach for cluster size analysis.
+
+        Parameters
+        ----------
+        correspondences : CorrespondenceSet
+            DataFrame with id1, id2, score, notes columns containing
+            entity correspondences to analyze.
+        out_dir : str, optional
+            Directory to write cluster size distribution. If provided, saves
+            the distribution as a CSV file.
+
+        Returns
+        -------
+        pandas.DataFrame
+            DataFrame with cluster size distribution containing columns:
+            - cluster_size: int, size of the cluster (number of entities)
+            - frequency: int, number of clusters with this size
+            - percentage: float, percentage of total clusters with this size
+
+        Raises
+        ------
+        ValueError
+            If correspondence set is empty or missing required columns.
+        """
+        if correspondences.empty:
+            raise ValueError("Empty correspondence set provided")
+
+        required_cols = ["id1", "id2", "score"]
+        for col in required_cols:
+            if col not in correspondences.columns:
+                raise ValueError(f"Correspondences missing required column: {col}")
+
+        # Create graph from correspondences to find connected components
+        G = nx.Graph()
+
+        # Add edges (no weights needed for clustering analysis)
+        for _, row in correspondences.iterrows():
+            G.add_edge(row["id1"], row["id2"])
+
+        # Find connected components (clusters)
+        clusters = list(nx.connected_components(G))
+
+        total_clusters = len(clusters)
+        distribution_df = cluster_size_distribution_from_sizes(
+            len(cluster) for cluster in clusters
+        )
+
+        # Log distribution to console (shared formatting with fusion engine)
+        log_cluster_size_distribution(
+            distribution_df,
+            logging.getLogger(__name__),
+            header="Cluster Size Distribution",
+            total_clusters=total_clusters,
+        )
+
+        # Write to file if output directory provided
+        if out_dir is not None:
+            os.makedirs(out_dir, exist_ok=True)
+            output_path = os.path.join(out_dir, "cluster_size_distribution.csv")
+            distribution_df.to_csv(output_path, index=False)
+            logging.info(f"Cluster size distribution written to {output_path}")
+
+        return distribution_df
+
+    @staticmethod
+    def write_cluster_details(
+        correspondences: CorrespondenceSet,
+        out_path: str,
+    ) -> str:
+        """Write detailed cluster information with all records for debugging purposes.
+
+        Exports all clusters found in the correspondences along with the complete
+        list of entity records contained in each cluster. This is useful for
+        debugging matching results and manually inspecting cluster composition.
+
+        Parameters
+        ----------
+        correspondences : CorrespondenceSet
+            DataFrame with id1, id2, score, notes columns containing
+            entity correspondences to analyze.
+        out_path : str
+            Full path to output JSON file where cluster details will be written.
+
+        Returns
+        -------
+        str
+            Path to the written JSON file.
+
+        Raises
+        ------
+        ValueError
+            If correspondence set is empty or missing required columns.
+        """
+        if correspondences.empty:
+            raise ValueError("Empty correspondence set provided")
+
+        required_cols = ["id1", "id2", "score"]
+        for col in required_cols:
+            if col not in correspondences.columns:
+                raise ValueError(f"Correspondences missing required column: {col}")
+
+        # Create output directory if needed
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+        # Create graph from correspondences to find connected components
+        G = nx.Graph()
+
+        # Add edges with metadata
+        edge_metadata = {}
+        for _, row in correspondences.iterrows():
+            edge_key = tuple(sorted([row["id1"], row["id2"]]))
+            G.add_edge(row["id1"], row["id2"])
+
+            # Store correspondence details for this edge
+            if edge_key not in edge_metadata:
+                edge_metadata[edge_key] = []
+            edge_metadata[edge_key].append(
+                {
+                    "score": float(row["score"]),
+                    "notes": (
+                        str(row.get("notes", ""))
+                        if "notes" in correspondences.columns
+                        else ""
+                    ),
+                }
+            )
+
+        # Find connected components (clusters)
+        clusters = list(nx.connected_components(G))
+
+        # Build cluster details
+        cluster_details = []
+
+        for i, cluster in enumerate(clusters):
+            cluster_entities = sorted(list(cluster))
+            cluster_size = len(cluster_entities)
+
+            # Get all correspondences within this cluster
+            cluster_correspondences = []
+            for j, entity1 in enumerate(cluster_entities):
+                for entity2 in cluster_entities[j + 1 :]:  # Avoid duplicates
+                    edge_key = tuple(sorted([entity1, entity2]))
+                    if edge_key in edge_metadata:
+                        for corr_data in edge_metadata[edge_key]:
+                            cluster_correspondences.append(
+                                {
+                                    "entity1": entity1,
+                                    "entity2": entity2,
+                                    "score": corr_data["score"],
+                                    "notes": corr_data["notes"],
+                                }
+                            )
+
+            # Calculate cluster statistics
+            if cluster_correspondences:
+                scores = [corr["score"] for corr in cluster_correspondences]
+                avg_score = sum(scores) / len(scores)
+                min_score = min(scores)
+                max_score = max(scores)
+            else:
+                avg_score = min_score = max_score = 0.0
+
+            cluster_info = {
+                "cluster_id": i,
+                "cluster_size": cluster_size,
+                "entities": cluster_entities,
+                "correspondences_count": len(cluster_correspondences),
+                "correspondences": cluster_correspondences,
+                "statistics": {
+                    "avg_score": avg_score,
+                    "min_score": min_score,
+                    "max_score": max_score,
+                },
+            }
+            cluster_details.append(cluster_info)
+
+        # Sort clusters by size (largest first) for easier debugging
+        cluster_details.sort(key=lambda x: x["cluster_size"], reverse=True)
+
+        # Create output structure
+        output_data = {
+            "metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "total_correspondences": len(correspondences),
+                "total_clusters": len(cluster_details),
+                "total_entities": sum(
+                    cluster["cluster_size"] for cluster in cluster_details
+                ),
+            },
+            "clusters": cluster_details,
+        }
+
+        # Write JSON file
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(output_data, f, indent=2, ensure_ascii=False)
+
+        logging.info(f"Cluster details written to {out_path}")
+        logging.info(
+            f"Exported {len(cluster_details)} clusters with detailed record information"
+        )
+
+        return out_path
+
+    @staticmethod
+    def write_debug_results(
+        correspondences: CorrespondenceSet,
+        debug_results: pd.DataFrame,
+        *,
+        out_dir: str,
+        matcher_instance: Optional[object] = None,
+        test_pairs: Optional[pd.DataFrame] = None,
+    ) -> Tuple[str, str]:
+        """Write debug results in Winter format for detailed matching analysis.
+
+        Creates detailed debug output files matching the Winter framework format,
+        including both full comparator matrix and simplified per-comparator results.
+        These files are essential for debugging matching rules and understanding
+        why specific pairs were matched or rejected.
+
+        The matching rule name is automatically determined from the matcher instance
+        class name or correspondence metadata.
+
+        Parameters
+        ----------
+        correspondences : CorrespondenceSet
+            DataFrame with id1, id2, score, notes columns containing
+            entity correspondences from matching process.
+        debug_results : pandas.DataFrame
+            DataFrame with detailed comparator results from matcher debug mode.
+            Expected columns: id1, id2, comparator_name, record1_value,
+            record2_value, record1_preprocessed, record2_preprocessed,
+            similarity, postprocessed_similarity.
+        out_dir : str
+            Directory to write debug result files.
+        matcher_instance : object, optional
+            The matcher instance used to generate the correspondences.
+            Used to automatically determine the matching rule name.
+        test_pairs : pandas.DataFrame, optional
+            Ground truth test pairs. Should have columns id1, id2, and
+            optionally a label column (1 for positive, 0 for negative).
+            If no label column, assumes all pairs are positive matches.
+            Used to populate IsMatch column in debug output.
+
+        Returns
+        -------
+        Tuple[str, str]
+            Paths to the written debug files: (full_debug_path, short_debug_path)
+
+        Raises
+        ------
+        ValueError
+            If required columns are missing from input DataFrames.
+        """
+        # Input validation
+        if correspondences.empty:
+            raise ValueError("Empty correspondence set provided")
+
+        if debug_results.empty:
+            raise ValueError("Empty debug results provided")
+
+        # Validate correspondence columns
+        corr_required = ["id1", "id2", "score"]
+        for col in corr_required:
+            if col not in correspondences.columns:
+                raise ValueError(f"Correspondences missing required column: {col}")
+
+        # Validate debug results columns
+        debug_required = [
+            "id1",
+            "id2",
+            "comparator_name",
+            "record1_value",
+            "record2_value",
+            "record1_preprocessed",
+            "record2_preprocessed",
+            "similarity",
+            "postprocessed_similarity",
+        ]
+        for col in debug_required:
+            if col not in debug_results.columns:
+                raise ValueError(f"Debug results missing required column: {col}")
+
+        # Automatically determine matching rule name
+        matching_rule_name = EntityMatchingEvaluator._determine_matching_rule_name(
+            correspondences, matcher_instance
+        )
+
+        os.makedirs(out_dir, exist_ok=True)
+
+        # Create full debug results file (debugResultsMatchingRule.csv format)
+        full_debug_path = os.path.join(out_dir, "debugResultsMatchingRule.csv")
+        EntityMatchingEvaluator._write_full_debug_results(
+            correspondences, debug_results, full_debug_path, matching_rule_name, test_pairs
+        )
+
+        # Create short debug results file (debugResultsMatchingRule.csv_short format)
+        short_debug_path = os.path.join(out_dir, "debugResultsMatchingRule.csv_short")
+        EntityMatchingEvaluator._write_short_debug_results(
+            correspondences, debug_results, short_debug_path, matching_rule_name
+        )
+
+        logging.info(
+            f"Debug results written to {full_debug_path} and {short_debug_path}"
+        )
+        return full_debug_path, short_debug_path
+
+    @staticmethod
+    def _determine_matching_rule_name(
+        correspondences: CorrespondenceSet,
+        matcher_instance: Optional[object] = None,
+    ) -> str:
+        """Automatically determine matching rule name from matcher or correspondences metadata."""
+        # First try to get from matcher instance
+        if matcher_instance is not None:
+            class_name = matcher_instance.__class__.__name__
+            # Return actual PyDI class names instead of Winter equivalents
+            return class_name
+
+        # Try to get from correspondence metadata
+        if hasattr(correspondences, "attrs") and correspondences.attrs:
+            matcher_name = correspondences.attrs.get("matcher_name")
+            if matcher_name:
+                return matcher_name
+
+            # Check provenance for matcher info
+            provenance = correspondences.attrs.get("provenance", [])
+            if isinstance(provenance, list):
+                for step in provenance:
+                    if isinstance(step, dict) and "operation" in step:
+                        if "match" in step["operation"].lower():
+                            return step.get("method", "UnknownMatchingRule")
+
+        # Default fallback
+        return "RuleBasedMatcher"
+
+    @staticmethod
+    def _write_full_debug_results(
+        correspondences: pd.DataFrame,
+        debug_results: pd.DataFrame,
+        out_path: str,
+        matching_rule_name: str,
+        test_pairs: Optional[pd.DataFrame] = None,
+    ) -> None:
+        """Write full debug results in Winter format with comparator matrix."""
+        # Process test pairs for IsMatch column if available
+        positive_set = set()
+        negative_set = set()
+
+        if test_pairs is not None and not test_pairs.empty:
+            # Use the same label normalization logic as in other methods
+            positive_mask, negative_mask = EntityMatchingEvaluator._normalize_labels(test_pairs)
+
+            if "label" in test_pairs.columns:
+                pos_df = test_pairs[positive_mask]
+                neg_df = test_pairs[negative_mask]
+                positive_set = set(zip(pos_df["id1"], pos_df["id2"]))
+                negative_set = set(zip(neg_df["id1"], neg_df["id2"]))
+            else:
+                # Assume all test pairs are positive
+                positive_set = set(zip(test_pairs["id1"], test_pairs["id2"]))
+
+        # Get unique comparators and pairs
+        unique_comparators = sorted(debug_results["comparator_name"].unique())
+
+        # Build header with dynamic comparator columns
+        header_cols = [
+            "MatchingRule",
+            "Record1Identifier",
+            "Record2Identifier",
+            "TotalSimilarity",
+            "IsMatch",
+        ]
+
+        for i, comp_name in enumerate(unique_comparators):
+            base_name = f"[{i}] {comp_name}"
+            header_cols.extend(
+                [
+                    f"{base_name} record1Value",
+                    f"{base_name} record2Value",
+                    f"{base_name} record1PreprocessedValue",
+                    f"{base_name} record2PreprocessedValue",
+                    f"{base_name} similarity",
+                    f"{base_name} postproccesedSimilarity",
+                ]
+            )
+
+        # Create a lookup for correspondence scores
+        correspondence_scores = {}
+        for _, corr_row in correspondences.iterrows():
+            pair_key = (corr_row["id1"], corr_row["id2"])
+            correspondence_scores[pair_key] = corr_row["score"]
+
+        # Get all unique pairs from debug_results (ALL evaluated candidates, not just matches)
+        unique_pairs = debug_results[["id1", "id2"]].drop_duplicates()
+
+        # Create rows for each evaluated pair (not just matches)
+        output_rows = []
+
+        for _, pair_row in unique_pairs.iterrows():
+            pair_id1, pair_id2 = pair_row["id1"], pair_row["id2"]
+            pair_tuple = (pair_id1, pair_id2)
+
+            # Get total similarity from correspondences if it matched, otherwise calculate from debug results
+            if pair_tuple in correspondence_scores:
+                total_similarity = correspondence_scores[pair_tuple]
+            else:
+                # Pair was evaluated but didn't match threshold - estimate total similarity
+                # from the weighted average of postprocessed similarities
+                pair_debug = debug_results[
+                    (debug_results["id1"] == pair_id1) & (debug_results["id2"] == pair_id2)
+                ]
+                if not pair_debug.empty:
+                    # Use mean of postprocessed similarities as estimate
+                    # (ideally we'd have weights from the matcher, but this is a reasonable approximation)
+                    total_similarity = pair_debug["postprocessed_similarity"].mean()
+                else:
+                    total_similarity = 0.0
+
+            # Determine if this is a match based on test set ground truth
+            if pair_tuple in positive_set:
+                is_match = "1"  # Ground truth positive match
+            elif pair_tuple in negative_set:
+                is_match = "0"  # Ground truth negative match
+            else:
+                is_match = ""   # Not in test set
+
+            # Start row with basic info
+            row_data = [
+                matching_rule_name,
+                pair_id1,
+                pair_id2,
+                str(total_similarity),
+                is_match,
+            ]
+
+            # Add comparator results for this pair
+            pair_results = debug_results[
+                (debug_results["id1"] == pair_id1) & (debug_results["id2"] == pair_id2)
+            ]
+
+            for comp_name in unique_comparators:
+                comp_data = pair_results[pair_results["comparator_name"] == comp_name]
+
+                if len(comp_data) > 0:
+                    comp_row = comp_data.iloc[0]
+                    row_data.extend(
+                        [
+                            (
+                                str(comp_row["record1_value"])
+                                if pd.notna(comp_row["record1_value"])
+                                else ""
+                            ),
+                            (
+                                str(comp_row["record2_value"])
+                                if pd.notna(comp_row["record2_value"])
+                                else ""
+                            ),
+                            (
+                                str(comp_row["record1_preprocessed"])
+                                if pd.notna(comp_row["record1_preprocessed"])
+                                else ""
+                            ),
+                            (
+                                str(comp_row["record2_preprocessed"])
+                                if pd.notna(comp_row["record2_preprocessed"])
+                                else ""
+                            ),
+                            (
+                                str(comp_row["similarity"])
+                                if pd.notna(comp_row["similarity"])
+                                else "0.0"
+                            ),
+                            (
+                                str(comp_row["postprocessed_similarity"])
+                                if pd.notna(comp_row["postprocessed_similarity"])
+                                else "0.0"
+                            ),
+                        ]
+                    )
+                else:
+                    # No data for this comparator and pair
+                    row_data.extend(["", "", "", "", "0.0", "0.0"])
+
+            output_rows.append(row_data)
+
+        # Write to CSV file
+        with open(out_path, "w", newline="", encoding="utf-8") as f:
+            # Write header
+            header_line = ",".join(f'"{col}"' for col in header_cols)
+            f.write(header_line + "\n")
+
+            # Write data rows
+            for row in output_rows:
+                data_line = ",".join(f'"{val}"' for val in row)
+                f.write(data_line + "\n")
+
+    @staticmethod
+    def _write_short_debug_results(
+        correspondences: pd.DataFrame,
+        debug_results: pd.DataFrame,
+        out_path: str,
+        matching_rule_name: str,
+    ) -> None:
+        """Write short debug results in Winter format with one row per comparator result."""
+        header_cols = [
+            "MatchingRule",
+            "Record1Identifier",
+            "Record2Identifier",
+            "comparatorName",
+            "record1Value",
+            "record2Value",
+            "record1PreprocessedValue",
+            "record2PreprocessedValue",
+            "similarity",
+            "postproccesedSimilarity",
+        ]
+
+        output_rows = []
+
+        # Create one row per comparator result
+        for _, debug_row in debug_results.iterrows():
+            row_data = [
+                matching_rule_name,
+                str(debug_row["id1"]),
+                str(debug_row["id2"]),
+                str(debug_row["comparator_name"]),
+                (
+                    str(debug_row["record1_value"])
+                    if pd.notna(debug_row["record1_value"])
+                    else ""
+                ),
+                (
+                    str(debug_row["record2_value"])
+                    if pd.notna(debug_row["record2_value"])
+                    else ""
+                ),
+                (
+                    str(debug_row["record1_preprocessed"])
+                    if pd.notna(debug_row["record1_preprocessed"])
+                    else ""
+                ),
+                (
+                    str(debug_row["record2_preprocessed"])
+                    if pd.notna(debug_row["record2_preprocessed"])
+                    else ""
+                ),
+                (
+                    str(debug_row["similarity"])
+                    if pd.notna(debug_row["similarity"])
+                    else "0.0"
+                ),
+                (
+                    str(debug_row["postprocessed_similarity"])
+                    if pd.notna(debug_row["postprocessed_similarity"])
+                    else "0.0"
+                ),
+            ]
+            output_rows.append(row_data)
+
+        # Write to CSV file
+        with open(out_path, "w", newline="", encoding="utf-8") as f:
+            # Write header
+            header_line = ",".join(f'"{col}"' for col in header_cols)
+            f.write(header_line + "\n")
+
+            # Write data rows
+            for row in output_rows:
+                data_line = ",".join(f'"{val}"' for val in row)
+                f.write(data_line + "\n")
