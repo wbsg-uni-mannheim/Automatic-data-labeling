@@ -1,0 +1,27 @@
+name: ditto-modern
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pytorch=2.4.*
+  - pytorch-cuda=12.1
+  - torchvision=0.19.*
+  - torchaudio=2.4.*
+  - numpy=1.26.*
+  - pandas=2.2.*
+  - scipy=1.14.*
+  - scikit-learn=1.5.*
+  - pyyaml=6.*
+  - tqdm=4.66.*
+  - nltk=3.9.*
+  - spacy=3.7.*
+  - regex
+  - jsonlines
+  - tensorboardx
+  - pip:
+      - transformers>=4.44,<5
+      - tokenizers>=0.19,<0.21
+      - sentencepiece>=0.2

@@ -1,0 +1,20 @@
+{
+  "source_json_gz": "data/wdc/wdcproducts80cc20rnd100un_gs.json.gz",
+  "multi_agent_run_dir": "output/multi_agent_single_batch/run_20260219_170127",
+  "output_json_gz": "output/ditto_smoke/gs_pseudo_consensus.json.gz",
+  "policy": "consensus",
+  "include_majority_with_weight": false,
+  "majority_weight": 0.5,
+  "rows_total": 4500,
+  "rows_kept": 4311,
+  "rows_dropped": 189,
+  "agreement": {
+    "consensus_3of3": 4311,
+    "majority_2of3": 189
+  },
+  "class_balance": {
+    "label_1": 524,
+    "label_0": 3787
+  },
+  "sample_weights_csv": "output/ditto_smoke/gs_pseudo_consensus_sample_weights.csv"
+}
