@@ -28,9 +28,9 @@ set -euo pipefail
 
 mkdir -p logs
 
-# Robust conda activation (matches DWS FAQ)
-source ~/.bashrc || true
+# Robust conda activation without sourcing interactive bashrc under `set -u`
 if command -v conda >/dev/null 2>&1; then
+  source "$(conda info --base)/etc/profile.d/conda.sh"
   conda activate "${CONDA_ENV_NAME:-ditto-modern}"
 else
   echo "conda not found in PATH; aborting" >&2

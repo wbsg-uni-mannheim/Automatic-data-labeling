@@ -60,6 +60,33 @@ def _pick(name: str, cli_value, cfg: Dict[str, object], default):
     return default
 
 
+def _normalize_da_op(da_value: str | None) -> str | None:
+    if da_value is None:
+        return None
+    op = str(da_value).strip().lower()
+    if not op:
+        return None
+    aliases = {
+        "delete": "del",
+    }
+    op = aliases.get(op, op)
+    allowed = {
+        "all",
+        "del",
+        "swap",
+        "drop_len",
+        "drop_sym",
+        "drop_same",
+        "drop_token",
+        "ins",
+        "append_col",
+        "drop_col",
+    }
+    if op not in allowed:
+        raise ValueError(f"--da must be one of {sorted(allowed)} (or alias: delete)")
+    return op
+
+
 def _broadcast_run_dir(ctx: DistContext, run_dir: Path | None) -> Path:
     if not ctx.enabled:
         if run_dir is None:
@@ -141,7 +168,7 @@ def main() -> None:
     fp16_cfg = bool(_pick("fp16", None, config_map, True))
     fields_raw = _pick("fields", args.fields, config_map, ",".join(DEFAULT_FIELDS))
     max_field_len = int(_pick("max_field_len", args.max_field_len, config_map, 350))
-    da = _pick("da", args.da, config_map, None)
+    da = _normalize_da_op(_pick("da", args.da, config_map, None))
     alpha_aug = float(_pick("alpha_aug", args.alpha_aug, config_map, 0.8))
     summarize = bool(_pick("summarize", args.summarize, config_map, False))
     dk = _pick("dk", args.dk, config_map, None)
