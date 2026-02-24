@@ -214,3 +214,4 @@ output
 data 
 logs
 outputoutput/ditto_runs/run_20260220_235713/checkpoints/best/model.pt
+*.pt
