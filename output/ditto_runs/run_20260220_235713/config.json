@@ -1,0 +1,20 @@
+{
+  "model_name": "roberta-base",
+  "batch_size": 16,
+  "max_len": 256,
+  "epochs": 5,
+  "lr": 2e-05,
+  "weight_decay": 0.01,
+  "warmup_ratio": 0.1,
+  "grad_accum_steps": 1,
+  "early_stopping_patience": 2,
+  "seed": 42,
+  "num_workers": 2,
+  "fp16": true,
+  "da": null,
+  "alpha_aug": 0.8,
+  "summarize": false,
+  "dk": null,
+  "spacy_model": "en_core_web_sm",
+  "world_size": 1
+}
