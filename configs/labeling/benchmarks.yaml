@@ -1,0 +1,55 @@
+defaults:
+  output_root: output/simple_labeling
+  run_prefix: benchmark
+  labeling_args:
+    model: gpt-5.2
+    faiss_k: 20
+    faiss_random_state: 42
+    seed_size: 100
+    seed_positives: 30
+    seed_max_calls: 4000
+    seed_pos_per_query: 1
+    seed_neg_per_query: 4
+    seed_batch_size: 5
+    seed_bottom_k: 2
+    seed_query_order: random
+    labels_per_iteration: 100
+    active_candidates: 5000
+    max_iterations: 30
+    adaptive_round_size: 0
+    adaptive_neg_min_share: 0.60
+    adaptive_neg_max_share: 0.90
+
+profiles:
+  small:
+    target_size: 2500
+    target_positives: 500
+  medium:
+    target_size: 10000
+    target_positives: 2500
+  large:
+    target_size: 20000
+    target_positives: 5000
+
+benchmarks:
+  wdc:
+    left_csv: data/wdc/wdc_train_large_left.csv
+    right_csv: data/wdc/wdc_train_large_right.csv
+    embeddings_dir: data/wdc/embeddings
+    left_emb: wdc_left_embeddings.npy
+    right_emb: wdc_right_embeddings.npy
+    left_schema_map:
+      id: id
+      title: title
+      brand: brand
+      description: description
+      price: price
+      priceCurrency: priceCurrency
+    right_schema_map:
+      id: id
+      title: title
+      brand: brand
+      description: description
+      price: price
+      priceCurrency: priceCurrency
+

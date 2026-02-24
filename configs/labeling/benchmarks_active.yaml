@@ -1,0 +1,129 @@
+defaults:
+  output_root: output/simple_labeling
+  run_prefix: benchmark
+  labeling_args:
+    model: gpt-5.2
+    faiss_k: 20
+    faiss_random_state: 42
+    seed_size: 100
+    seed_positives: 30
+    seed_max_calls: 400
+    seed_pos_per_query: 1
+    seed_neg_per_query: 4
+    seed_batch_size: 5
+    seed_bottom_k: 2
+    seed_query_order: random
+    labels_per_iteration: 100
+    active_candidates: 5000
+    max_iterations: 3_00
+    adaptive_round_size: 0
+    adaptive_neg_min_share: 0.60
+    adaptive_neg_max_share: 0.90
+
+benchmarks:
+  wdc:
+    left_csv: data/wdc/wdc_train_large_left.csv
+    right_csv: data/wdc/wdc_train_large_right.csv
+    id_col: id
+    fields:
+      title: title
+      brand: brand
+      description: description
+      price: price
+      currency: priceCurrency
+    embeddings:
+      dir: data/wdc/embeddings
+      left_file: wdc_left_embeddings.npy
+      right_file: wdc_right_embeddings.npy
+    profiles:
+      small:  {target_total: 2500, target_pos: 500,  target_neg: 2000,  label_budget: 4000}
+      medium: {target_total: 10000, target_pos: 2500, target_neg: 7500,  label_budget: 15000}
+      large:  {target_total: 20000, target_pos: 5000, target_neg: 15000, label_budget: 30000}
+
+  abt-buy:
+    left_csv: data/abt-buy/abt-buy-train-left.csv
+    right_csv: data/abt-buy/abt-buy-train-right.csv
+    id_col: id
+    fields:
+      title: title
+      description: description
+      price: price
+    embeddings:
+      dir: data/abt-buy/embeddings
+      left_file: abt-buy_left_embeddings.npy
+      right_file: abt-buy_right_embeddings.npy
+    profiles:
+      small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
+      medium: {target_total: 3000, target_pos: 600, target_neg: 2400, label_budget: 4500}
+      large:  {target_total: 5000, target_pos: 800, target_neg: 4200, label_budget: 7500}
+
+  amazon-google:
+    left_csv: data/amazon-google/amazon-google-train-left.csv
+    right_csv: data/amazon-google/amazon-google-train-right.csv
+    id_col: id
+    fields:
+      title: title
+      brand: manufacturer
+      price: price
+    embeddings:
+      dir: data/amazon-google/embeddings
+      left_file: amazon-google_left_embeddings.npy
+      right_file: amazon-google_right_embeddings.npy
+    profiles:
+      small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
+      medium: {target_total: 4000, target_pos: 700, target_neg: 3300, label_budget: 6000}
+      large:  {target_total: 7000, target_pos: 900, target_neg: 6100, label_budget: 10500}
+
+  dblp-acm:
+    left_csv: data/dblp-acm/dblp-acm-train-left.csv
+    right_csv: data/dblp-acm/dblp-acm-train-right.csv
+    id_col: id
+    fields:
+      title: title
+      brand: authors
+      description: venue
+      price: year
+    embeddings:
+      dir: data/dblp-acm/embeddings
+      left_file: dblp-acm_left_embeddings.npy
+      right_file: dblp-acm_right_embeddings.npy
+    profiles:
+      small:  {target_total: 1500, target_pos: 300, target_neg: 1200, label_budget: 2250}
+      medium: {target_total: 5000, target_pos: 1000, target_neg: 4000, label_budget: 7500}
+      large:  {target_total: 9000, target_pos: 1700, target_neg: 7300, label_budget: 13500}
+
+  dblp-scholar:
+    left_csv: data/dblp-scholar/dblp-scholar-train-left.csv
+    right_csv: data/dblp-scholar/dblp-scholar-train-right.csv
+    id_col: id
+    fields:
+      title: title
+      brand: authors
+      description: venue
+      price: year
+    embeddings:
+      dir: data/dblp-scholar/embeddings
+      left_file: dblp-scholar_left_embeddings.npy
+      right_file: dblp-scholar_right_embeddings.npy
+    profiles:
+      small:  {target_total: 2500, target_pos: 500, target_neg: 2000, label_budget: 4000}
+      medium: {target_total: 10000, target_pos: 2000, target_neg: 8000, label_budget: 15000}
+      large:  {target_total: 20000, target_pos: 4000, target_neg: 16000, label_budget: 30000}
+
+  walmart-amazon:
+    left_csv: data/walmart-amazon/walmart-amazon-train-left.csv
+    right_csv: data/walmart-amazon/walmart-amazon-train-right.csv
+    id_col: id
+    fields:
+      title: title
+      brand: brand
+      description: category
+      price: price
+    embeddings:
+      dir: data/walmart-amazon/embeddings
+      left_file: walmart-amazon_left_embeddings.npy
+      right_file: walmart-amazon_right_embeddings.npy
+    profiles:
+      small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
+      medium: {target_total: 3000, target_pos: 500, target_neg: 2500, label_budget: 4500}
+      large:  {target_total: 6000, target_pos: 750, target_neg: 5250, label_budget: 9000}

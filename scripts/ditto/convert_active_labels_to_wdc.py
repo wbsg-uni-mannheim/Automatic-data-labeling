@@ -38,10 +38,13 @@ def _safe(v: object) -> str:
 
 def _load_source(csv_path: Path, side_prefix: str) -> Tuple[pd.DataFrame, Dict[str, int], Dict[str, int]]:
     df = pd.read_csv(csv_path).reset_index(drop=True).copy()
-    required = {"id", "title", "brand", "description", "price", "priceCurrency"}
+    required = {"id"}
     missing = sorted(list(required - set(df.columns)))
     if missing:
-        raise ValueError(f"Missing columns in {csv_path}: {missing}")
+        raise ValueError(f"Missing required columns in {csv_path}: {missing}")
+    for optional_col in ["title", "brand", "description", "price", "priceCurrency"]:
+        if optional_col not in df.columns:
+            df[optional_col] = ""
     if "cluster_id" not in df.columns:
         df["cluster_id"] = ""
 

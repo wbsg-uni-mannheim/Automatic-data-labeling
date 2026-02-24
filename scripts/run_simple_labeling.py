@@ -30,6 +30,15 @@ try:
 except Exception:
     XGBClassifier = None  # type: ignore
 
+CANONICAL_SCHEMA_FIELDS: Tuple[str, ...] = (
+    "id",
+    "title",
+    "brand",
+    "description",
+    "price",
+    "priceCurrency",
+)
+
 
 def _norm_text(v: object) -> str:
     if v is None:
@@ -99,16 +108,60 @@ def _load_json(path: Path) -> Dict:
         return {}
 
 
-def _load_df(path: Path, side: str) -> pd.DataFrame:
-    df = pd.read_csv(path)
-    needed = {"id", "title", "brand", "description", "price", "priceCurrency"}
-    missing = sorted(list(needed - set(df.columns)))
-    if missing:
-        raise ValueError(f"Missing columns in {path}: {missing}")
-    # WDC can contain duplicate source ids; use stable row ids internally.
-    df = df.reset_index(drop=True).copy()
-    df["__rid"] = [f"{side}:{i}" for i in range(len(df))]
-    return df
+def _parse_schema_map_arg(raw: str | None, side: str) -> Dict[str, str]:
+    if raw is None:
+        return {}
+    raw = str(raw).strip()
+    if not raw:
+        return {}
+    candidate = Path(raw)
+    payload = candidate.read_text() if candidate.exists() else raw
+    try:
+        parsed = json.loads(payload)
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"Invalid --{side}-schema-map; expected JSON object or JSON file path. "
+            f"Input was: {raw}"
+        ) from exc
+    if not isinstance(parsed, dict):
+        raise ValueError(f"--{side}-schema-map must decode to an object, got {type(parsed).__name__}")
+    out: Dict[str, str] = {}
+    for k, v in parsed.items():
+        key = str(k).strip()
+        if key not in CANONICAL_SCHEMA_FIELDS:
+            raise ValueError(
+                f"--{side}-schema-map contains unsupported canonical field '{key}'. "
+                f"Allowed: {list(CANONICAL_SCHEMA_FIELDS)}"
+            )
+        val = str(v).strip() if v is not None else ""
+        if val:
+            out[key] = val
+    return out
+
+
+def _load_df(path: Path, side: str, schema_map: Dict[str, str], strict_schema: bool = False) -> pd.DataFrame:
+    src = pd.read_csv(path)
+    out = pd.DataFrame(index=src.index)
+    missing_required: List[str] = []
+    for canonical in CANONICAL_SCHEMA_FIELDS:
+        source_col = str(schema_map.get(canonical, canonical))
+        if source_col in src.columns:
+            out[canonical] = src[source_col]
+            continue
+        if canonical == "id" or strict_schema:
+            missing_required.append(f"{canonical}<-{source_col}")
+            continue
+        out[canonical] = ""
+    if missing_required:
+        raise ValueError(
+            f"Missing required columns in {path}: {missing_required}. "
+            f"Provided schema_map={schema_map}"
+        )
+    out = out.reset_index(drop=True).copy()
+    out["id"] = out["id"].astype(str)
+    # Use stable row ids internally because source ids can repeat.
+    out["__rid"] = [f"{side}:{i}" for i in range(len(out))]
+    return out
 
 
 def _build_candidates(
@@ -1239,6 +1292,27 @@ def main() -> None:
     parser.add_argument("--embeddings-dir", required=True)
     parser.add_argument("--left-csv", default="data/wdc/wdc_train_large_left.csv")
     parser.add_argument("--right-csv", default="data/wdc/wdc_train_large_right.csv")
+    parser.add_argument(
+        "--left-schema-map",
+        default="",
+        help=(
+            "JSON object or path to JSON mapping canonical fields "
+            "(id,title,brand,description,price,priceCurrency) to source columns for the left CSV."
+        ),
+    )
+    parser.add_argument(
+        "--right-schema-map",
+        default="",
+        help=(
+            "JSON object or path to JSON mapping canonical fields "
+            "(id,title,brand,description,price,priceCurrency) to source columns for the right CSV."
+        ),
+    )
+    parser.add_argument(
+        "--strict-schema",
+        action="store_true",
+        help="Require all canonical fields to be present after schema mapping. By default only id is required.",
+    )
     parser.add_argument("--left-emb", default="wdc_left_embeddings.npy")
     parser.add_argument("--right-emb", default="wdc_right_embeddings.npy")
     parser.add_argument("--model", default="gpt-5.2")
@@ -1287,8 +1361,10 @@ def main() -> None:
     prev_state = _load_json(state_path) if args.resume else {}
     prev_usage = prev_state.get("token_usage", {}) if isinstance(prev_state, dict) else {}
 
-    left_df = _load_df(Path(args.left_csv), side="L")
-    right_df = _load_df(Path(args.right_csv), side="R")
+    left_schema_map = _parse_schema_map_arg(args.left_schema_map, side="left")
+    right_schema_map = _parse_schema_map_arg(args.right_schema_map, side="right")
+    left_df = _load_df(Path(args.left_csv), side="L", schema_map=left_schema_map, strict_schema=args.strict_schema)
+    right_df = _load_df(Path(args.right_csv), side="R", schema_map=right_schema_map, strict_schema=args.strict_schema)
 
     emb_dir = Path(args.embeddings_dir)
     left_emb = np.load(emb_dir / args.left_emb).astype(np.float32)
@@ -1327,6 +1403,9 @@ def main() -> None:
             "left_query_rows": int(len(left_query_ids)),
             "right_index_rows": int(len(right_index_ids)),
             "embedding_dim": int(left_emb.shape[1]),
+            "left_schema_map": left_schema_map,
+            "right_schema_map": right_schema_map,
+            "strict_schema": bool(args.strict_schema),
             "token_usage": {
                 "prompt_tokens": int(prev_usage.get("prompt_tokens", 0) or 0),
                 "completion_tokens": int(prev_usage.get("completion_tokens", 0) or 0),
