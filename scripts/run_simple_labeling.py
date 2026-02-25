@@ -516,90 +516,42 @@ def _count_labels(df: pd.DataFrame) -> Tuple[int, int]:
     return pos, neg
 
 
-def _run_old_active_learning(
+def _run_active_learning_same_prompt(
     *,
+    client: OpenAI,
     model: str,
-    run_dir: Path,
-    left_df: pd.DataFrame,
-    right_df: pd.DataFrame,
     labeled: pd.DataFrame,
-    seed: pd.DataFrame,
     candidates: pd.DataFrame,
+    left_map: Dict[str, Dict[str, object]],
+    right_map: Dict[str, Dict[str, object]],
+    left_idx: Dict[str, int],
+    right_idx: Dict[str, int],
+    left_emb: np.ndarray,
+    right_emb: np.ndarray,
+    feature_fields: Sequence[str],
     target_pos: int,
     target_neg: int,
     labels_per_iteration: int,
     active_candidates: int,
+    active_top_matchers: int,
     max_iterations: int,
     max_total_labels_override: int | None = None,
     usage_stats: Dict[str, int] | None = None,
 ) -> Tuple[pd.DataFrame, Dict[str, object]]:
-    import sys
-
-    # Prefer local legacy implementation in this repo.
-    old_root = Path(__file__).resolve().parents[1] / "old"
-    if old_root.exists() and str(old_root) not in sys.path:
-        sys.path.insert(0, str(old_root))
-
-    try:
-        from langchain_openai import ChatOpenAI  # type: ignore
-    except Exception as exc:
-        raise RuntimeError("Legacy active learning requires langchain_openai.") from exc
-
-    try:
-        from PyDI.pipeline.labeled_set_generation import run_active_learning as run_active_learning_old  # type: ignore
-    except Exception as exc:
-        raise RuntimeError("Failed to import legacy PyDI active learning implementation.") from exc
-
-    training_set = labeled[["id1", "id2", "label"]].copy()
+    training_set = labeled[["id1", "id2", "label", "similarity"]].copy()
     training_set["id1"] = training_set["id1"].astype(str)
     training_set["id2"] = training_set["id2"].astype(str)
     training_set["label"] = training_set["label"].astype(str).str.upper().str.strip()
+    training_set["label"] = training_set["label"].replace({"1": "TRUE", "0": "FALSE"})
+    training_set["similarity"] = pd.to_numeric(training_set.get("similarity", 0.0), errors="coerce").fillna(0.0)
+    training_set = training_set[training_set["label"].isin(["TRUE", "FALSE"])].copy()
+    training_set = training_set.drop_duplicates(subset=["id1", "id2"], keep="last").reset_index(drop=True)
 
-    if seed.empty:
-        raise RuntimeError("Legacy active learning requires seed labels to build a validation holdout.")
-
-    seed_work = seed.copy()
-    seed_work["id1"] = seed_work["id1"].astype(str)
-    seed_work["id2"] = seed_work["id2"].astype(str)
-    seed_work["label"] = seed_work["label"].astype(str).str.upper().str.strip()
-    if "similarity" not in seed_work.columns:
-        seed_work["similarity"] = 0.0
-    seed_work = seed_work.drop_duplicates(subset=["id1", "id2"], keep="last").reset_index(drop=True)
-
-    pos_seed = seed_work[seed_work["label"] == "TRUE"]
-    neg_seed = seed_work[seed_work["label"] == "FALSE"]
-    if pos_seed.empty or neg_seed.empty:
-        raise RuntimeError("Seed labels must contain both positive and negative examples.")
-
-    # Legacy optimizer requires a labeled validation set, and it removes train/val overlaps.
-    val_n = min(20, len(seed_work) - 2) if len(seed_work) > 2 else 1
-    val_n = max(2, val_n)
-    pos_ratio = len(pos_seed) / len(seed_work)
-    val_pos_n = max(1, min(len(pos_seed) - 1, int(round(val_n * pos_ratio))))
-    val_neg_n = max(1, min(len(neg_seed) - 1, val_n - val_pos_n))
-    val_pos_n = max(1, min(val_pos_n, val_n - 1))
-    val_neg_n = max(1, min(val_neg_n, val_n - val_pos_n))
-
-    validation_set = pd.concat(
-        [
-            pos_seed.sample(n=val_pos_n, random_state=42),
-            neg_seed.sample(n=val_neg_n, random_state=42),
-        ],
-        ignore_index=True,
-    ).sample(frac=1.0, random_state=42).reset_index(drop=True)
-    validation_pairs = set(zip(validation_set["id1"].astype(str), validation_set["id2"].astype(str)))
-    training_set = training_set[
-        ~training_set.apply(lambda r: (str(r["id1"]), str(r["id2"])) in validation_pairs, axis=1)
-    ].reset_index(drop=True)
-
-    train_pos = int((training_set["label"] == "TRUE").sum())
-    train_neg = int((training_set["label"] == "FALSE").sum())
-    if training_set.empty or train_pos == 0 or train_neg == 0:
-        raise RuntimeError("Training set became invalid after building validation holdout from seed labels.")
-
-    legacy_candidates = candidates[["id1", "id2", "similarity"]].copy()
-    legacy_candidates["id1"] = legacy_candidates["id1"].astype(str)
-    legacy_candidates["id2"] = legacy_candidates["id2"].astype(str)
+    pool_all = candidates[["id1", "id2", "similarity"]].copy()
+    pool_all["id1"] = pool_all["id1"].astype(str)
+    pool_all["id2"] = pool_all["id2"].astype(str)
+    pool_all["similarity"] = pd.to_numeric(pool_all["similarity"], errors="coerce").fillna(0.0).astype(float)
+    pool_all = pool_all.drop_duplicates(subset=["id1", "id2"], keep="first").reset_index(drop=True)
 
     if max_total_labels_override is None:
         target_total = int(target_pos + target_neg)
@@ -610,7 +562,6 @@ def _run_old_active_learning(
         if max_total_labels <= 0:
             max_total_labels = int(max(labels_per_iteration, 1))
 
-    chat_model = ChatOpenAI(model=model, temperature=0)
     active_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
     cb_ctx = nullcontext()
     cb_obj = None
@@ -619,35 +570,258 @@ def _run_old_active_learning(
 
         cb_ctx = get_openai_callback()
     except Exception:
-        # Best effort only; continue without callback-based usage accounting.
+        # Optional fallback only.
         cb_ctx = nullcontext()
 
+    rounds: List[Dict[str, object]] = []
+    token_source = "response_usage"
     with cb_ctx as cb:
         cb_obj = cb
-        augmented, _, summary = run_active_learning_old(
-            df_left=left_df,
-            df_right=right_df,
-            left_name="left",
-            right_name="right",
-            training_set=training_set,
-            validation_set=validation_set[["id1", "id2", "label"]].copy(),
-            chat_model=chat_model,
-            output_dir=run_dir,
-            candidates=legacy_candidates,
-            id_column="__rid",
-            target_positives=int(target_pos),
-            target_negatives=int(target_neg) if target_neg > 0 else None,
-            max_total_labels=int(max_total_labels),
-            labels_per_iteration=int(labels_per_iteration),
-            max_candidates=int(active_candidates),
-            max_iterations=int(max_iterations),
-            label_batch_size=int(min(25, max(1, labels_per_iteration))),
-        )
+        labels_added = 0
+        for iteration in range(1, int(max_iterations) + 1):
+            if labels_added >= max_total_labels:
+                break
+            cur_pos, cur_neg = _count_labels(training_set)
+            if cur_pos >= target_pos and cur_neg >= target_neg:
+                break
 
-    if cb_obj is not None:
-        active_usage["prompt_tokens"] = int(getattr(cb_obj, "prompt_tokens", 0) or 0)
-        active_usage["completion_tokens"] = int(getattr(cb_obj, "completion_tokens", 0) or 0)
-        active_usage["total_tokens"] = int(getattr(cb_obj, "total_tokens", 0) or 0)
+            labeled_pairs = set(zip(training_set["id1"].astype(str), training_set["id2"].astype(str)))
+            labeled_pair_keys = set(
+                (
+                    training_set["id1"].astype(str)
+                    + "||"
+                    + training_set["id2"].astype(str)
+                ).tolist()
+            )
+            pool_keys = pool_all["id1"].astype(str) + "||" + pool_all["id2"].astype(str)
+            pool = pool_all.loc[~pool_keys.isin(labeled_pair_keys)].reset_index(drop=True)
+            print(
+                f"AL iter {iteration}: train={len(training_set)} "
+                f"(pos={cur_pos}, neg={cur_neg}), unlabeled_pool={len(pool)}",
+                flush=True,
+            )
+            if pool.empty:
+                rounds.append(
+                    {
+                        "iteration": int(iteration),
+                        "status": "stopped",
+                        "reason": "candidate_pool_exhausted",
+                    }
+                )
+                break
+
+            if active_candidates > 0 and len(pool) > int(active_candidates):
+                keep_top = max(int(active_candidates) // 2, 1)
+                head = pool.sort_values("similarity", ascending=False).head(keep_top)
+                tail_n = int(active_candidates) - len(head)
+                if tail_n > 0:
+                    rem = pool.drop(index=head.index)
+                    if not rem.empty:
+                        tail = rem.sample(n=min(tail_n, len(rem)), random_state=42 + iteration)
+                        pool = pd.concat([head, tail], ignore_index=True)
+                    else:
+                        pool = head.reset_index(drop=True)
+                else:
+                    pool = head.reset_index(drop=True)
+                pool = pool.drop_duplicates(subset=["id1", "id2"], keep="first").reset_index(drop=True)
+                print(
+                    f"AL iter {iteration}: capped active pool to {len(pool)} candidates",
+                    flush=True,
+                )
+
+            fit_t0 = time.perf_counter()
+            fitted = _fit_matcher_ensemble(
+                training_set,
+                left_map,
+                right_map,
+                left_idx,
+                right_idx,
+                left_emb,
+                right_emb,
+                feature_fields=feature_fields,
+                verbose=True,
+            )
+            print(
+                f"AL iter {iteration}: fitted {len(fitted)} matchers "
+                f"in {time.perf_counter() - fit_t0:.1f}s",
+                flush=True,
+            )
+            if len(fitted) < 2:
+                rounds.append(
+                    {
+                        "iteration": int(iteration),
+                        "status": "stopped",
+                        "reason": "not_enough_matchers",
+                        "fitted_matchers": int(len(fitted)),
+                    }
+                )
+                break
+
+            top_n = max(2, int(active_top_matchers))
+            top_matchers = fitted[:top_n]
+            score_t0 = time.perf_counter()
+            corr_list = _run_matchers_on_pool(
+                pool,
+                top_matchers,
+                left_map,
+                right_map,
+                left_idx,
+                right_idx,
+                left_emb,
+                right_emb,
+                feature_fields=feature_fields,
+            )
+            print(
+                f"AL iter {iteration}: scored pool with {len(top_matchers)} matchers "
+                f"in {time.perf_counter() - score_t0:.1f}s",
+                flush=True,
+            )
+            disagreements = _find_matcher_disagreements(corr_list, top_n=top_n)
+
+            remaining_budget = int(max_total_labels) - int(labels_added)
+            quota = min(int(labels_per_iteration), remaining_budget)
+            if quota <= 0:
+                break
+
+            select: pd.DataFrame
+            select_mode: str
+            if not disagreements.empty:
+                select = disagreements[["id1", "id2", "variance"]].copy()
+                select = select.merge(pool[["id1", "id2", "similarity"]], on=["id1", "id2"], how="left")
+                select = select.sort_values("variance", ascending=False).head(quota).reset_index(drop=True)
+                select_mode = "disagreement_variance"
+            else:
+                # Fallback to uncertainty sampling from ensemble means.
+                pair_scores: Dict[Tuple[str, str], List[float]] = {}
+                for c in corr_list:
+                    corr = c["correspondences"]
+                    if not isinstance(corr, pd.DataFrame) or corr.empty:
+                        continue
+                    for _, r in corr.iterrows():
+                        key = (str(r["id1"]), str(r["id2"]))
+                        pair_scores.setdefault(key, []).append(float(r["score"]))
+                rows: List[Dict[str, object]] = []
+                for (id1, id2), vals in pair_scores.items():
+                    if not vals:
+                        continue
+                    mean_score = float(np.mean(vals))
+                    rows.append(
+                        {
+                            "id1": id1,
+                            "id2": id2,
+                            "uncertainty": abs(mean_score - 0.5),
+                        }
+                    )
+                if rows:
+                    select = pd.DataFrame(rows)
+                    select = select.merge(pool[["id1", "id2", "similarity"]], on=["id1", "id2"], how="left")
+                    select = select.sort_values("uncertainty", ascending=True).head(quota).reset_index(drop=True)
+                    select_mode = "uncertainty_mean_score"
+                else:
+                    select = pool[["id1", "id2", "similarity"]].sample(
+                        n=min(quota, len(pool)),
+                        random_state=42 + iteration,
+                    ).reset_index(drop=True)
+                    select_mode = "random_fallback"
+            print(
+                f"AL iter {iteration}: selected {len(select)} pairs "
+                f"with mode={select_mode}, quota={quota}",
+                flush=True,
+            )
+
+            if select.empty:
+                rounds.append(
+                    {
+                        "iteration": int(iteration),
+                        "status": "stopped",
+                        "reason": "no_pairs_selected",
+                    }
+                )
+                break
+
+            new_rows: List[Dict[str, object]] = []
+            label_t0 = time.perf_counter()
+            for _, row in select.iterrows():
+                id1 = str(row["id1"])
+                id2 = str(row["id2"])
+                if (id1, id2) in labeled_pairs:
+                    continue
+                if id1 not in left_map or id2 not in right_map:
+                    continue
+                label, usage = _label_pair(client, model, left_map[id1], right_map[id2])
+                active_usage["prompt_tokens"] += int(usage.get("prompt_tokens", 0) or 0)
+                active_usage["completion_tokens"] += int(usage.get("completion_tokens", 0) or 0)
+                active_usage["total_tokens"] += int(usage.get("total_tokens", 0) or 0)
+                new_rows.append(
+                    {
+                        "id1": id1,
+                        "id2": id2,
+                        "label": label,
+                        "similarity": float(row.get("similarity", 0.0) or 0.0),
+                        "al_source": select_mode,
+                        "iteration": int(iteration),
+                    }
+                )
+                labeled_pairs.add((id1, id2))
+                if len(new_rows) % 10 == 0 or len(new_rows) == len(select):
+                    print(
+                        f"AL iter {iteration}: labeled {len(new_rows)}/{len(select)} "
+                        f"(tokens={active_usage['total_tokens']})",
+                        flush=True,
+                    )
+                if len(new_rows) >= quota:
+                    break
+
+            if not new_rows:
+                rounds.append(
+                    {
+                        "iteration": int(iteration),
+                        "status": "stopped",
+                        "reason": "no_new_labels",
+                        "selected_mode": select_mode,
+                    }
+                )
+                break
+
+            add_df = pd.DataFrame(new_rows)
+            training_set = pd.concat([training_set, add_df], ignore_index=True)
+            training_set = training_set.drop_duplicates(subset=["id1", "id2"], keep="last").reset_index(drop=True)
+            labels_added += int(len(add_df))
+            new_pos = int((add_df["label"].astype(str).str.upper() == "TRUE").sum())
+            new_neg = int((add_df["label"].astype(str).str.upper() == "FALSE").sum())
+            cur_pos, cur_neg = _count_labels(training_set)
+            print(
+                f"AL iter {iteration}: added {len(add_df)} labels "
+                f"(+{new_pos} pos, +{new_neg} neg) in {time.perf_counter() - label_t0:.1f}s; "
+                f"totals pos={cur_pos}, neg={cur_neg}",
+                flush=True,
+            )
+            rounds.append(
+                {
+                    "iteration": int(iteration),
+                    "status": "ok",
+                    "selected_mode": select_mode,
+                    "pool_size": int(len(pool)),
+                    "selected_pairs": int(len(select)),
+                    "new_labels": int(len(add_df)),
+                    "new_pos": int(new_pos),
+                    "new_neg": int(new_neg),
+                    "total_pos": int(cur_pos),
+                    "total_neg": int(cur_neg),
+                    "total_size": int(len(training_set)),
+                }
+            )
+
+    # Fallback only: use callback counters iff direct usage metadata was unavailable.
+    if active_usage["total_tokens"] <= 0 and cb_obj is not None:
+        cb_prompt = int(getattr(cb_obj, "prompt_tokens", 0) or 0)
+        cb_completion = int(getattr(cb_obj, "completion_tokens", 0) or 0)
+        cb_total = int(getattr(cb_obj, "total_tokens", 0) or 0)
+        if cb_total > 0 or cb_prompt > 0 or cb_completion > 0:
+            active_usage["prompt_tokens"] = cb_prompt
+            active_usage["completion_tokens"] = cb_completion
+            active_usage["total_tokens"] = cb_total
+            token_source = "langchain_callback_fallback"
 
     if usage_stats is not None:
         usage_stats["prompt_tokens"] += active_usage["prompt_tokens"]
@@ -657,12 +831,7 @@ def _run_old_active_learning(
         usage_stats["active_completion_tokens"] += active_usage["completion_tokens"]
         usage_stats["active_total_tokens"] += active_usage["total_tokens"]
 
-    # Keep holdout labels in the final label pool for parity with this script's original totals.
-    if "similarity" not in augmented.columns:
-        augmented["similarity"] = 0.0
-    holdout = validation_set[["id1", "id2", "label", "similarity"]].copy()
-    out = pd.concat([augmented, holdout], ignore_index=True)
-    out = out.drop_duplicates(subset=["id1", "id2"], keep="first").reset_index(drop=True)
+    out = training_set.copy()
     out["id1"] = out["id1"].astype(str)
     out["id2"] = out["id2"].astype(str)
     out["label"] = out["label"].astype(str).str.upper().str.strip()
@@ -670,7 +839,20 @@ def _run_old_active_learning(
     out = out[out["label"].isin(["TRUE", "FALSE"])].copy()
     out["similarity"] = pd.to_numeric(out["similarity"], errors="coerce").fillna(0.0).astype(float)
     out = out.drop_duplicates(subset=["id1", "id2"], keep="last").reset_index(drop=True)
-    summary_out = summary if isinstance(summary, dict) else {}
+    final_pos, final_neg = _count_labels(out)
+    summary_out: Dict[str, object] = {
+        "impl": "in_script_same_prompt",
+        "max_total_labels": int(max_total_labels),
+        "labels_per_iteration": int(labels_per_iteration),
+        "active_candidates": int(active_candidates),
+        "active_top_matchers": int(max(2, int(active_top_matchers))),
+        "max_iterations": int(max_iterations),
+        "rounds": rounds,
+        "final_total": int(len(out)),
+        "final_pos": int(final_pos),
+        "final_neg": int(final_neg),
+        "active_token_usage_source": token_source,
+    }
     summary_out["active_token_usage"] = active_usage
     return out, summary_out
 
@@ -1697,11 +1879,11 @@ def main() -> None:
     pos, neg = _count_labels(labeled)
     if pos < target_pos or neg < target_neg:
         print(
-            f"AL(old): start total={len(labeled)} pos={pos} neg={neg} target={target_pos}/{target_neg}",
+            f"AL: start total={len(labeled)} pos={pos} neg={neg} target={target_pos}/{target_neg}",
             flush=True,
         )
         al_t0 = time.perf_counter()
-        legacy_rounds: List[Dict[str, object]] = []
+        active_rounds: List[Dict[str, object]] = []
         round_idx = 0
         while pos < target_pos or neg < target_neg:
             plan = _plan_adaptive_round(
@@ -1721,7 +1903,7 @@ def main() -> None:
 
             round_idx += 1
             print(
-                f"AL(old) round {round_idx}: deficits pos={plan['d_pos']} neg={plan['d_neg']}, "
+                f"AL round {round_idx}: deficits pos={plan['d_pos']} neg={plan['d_neg']}, "
                 f"budget={budget}, mix pos={plan['pos_quota']} neg={plan['neg_quota']} "
                 f"(neg_share={float(plan['neg_share']):.2f}, raw={float(plan['raw_neg_share']):.2f}), "
                 f"targets={round_target_pos}/{round_target_neg}",
@@ -1729,25 +1911,30 @@ def main() -> None:
             )
 
             prev_pos, prev_neg, prev_total = pos, neg, len(labeled)
-            labeled, legacy_summary = _run_old_active_learning(
+            labeled, active_summary = _run_active_learning_same_prompt(
+                client=client,
                 model=args.model,
-                run_dir=run_dir,
-                left_df=left_df,
-                right_df=right_df,
                 labeled=labeled,
-                seed=seed,
                 candidates=candidates,
+                left_map=left_map,
+                right_map=right_map,
+                left_idx=left_idx,
+                right_idx=right_idx,
+                left_emb=left_emb,
+                right_emb=right_emb,
+                feature_fields=feature_fields,
                 target_pos=round_target_pos,
                 target_neg=round_target_neg,
                 labels_per_iteration=min(args.labels_per_iteration, budget),
                 active_candidates=args.active_candidates,
+                active_top_matchers=args.active_top_matchers,
                 max_iterations=args.max_iterations,
                 max_total_labels_override=budget,
                 usage_stats=usage_stats,
             )
             pos, neg = _count_labels(labeled)
             round_gain = int(len(labeled) - prev_total)
-            legacy_rounds.append(
+            active_rounds.append(
                 {
                     "round": int(round_idx),
                     "start_pos": int(prev_pos),
@@ -1757,14 +1944,14 @@ def main() -> None:
                     "gain_total": int(round_gain),
                     "budget": int(budget),
                     "plan": plan,
-                    "legacy_summary": legacy_summary,
+                    "active_summary": active_summary,
                 }
             )
             if pos <= prev_pos and neg <= prev_neg:
-                print("AL(old): no class progress in this round, stopping early.", flush=True)
+                print("AL: no class progress in this round, stopping early.", flush=True)
                 break
 
-        legacy_summary = {"rounds": legacy_rounds}
+        legacy_summary = {"rounds": active_rounds}
         pos, neg = _count_labels(labeled)
         _materialize_output_ids(labeled, left_rid_to_id, right_rid_to_id).to_csv(
             run_dir / "active_labels_latest.csv", index=False
@@ -1773,7 +1960,7 @@ def main() -> None:
             state_path,
             {
                 "stage": "active_learning",
-                "active_learning_impl": "old_pydi",
+                "active_learning_impl": "in_script_same_prompt",
                 "total": len(labeled),
                 "pos": pos,
                 "neg": neg,
@@ -1787,7 +1974,7 @@ def main() -> None:
             },
         )
         al_dt = time.perf_counter() - al_t0
-        print(f"AL(old): done total={len(labeled)} pos={pos} neg={neg} ({al_dt:.1f}s)", flush=True)
+        print(f"AL: done total={len(labeled)} pos={pos} neg={neg} ({al_dt:.1f}s)", flush=True)
 
     final_df = labeled.copy()
     if not args.no_enforce_exact_final:

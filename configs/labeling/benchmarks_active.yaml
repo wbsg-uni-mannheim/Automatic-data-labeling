@@ -17,7 +17,7 @@ defaults:
     active_candidates: 5000
     max_iterations: 3_00
     adaptive_round_size: 0
-    adaptive_neg_min_share: 0.60
+    adaptive_neg_min_share: 0.30
     adaptive_neg_max_share: 0.90
 
 benchmarks:
