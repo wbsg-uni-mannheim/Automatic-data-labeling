@@ -6,10 +6,20 @@ from typing import Dict, Tuple
 
 import pandas as pd
 
-from .data import WDC_COLUMNS, load_wdc_json_gz, write_wdc_json_gz
+from .data import REQUIRED_PAIR_COLUMNS, load_wdc_json_gz, write_wdc_json_gz
 
 
 REQUIRED_PRED_COLS = {"pair_id", "pred_precision", "pred_balanced", "pred_recall", "pred_vote"}
+
+
+def _resolve_output_columns(df: pd.DataFrame) -> list[str]:
+    pair_meta = [c for c in REQUIRED_PAIR_COLUMNS if c in df.columns]
+    dynamic_fields = [c for c in df.columns if c.endswith("_left") or c.endswith("_right")]
+    out: list[str] = []
+    for c in pair_meta + dynamic_fields:
+        if c not in out:
+            out.append(c)
+    return out
 
 
 def agreement(row: pd.Series) -> Tuple[int, int]:
@@ -67,7 +77,8 @@ def build_pseudolabels(
         kept["sample_weight"] = 1.0
 
     kept["label"] = kept["pred_vote"].astype(int)
-    out_df = kept[WDC_COLUMNS].copy()
+    out_cols = _resolve_output_columns(kept)
+    out_df = kept[out_cols].copy()
     write_wdc_json_gz(out_df, output_json_gz)
 
     out_path = Path(output_json_gz)

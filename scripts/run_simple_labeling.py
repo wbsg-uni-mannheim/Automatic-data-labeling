@@ -7,6 +7,7 @@ import math
 import re
 import time
 from datetime import datetime
+from contextlib import nullcontext
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
@@ -38,6 +39,16 @@ CANONICAL_SCHEMA_FIELDS: Tuple[str, ...] = (
     "price",
     "priceCurrency",
 )
+RESERVED_FEATURE_FIELDS = {"id", "__rid", "pair_id", "label", "is_hard_negative", "rid1", "rid2", "similarity"}
+
+
+def _parse_field_list_arg(raw: str | None) -> List[str]:
+    if raw is None:
+        return []
+    vals = [x.strip() for x in str(raw).split(",")]
+    vals = [v for v in vals if v]
+    # Keep order, dedupe.
+    return list(dict.fromkeys(vals))
 
 
 def _norm_text(v: object) -> str:
@@ -143,10 +154,12 @@ def _load_df(path: Path, side: str, schema_map: Dict[str, str], strict_schema: b
     src = pd.read_csv(path)
     out = pd.DataFrame(index=src.index)
     missing_required: List[str] = []
+    mapped_source_cols: set[str] = set()
     for canonical in CANONICAL_SCHEMA_FIELDS:
         source_col = str(schema_map.get(canonical, canonical))
         if source_col in src.columns:
             out[canonical] = src[source_col]
+            mapped_source_cols.add(source_col)
             continue
         if canonical == "id" or strict_schema:
             missing_required.append(f"{canonical}<-{source_col}")
@@ -159,6 +172,14 @@ def _load_df(path: Path, side: str, schema_map: Dict[str, str], strict_schema: b
         )
     out = out.reset_index(drop=True).copy()
     out["id"] = out["id"].astype(str)
+    # Preserve unmapped source columns so prompts can reuse native headers
+    # (e.g., authors/venue/year for bibliographic datasets).
+    for col in src.columns:
+        if col in out.columns:
+            continue
+        if col in mapped_source_cols:
+            continue
+        out[col] = src[col]
     # Use stable row ids internally because source ids can repeat.
     out["__rid"] = [f"{side}:{i}" for i in range(len(out))]
     return out
@@ -312,16 +333,35 @@ def _label_pair(
     right: Dict[str, object],
 ) -> Tuple[str, Dict[str, int]]:
     def _serialize_record(rec: Dict[str, object], max_len: int = 200) -> Dict[str, str]:
-        fields = ["title", "brand", "description", "price", "priceCurrency"]
+        canonical = {"title", "brand", "description", "price", "priceCurrency"}
+        skip_exact = {"id", "label", "pair_id", "explanation"}
+
+        items: List[Tuple[str, str]] = []
+        for key, raw_val in rec.items():
+            k = str(key)
+            lk = k.lower()
+            if k.startswith("__"):
+                continue
+            if lk in skip_exact:
+                continue
+            if "cluster" in lk:
+                continue
+            val = _norm_text(raw_val)
+            if not val:
+                continue
+            if len(val) > max_len:
+                val = val[:max_len] + "..."
+            items.append((k, val))
+
+        # If a canonical alias has the same value as a native source column,
+        # keep the native source header (e.g., keep "authors", drop "brand").
         out: Dict[str, str] = {}
-        for f in fields:
-            if f in rec and rec[f] is not None:
-                val = _norm_text(rec[f])
-                if not val:
+        for k, v in items:
+            if k in canonical:
+                has_native_twin = any((k2 not in canonical and v2 == v) for k2, v2 in items)
+                if has_native_twin:
                     continue
-                if len(val) > max_len:
-                    val = val[:max_len] + "..."
-                out[f] = val
+            out[k] = v
         return out
 
     def _extract_json(text: str) -> Dict[str, object]:
@@ -362,11 +402,13 @@ def _label_pair(
     right_json = json.dumps(_serialize_record(right), ensure_ascii=False)
 
     system_prompt = (
+        "You are an expert entity matcher. "
+        "Decide if two records refer to the same real-world entity. "
         "Return only valid JSON with exactly one field: "
         '{"match": true|false}.'
     )
     user_prompt = (
-        "Do the two product descriptions refer to the same real-world product? "
+        "Do the two entity descriptions refer to the same real-world entity? "
         f"Entity 1: '{left_json}'. "
         f"Entity 2: '{right_json}'."
     )
@@ -414,24 +456,32 @@ def _build_feature_matrix(
     right_idx: Dict[str, int],
     left_emb: np.ndarray,
     right_emb: np.ndarray,
+    feature_fields: Sequence[str],
     progress_desc: str | None = None,
 ) -> np.ndarray:
     n = len(pairs)
-    X = np.zeros((n, 6), dtype=np.float32)
+    fields = [str(f).strip() for f in feature_fields if str(f).strip()]
+    if not fields:
+        fields = ["title", "brand", "description", "price", "priceCurrency"]
+    base_dim = len(fields)
+    X = np.zeros((n, base_dim + 1), dtype=np.float32)
 
     left_rows = [left_map[str(i)] for i in pairs["id1"].tolist()]
     right_rows = [right_map[str(i)] for i in pairs["id2"].tolist()]
 
-    title_l = [_tokens(r.get("title")) for r in left_rows]
-    title_r = [_tokens(r.get("title")) for r in right_rows]
-    brand_l = [_norm_text(r.get("brand")).lower() for r in left_rows]
-    brand_r = [_norm_text(r.get("brand")).lower() for r in right_rows]
-    desc_l = [_tokens(r.get("description")) for r in left_rows]
-    desc_r = [_tokens(r.get("description")) for r in right_rows]
-    price_l = [_to_price(r.get("price")) for r in left_rows]
-    price_r = [_to_price(r.get("price")) for r in right_rows]
-    curr_l = [_norm_text(r.get("priceCurrency")).upper() for r in left_rows]
-    curr_r = [_norm_text(r.get("priceCurrency")).upper() for r in right_rows]
+    field_text_l: Dict[str, List[str]] = {}
+    field_text_r: Dict[str, List[str]] = {}
+    field_tokens_l: Dict[str, List[set[str]]] = {}
+    field_tokens_r: Dict[str, List[set[str]]] = {}
+    field_num_l: Dict[str, List[float | None]] = {}
+    field_num_r: Dict[str, List[float | None]] = {}
+    for f in fields:
+        field_text_l[f] = [_norm_text(r.get(f)) for r in left_rows]
+        field_text_r[f] = [_norm_text(r.get(f)) for r in right_rows]
+        field_tokens_l[f] = [_tokens(r.get(f)) for r in left_rows]
+        field_tokens_r[f] = [_tokens(r.get(f)) for r in right_rows]
+        field_num_l[f] = [_to_price(r.get(f)) for r in left_rows]
+        field_num_r[f] = [_to_price(r.get(f)) for r in right_rows]
 
     row_iter: Iterable[int]
     if progress_desc and n >= 1000:
@@ -440,20 +490,22 @@ def _build_feature_matrix(
         row_iter = range(n)
 
     for i in row_iter:
-        X[i, 0] = _jaccard(title_l[i], title_r[i])
-        X[i, 1] = 1.0 if brand_l[i] and brand_l[i] == brand_r[i] else 0.0
-        X[i, 2] = _jaccard(desc_l[i], desc_r[i])
-        p1, p2 = price_l[i], price_r[i]
-        if p1 is None or p2 is None:
-            X[i, 3] = 0.0
-        else:
-            denom = max(abs(p1), abs(p2), 1e-6)
-            X[i, 3] = max(0.0, 1.0 - abs(p1 - p2) / denom)
-        X[i, 4] = 1.0 if curr_l[i] and curr_l[i] == curr_r[i] else 0.0
+        for j, f in enumerate(fields):
+            p1, p2 = field_num_l[f][i], field_num_r[f][i]
+            t1, t2 = field_text_l[f][i], field_text_r[f][i]
+            if p1 is not None and p2 is not None:
+                denom = max(abs(p1), abs(p2), 1e-6)
+                X[i, j] = max(0.0, 1.0 - abs(p1 - p2) / denom)
+            elif t1 and t2 and t1.lower() == t2.lower():
+                X[i, j] = 1.0
+            elif not t1 and not t2:
+                X[i, j] = 0.0
+            else:
+                X[i, j] = _jaccard(field_tokens_l[f][i], field_tokens_r[f][i])
 
     li = np.array([left_idx[str(x)] for x in pairs["id1"].tolist()], dtype=np.int64)
     ri = np.array([right_idx[str(x)] for x in pairs["id2"].tolist()], dtype=np.int64)
-    X[:, 5] = _cosine_rows(left_emb[li], right_emb[ri]).astype(np.float32)
+    X[:, base_dim] = _cosine_rows(left_emb[li], right_emb[ri]).astype(np.float32)
     return X
 
 
@@ -479,6 +531,7 @@ def _run_old_active_learning(
     active_candidates: int,
     max_iterations: int,
     max_total_labels_override: int | None = None,
+    usage_stats: Dict[str, int] | None = None,
 ) -> Tuple[pd.DataFrame, Dict[str, object]]:
     import sys
 
@@ -558,25 +611,51 @@ def _run_old_active_learning(
             max_total_labels = int(max(labels_per_iteration, 1))
 
     chat_model = ChatOpenAI(model=model, temperature=0)
-    augmented, _, summary = run_active_learning_old(
-        df_left=left_df,
-        df_right=right_df,
-        left_name="left",
-        right_name="right",
-        training_set=training_set,
-        validation_set=validation_set[["id1", "id2", "label"]].copy(),
-        chat_model=chat_model,
-        output_dir=run_dir,
-        candidates=legacy_candidates,
-        id_column="__rid",
-        target_positives=int(target_pos),
-        target_negatives=int(target_neg) if target_neg > 0 else None,
-        max_total_labels=int(max_total_labels),
-        labels_per_iteration=int(labels_per_iteration),
-        max_candidates=int(active_candidates),
-        max_iterations=int(max_iterations),
-        label_batch_size=int(min(25, max(1, labels_per_iteration))),
-    )
+    active_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+    cb_ctx = nullcontext()
+    cb_obj = None
+    try:
+        from langchain_community.callbacks.manager import get_openai_callback  # type: ignore
+
+        cb_ctx = get_openai_callback()
+    except Exception:
+        # Best effort only; continue without callback-based usage accounting.
+        cb_ctx = nullcontext()
+
+    with cb_ctx as cb:
+        cb_obj = cb
+        augmented, _, summary = run_active_learning_old(
+            df_left=left_df,
+            df_right=right_df,
+            left_name="left",
+            right_name="right",
+            training_set=training_set,
+            validation_set=validation_set[["id1", "id2", "label"]].copy(),
+            chat_model=chat_model,
+            output_dir=run_dir,
+            candidates=legacy_candidates,
+            id_column="__rid",
+            target_positives=int(target_pos),
+            target_negatives=int(target_neg) if target_neg > 0 else None,
+            max_total_labels=int(max_total_labels),
+            labels_per_iteration=int(labels_per_iteration),
+            max_candidates=int(active_candidates),
+            max_iterations=int(max_iterations),
+            label_batch_size=int(min(25, max(1, labels_per_iteration))),
+        )
+
+    if cb_obj is not None:
+        active_usage["prompt_tokens"] = int(getattr(cb_obj, "prompt_tokens", 0) or 0)
+        active_usage["completion_tokens"] = int(getattr(cb_obj, "completion_tokens", 0) or 0)
+        active_usage["total_tokens"] = int(getattr(cb_obj, "total_tokens", 0) or 0)
+
+    if usage_stats is not None:
+        usage_stats["prompt_tokens"] += active_usage["prompt_tokens"]
+        usage_stats["completion_tokens"] += active_usage["completion_tokens"]
+        usage_stats["total_tokens"] += active_usage["total_tokens"]
+        usage_stats["active_prompt_tokens"] += active_usage["prompt_tokens"]
+        usage_stats["active_completion_tokens"] += active_usage["completion_tokens"]
+        usage_stats["active_total_tokens"] += active_usage["total_tokens"]
 
     # Keep holdout labels in the final label pool for parity with this script's original totals.
     if "similarity" not in augmented.columns:
@@ -591,7 +670,9 @@ def _run_old_active_learning(
     out = out[out["label"].isin(["TRUE", "FALSE"])].copy()
     out["similarity"] = pd.to_numeric(out["similarity"], errors="coerce").fillna(0.0).astype(float)
     out = out.drop_duplicates(subset=["id1", "id2"], keep="last").reset_index(drop=True)
-    return out, (summary if isinstance(summary, dict) else {})
+    summary_out = summary if isinstance(summary, dict) else {}
+    summary_out["active_token_usage"] = active_usage
+    return out, summary_out
 
 
 def _plan_adaptive_round(
@@ -870,6 +951,7 @@ def _fit_matcher_ensemble(
     right_idx: Dict[str, int],
     left_emb: np.ndarray,
     right_emb: np.ndarray,
+    feature_fields: Sequence[str],
     verbose: bool = False,
 ) -> List[Dict[str, object]]:
     X_train = _build_feature_matrix(
@@ -880,6 +962,7 @@ def _fit_matcher_ensemble(
         right_idx,
         left_emb,
         right_emb,
+        feature_fields=feature_fields,
         progress_desc="AL features train",
     )
     y_train = (labeled["label"].astype(str).str.upper() == "TRUE").astype(int).to_numpy()
@@ -917,10 +1000,27 @@ def _fit_matcher_ensemble(
     fitted: List[Dict[str, object]] = []
 
     # Rule-style scorers (to mirror old rule+ml ensemble behavior).
+    base_dim = X_train.shape[1] - 1
+    emb_idx = base_dim
+
+    def _rule_field_mean(X: np.ndarray) -> np.ndarray:
+        if base_dim <= 0:
+            return X[:, emb_idx]
+        return np.mean(X[:, :base_dim], axis=1)
+
+    def _rule_primary_embed(X: np.ndarray) -> np.ndarray:
+        primary = X[:, 0] if base_dim > 0 else X[:, emb_idx]
+        return 0.6 * primary + 0.4 * X[:, emb_idx]
+
+    def _rule_embed_mean(X: np.ndarray) -> np.ndarray:
+        if base_dim <= 0:
+            return X[:, emb_idx]
+        return 0.55 * X[:, emb_idx] + 0.45 * np.mean(X[:, :base_dim], axis=1)
+
     rule_models: List[Tuple[str, object]] = [
-        ("rule_title_brand", lambda X: 0.65 * X[:, 0] + 0.35 * X[:, 1]),
-        ("rule_text_price", lambda X: 0.45 * X[:, 0] + 0.25 * X[:, 2] + 0.20 * X[:, 3] + 0.10 * X[:, 4]),
-        ("rule_embed_text", lambda X: 0.55 * X[:, 5] + 0.30 * X[:, 0] + 0.15 * X[:, 1]),
+        ("rule_field_mean", _rule_field_mean),
+        ("rule_primary_embed", _rule_primary_embed),
+        ("rule_embed_mean", _rule_embed_mean),
     ]
     for name, scorer in rule_models:
         try:
@@ -960,6 +1060,7 @@ def _run_matchers_on_pool(
     right_idx: Dict[str, int],
     left_emb: np.ndarray,
     right_emb: np.ndarray,
+    feature_fields: Sequence[str],
 ) -> List[Dict[str, object]]:
     if pool.empty or not fitted_matchers:
         return []
@@ -971,6 +1072,7 @@ def _run_matchers_on_pool(
         right_idx,
         left_emb,
         right_emb,
+        feature_fields=feature_fields,
         progress_desc="AL features pool",
     )
     out: List[Dict[str, object]] = []
@@ -1345,6 +1447,11 @@ def main() -> None:
     parser.add_argument("--adaptive-neg-min-share", type=float, default=0.60)
     parser.add_argument("--adaptive-neg-max-share", type=float, default=0.90)
     parser.add_argument("--preview-k", type=int, default=0, help="Show first K comparisons and exit without labeling")
+    parser.add_argument(
+        "--feature-fields",
+        default="title,brand,description,price,priceCurrency",
+        help="Comma-separated fields to use for in-script matcher features (when applicable).",
+    )
 
     parser.add_argument("--output-root", default="output/simple_labeling")
     parser.add_argument("--run-name", default=None)
@@ -1365,6 +1472,14 @@ def main() -> None:
     right_schema_map = _parse_schema_map_arg(args.right_schema_map, side="right")
     left_df = _load_df(Path(args.left_csv), side="L", schema_map=left_schema_map, strict_schema=args.strict_schema)
     right_df = _load_df(Path(args.right_csv), side="R", schema_map=right_schema_map, strict_schema=args.strict_schema)
+    feature_fields = _parse_field_list_arg(args.feature_fields)
+    feature_fields = [f for f in feature_fields if f not in RESERVED_FEATURE_FIELDS]
+    feature_fields = [f for f in feature_fields if f in left_df.columns and f in right_df.columns]
+    if not feature_fields:
+        raise ValueError(
+            "No valid --feature-fields found in both left/right dataframes. "
+            f"Requested={_parse_field_list_arg(args.feature_fields)}"
+        )
 
     emb_dir = Path(args.embeddings_dir)
     left_emb = np.load(emb_dir / args.left_emb).astype(np.float32)
@@ -1405,6 +1520,7 @@ def main() -> None:
             "embedding_dim": int(left_emb.shape[1]),
             "left_schema_map": left_schema_map,
             "right_schema_map": right_schema_map,
+            "feature_fields": feature_fields,
             "strict_schema": bool(args.strict_schema),
             "token_usage": {
                 "prompt_tokens": int(prev_usage.get("prompt_tokens", 0) or 0),
@@ -1627,6 +1743,7 @@ def main() -> None:
                 active_candidates=args.active_candidates,
                 max_iterations=args.max_iterations,
                 max_total_labels_override=budget,
+                usage_stats=usage_stats,
             )
             pos, neg = _count_labels(labeled)
             round_gain = int(len(labeled) - prev_total)

@@ -13,16 +13,9 @@ from typing import Any, Dict, List, Sequence
 import pandas as pd
 import yaml
 
-CANONICAL_FIELDS: Sequence[str] = (
-    "id",
-    "title",
-    "brand",
-    "description",
-    "price",
-    "priceCurrency",
-)
 POSITIVE_LABELS = {"TRUE", "1", "YES", "Y", "T"}
 NEGATIVE_LABELS = {"FALSE", "0", "NO", "N", "F"}
+RESERVED_FEATURE_FIELDS = {"id", "__rid", "pair_id", "label", "is_hard_negative", "rid1", "rid2", "similarity"}
 
 
 @dataclass(frozen=True)
@@ -51,8 +44,83 @@ def _coerce_mapping(value: Any, name: str) -> Dict[str, Any]:
     return dict(value)
 
 
+def _coerce_field_list(value: Any, name: str) -> List[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        parts = [x.strip() for x in value.split(",")]
+    elif isinstance(value, (list, tuple)):
+        parts = [str(x).strip() for x in value]
+    else:
+        raise ValueError(f"{name} must be a comma-separated string or list")
+    return [p for p in parts if p]
+
+
+def _coerce_str_mapping(value: Any, name: str) -> Dict[str, str]:
+    raw = _coerce_mapping(value, name)
+    out: Dict[str, str] = {}
+    for k, v in raw.items():
+        key = str(k).strip()
+        val = str(v).strip() if v is not None else ""
+        if not key:
+            continue
+        if not val:
+            continue
+        out[key] = val
+    return out
+
+
+def _normalize_field_mapping(field_map: Dict[str, str]) -> Dict[str, str]:
+    out: Dict[str, str] = {}
+    for k, v in field_map.items():
+        key = "priceCurrency" if str(k).strip() == "currency" else str(k).strip()
+        val = str(v).strip()
+        if not key or not val:
+            continue
+        out[key] = val
+    return out
+
+
+def _resolve_train_fields(
+    train_fields_raw: Sequence[str],
+    left_fields: Dict[str, str],
+    right_fields: Dict[str, str],
+) -> List[str]:
+    # Default to all mapped output names, preserving left->right order.
+    desired: List[str]
+    if train_fields_raw:
+        desired = [str(x).strip() for x in train_fields_raw if str(x).strip()]
+    else:
+        desired = list(left_fields.keys())
+        for k in right_fields.keys():
+            if k not in desired:
+                desired.append(k)
+
+    if not desired:
+        return []
+
+    # Backward compatibility: if an old config still passes source column
+    # names in train_fields, remap them to the configured output field names.
+    source_to_field: Dict[str, str] = {}
+    for out_name, src_name in {**left_fields, **right_fields}.items():
+        if src_name and src_name not in source_to_field:
+            source_to_field[src_name] = out_name
+
+    resolved: List[str] = []
+    for f in desired:
+        if f in left_fields or f in right_fields:
+            resolved.append(f)
+            continue
+        resolved.append(source_to_field.get(f, f))
+
+    # Remove reserved/meta fields from model features.
+    resolved = [f for f in resolved if f not in RESERVED_FEATURE_FIELDS]
+    # Deduplicate while preserving order.
+    return list(dict.fromkeys(resolved))
+
+
 def _normalize_benchmark_config(benchmark_cfg: Dict[str, Any]) -> Dict[str, Any]:
-    """Normalize benchmark config aliases to the canonical keys expected by this runner."""
+    """Normalize benchmark config aliases to the keys expected by this runner."""
     cfg = dict(benchmark_cfg)
 
     # Support nested embeddings config:
@@ -63,49 +131,68 @@ def _normalize_benchmark_config(benchmark_cfg: Dict[str, Any]) -> Dict[str, Any]
         cfg.setdefault("left_emb", embeddings_cfg.get("left_file"))
         cfg.setdefault("right_emb", embeddings_cfg.get("right_file"))
 
-    # Support concise schema config:
-    # id_col + fields: {title, brand, description, price, currency}
-    if "left_schema_map" not in cfg and "right_schema_map" not in cfg:
-        fields_cfg = _coerce_mapping(cfg.get("fields"), "benchmarks.*.fields")
-        if fields_cfg:
-            id_col = str(cfg.get("id_col", "id")).strip() or "id"
-            schema_map: Dict[str, str] = {"id": id_col}
+    id_col = str(cfg.get("id_col", "id")).strip() or "id"
+    cfg.setdefault("left_id_col", str(cfg.get("left_id_col", id_col)).strip() or id_col)
+    cfg.setdefault("right_id_col", str(cfg.get("right_id_col", id_col)).strip() or id_col)
 
-            for canonical in ("title", "brand", "description", "price"):
-                raw = fields_cfg.get(canonical)
-                if raw is None:
-                    continue
-                val = str(raw).strip()
-                if val:
-                    schema_map[canonical] = val
+    fields_cfg = _normalize_field_mapping(_coerce_str_mapping(cfg.get("fields"), "benchmarks.*.fields"))
+    left_fields_cfg = _normalize_field_mapping(_coerce_str_mapping(cfg.get("left_fields"), "benchmarks.*.left_fields"))
+    right_fields_cfg = _normalize_field_mapping(_coerce_str_mapping(cfg.get("right_fields"), "benchmarks.*.right_fields"))
 
-            # Accept either `priceCurrency` or `currency` alias.
-            price_currency_raw = fields_cfg.get("priceCurrency", fields_cfg.get("currency"))
-            if price_currency_raw is not None:
-                price_currency = str(price_currency_raw).strip()
-                if price_currency:
-                    schema_map["priceCurrency"] = price_currency
+    if not left_fields_cfg and fields_cfg:
+        left_fields_cfg = dict(fields_cfg)
+    if not right_fields_cfg and fields_cfg:
+        right_fields_cfg = dict(fields_cfg)
 
-            cfg.setdefault("left_schema_map", dict(schema_map))
-            cfg.setdefault("right_schema_map", dict(schema_map))
+    # Backward compatibility with old schema-map config.
+    if not left_fields_cfg:
+        left_schema_map = _coerce_str_mapping(cfg.get("left_schema_map"), "benchmarks.*.left_schema_map")
+        if left_schema_map:
+            cfg["left_id_col"] = str(left_schema_map.get("id", cfg["left_id_col"])).strip() or cfg["left_id_col"]
+            left_fields_cfg = _normalize_field_mapping({k: v for k, v in left_schema_map.items() if k != "id"})
+    if not right_fields_cfg:
+        right_schema_map = _coerce_str_mapping(cfg.get("right_schema_map"), "benchmarks.*.right_schema_map")
+        if right_schema_map:
+            cfg["right_id_col"] = str(right_schema_map.get("id", cfg["right_id_col"])).strip() or cfg["right_id_col"]
+            right_fields_cfg = _normalize_field_mapping({k: v for k, v in right_schema_map.items() if k != "id"})
+
+    cfg["left_fields"] = left_fields_cfg
+    cfg["right_fields"] = right_fields_cfg
 
     return cfg
 
 
-def _canonicalize_source_csv(src_csv: Path, schema_map: Dict[str, str], out_csv: Path) -> None:
+def _materialize_source_csv(
+    src_csv: Path,
+    id_col: str,
+    field_map: Dict[str, str],
+    out_csv: Path,
+    ensure_fields: Sequence[str] | None = None,
+) -> None:
     src = pd.read_csv(src_csv).reset_index(drop=True)
+    source_id_col = str(id_col).strip() or "id"
+    if source_id_col not in src.columns:
+        raise ValueError(
+            f"Required id column not found in {src_csv}. "
+            f"Expected '{source_id_col}'."
+        )
     out = pd.DataFrame(index=src.index)
-    for canonical in CANONICAL_FIELDS:
-        source_col = str(schema_map.get(canonical, canonical))
-        if source_col in src.columns:
-            out[canonical] = src[source_col]
-        elif canonical == "id":
+    out["id"] = src[source_id_col]
+    for output_name, source_col in field_map.items():
+        if source_col not in src.columns:
             raise ValueError(
-                f"Required id column not found in {src_csv}. "
-                f"Expected mapped column '{source_col}' from schema_map={schema_map}"
+                f"Mapped source column '{source_col}' not found in {src_csv} "
+                f"for output field '{output_name}'."
             )
-        else:
-            out[canonical] = ""
+        out[output_name] = src[source_col]
+    for col in (ensure_fields or []):
+        c = str(col).strip()
+        if not c or c in out.columns:
+            continue
+        if c in src.columns:
+            out[c] = src[c]
+            continue
+        out[c] = ""
     out["id"] = out["id"].astype(str)
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(out_csv, index=False)
@@ -229,6 +316,11 @@ def main() -> None:
 
     benchmark_cfg = _coerce_mapping(benchmarks[args.benchmark], f"benchmarks.{args.benchmark}")
     benchmark_cfg = _normalize_benchmark_config(benchmark_cfg)
+    left_fields = _coerce_str_mapping(benchmark_cfg.get("left_fields"), "benchmarks.*.left_fields")
+    right_fields = _coerce_str_mapping(benchmark_cfg.get("right_fields"), "benchmarks.*.right_fields")
+    train_fields_raw = _coerce_field_list(benchmark_cfg.get("train_fields"), "benchmarks.*.train_fields")
+    train_fields = _resolve_train_fields(train_fields_raw, left_fields=left_fields, right_fields=right_fields)
+
     benchmark_profile_overrides = _coerce_mapping(benchmark_cfg.get("profiles"), "benchmarks.*.profiles")
     effective_profiles_cfg = dict(profiles_cfg)
     effective_profiles_cfg.update(benchmark_profile_overrides)
@@ -247,10 +339,20 @@ def main() -> None:
     right_src = Path(str(benchmark_cfg["right_csv"]))
     left_canonical = canonical_dir / "left.csv"
     right_canonical = canonical_dir / "right.csv"
-    left_schema_map = _coerce_mapping(benchmark_cfg.get("left_schema_map"), "left_schema_map")
-    right_schema_map = _coerce_mapping(benchmark_cfg.get("right_schema_map"), "right_schema_map")
-    _canonicalize_source_csv(left_src, left_schema_map, left_canonical)
-    _canonicalize_source_csv(right_src, right_schema_map, right_canonical)
+    _materialize_source_csv(
+        left_src,
+        str(benchmark_cfg.get("left_id_col", "id")),
+        left_fields,
+        left_canonical,
+        ensure_fields=train_fields,
+    )
+    _materialize_source_csv(
+        right_src,
+        str(benchmark_cfg.get("right_id_col", "id")),
+        right_fields,
+        right_canonical,
+        ensure_fields=train_fields,
+    )
 
     labeling_defaults = _coerce_mapping(defaults.get("labeling_args"), "defaults.labeling_args")
     labeling_override = _coerce_mapping(benchmark_cfg.get("labeling_args"), "benchmarks.*.labeling_args")
@@ -281,6 +383,8 @@ def main() -> None:
         "--run-name",
         run_name,
     ]
+    if train_fields:
+        run_simple_cmd.extend(["--feature-fields", ",".join(train_fields)])
     if args.resume:
         run_simple_cmd.append("--resume")
     run_simple_cmd.extend(_flatten_cli_args(labeling_args))
@@ -314,6 +418,9 @@ def main() -> None:
         "source_train_file": str(master_path),
         "canonical_left_csv": str(left_canonical),
         "canonical_right_csv": str(right_canonical),
+        "left_fields": left_fields,
+        "right_fields": right_fields,
+        "ditto_fields": train_fields,
         "profiles": {},
     }
 
@@ -352,8 +459,11 @@ def main() -> None:
                 "--output-json-gz",
                 str(ditto_json_gz),
             ]
+            if train_fields:
+                convert_cmd.extend(["--fields", ",".join(train_fields)])
             subprocess.run(convert_cmd, check=True)
             profile_meta["ditto_train_json_gz"] = str(ditto_json_gz)
+            profile_meta["ditto_fields"] = list(train_fields)
         manifest["profiles"][spec.name] = profile_meta
         print(
             f"Profile {spec.name}: total={profile_meta['actual_total']} "

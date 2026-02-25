@@ -30,7 +30,7 @@ benchmarks:
       brand: brand
       description: description
       price: price
-      currency: priceCurrency
+      priceCurrency: priceCurrency
     embeddings:
       dir: data/wdc/embeddings
       left_file: wdc_left_embeddings.npy
@@ -63,7 +63,7 @@ benchmarks:
     id_col: id
     fields:
       title: title
-      brand: manufacturer
+      manufacturer: manufacturer
       price: price
     embeddings:
       dir: data/amazon-google/embeddings
@@ -80,9 +80,9 @@ benchmarks:
     id_col: id
     fields:
       title: title
-      brand: authors
-      description: venue
-      price: year
+      authors: authors
+      venue: venue
+      year: year
     embeddings:
       dir: data/dblp-acm/embeddings
       left_file: dblp-acm_left_embeddings.npy
@@ -98,9 +98,9 @@ benchmarks:
     id_col: id
     fields:
       title: title
-      brand: authors
-      description: venue
-      price: year
+      authors: authors
+      venue: venue
+      year: year
     embeddings:
       dir: data/dblp-scholar/embeddings
       left_file: dblp-scholar_left_embeddings.npy
@@ -117,7 +117,8 @@ benchmarks:
     fields:
       title: title
       brand: brand
-      description: category
+      category: category
+      modelno: modelno
       price: price
     embeddings:
       dir: data/walmart-amazon/embeddings

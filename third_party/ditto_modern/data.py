@@ -13,6 +13,7 @@ from torch.utils.data import Dataset
 
 from .augment import Augmenter
 
+# Legacy WDC schema. Kept for backward compatibility with older datasets/tests.
 WDC_COLUMNS = [
     "id_left",
     "brand_left",
@@ -33,6 +34,9 @@ WDC_COLUMNS = [
     "is_hard_negative",
 ]
 
+REQUIRED_PAIR_COLUMNS = ["id_left", "id_right", "pair_id", "label", "is_hard_negative"]
+RESERVED_SERIALIZATION_FIELDS = {"id", "__rid", "pair_id", "label", "is_hard_negative", "rid1", "rid2", "similarity"}
+
 
 @dataclass(frozen=True)
 class PairExample:
@@ -49,6 +53,24 @@ def normalize_text(value: object) -> str:
     text = str(value)
     text = re.sub(r"\s+", " ", text.replace("\n", " ").replace("\t", " ")).strip()
     return text
+
+
+def _normalize_binary_label(value: object) -> int:
+    if value is None:
+        raise ValueError("label value is missing")
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, (int, float)):
+        iv = int(value)
+        if iv in {0, 1}:
+            return iv
+        raise ValueError(f"label column must contain 0/1 values, got {value!r}")
+    s = str(value).strip().upper()
+    if s in {"1", "TRUE", "T", "YES", "Y"}:
+        return 1
+    if s in {"0", "FALSE", "F", "NO", "N"}:
+        return 0
+    raise ValueError(f"label column must contain 0/1 values, got {value!r}")
 
 
 def serialize_entity(record: Dict[str, object], side: str, fields: Sequence[str], max_field_len: int) -> str:
@@ -69,14 +91,18 @@ def load_wdc_json_gz(path: str | Path) -> pd.DataFrame:
     with gzip.open(p, "rt") as f:
         records = [json.loads(line) for line in f]
     df = pd.DataFrame(records)
+    if "label" not in df.columns:
+        raise ValueError("Missing required label column")
+    if "pair_id" not in df.columns:
+        df["pair_id"] = [f"idx-{i}" for i in range(len(df))]
+    if "id_left" not in df.columns:
+        df["id_left"] = ""
+    if "id_right" not in df.columns:
+        df["id_right"] = ""
+    if "is_hard_negative" not in df.columns:
+        df["is_hard_negative"] = 0
 
-    missing = [c for c in WDC_COLUMNS if c not in df.columns]
-    if missing:
-        raise ValueError(f"Missing required WDC columns: {missing}")
-
-    df["label"] = df["label"].astype(int)
-    if not set(df["label"].unique()).issubset({0, 1}):
-        raise ValueError("label column must contain 0/1 values")
+    df["label"] = df["label"].map(_normalize_binary_label).astype(int)
     return df
 
 
@@ -94,6 +120,19 @@ def wdc_to_pair_examples(
     fields: Sequence[str],
     max_field_len: int,
 ) -> List[PairExample]:
+    bad_fields = [f for f in fields if str(f).strip() in RESERVED_SERIALIZATION_FIELDS]
+    if bad_fields:
+        raise ValueError(f"Reserved metadata fields cannot be used for Ditto serialization: {sorted(set(bad_fields))}")
+
+    missing_fields: List[str] = []
+    for field in fields:
+        for side in ("left", "right"):
+            col = f"{field}_{side}"
+            if col not in df.columns:
+                missing_fields.append(col)
+    if missing_fields:
+        raise ValueError(f"Missing required field columns for serialization: {sorted(set(missing_fields))}")
+
     rows: List[PairExample] = []
     for idx, row in enumerate(df.to_dict(orient="records")):
         pair_id = normalize_text(row.get("pair_id", f"idx-{idx}")) or f"idx-{idx}"

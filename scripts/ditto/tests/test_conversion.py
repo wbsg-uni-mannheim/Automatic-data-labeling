@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from third_party.ditto_modern.data import WDC_COLUMNS, examples_to_ditto_lines, wdc_to_pair_examples
+from third_party.ditto_modern.data import WDC_COLUMNS, examples_to_ditto_lines, load_wdc_json_gz, wdc_to_pair_examples, write_wdc_json_gz
 
 
 def _row(pair_id: str, label: int):
@@ -40,3 +40,34 @@ def test_wdc_to_ditto_lines_format():
     assert "COL title VAL Product A 128GB" in parts[0]
     assert "COL brand VAL BrandA" in parts[0]
     assert "COL title VAL Product A 128 GB" in parts[1]
+
+
+def test_generic_pair_schema_supported(tmp_path):
+    df = pd.DataFrame(
+        [
+            {
+                "id_left": "l1",
+                "id_right": "r1",
+                "pair_id": "p1",
+                "label": "TRUE",
+                "is_hard_negative": 0,
+                "title_left": "Paper A",
+                "title_right": "Paper A Extended",
+                "authors_left": "Alice;Bob",
+                "authors_right": "Alice;Bob",
+            }
+        ]
+    )
+    path = tmp_path / "generic.json.gz"
+    write_wdc_json_gz(df, path)
+
+    loaded = load_wdc_json_gz(path)
+    examples = wdc_to_pair_examples(loaded, fields=["title", "authors"], max_field_len=100)
+    lines = examples_to_ditto_lines(examples)
+
+    assert len(lines) == 1
+    left, right, label = lines[0].split("\t")
+    assert label == "1"
+    assert "COL title VAL Paper A" in left
+    assert "COL authors VAL Alice;Bob" in left
+    assert "COL title VAL Paper A Extended" in right
