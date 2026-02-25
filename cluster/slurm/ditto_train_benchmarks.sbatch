@@ -32,6 +32,7 @@ fi
 
 if command -v conda >/dev/null 2>&1; then
   source "$(conda info --base)/etc/profile.d/conda.sh"
+  conda env create -f configs/ditto/environment.yml
   conda activate "${CONDA_ENV_NAME:-ditto-modern}"
 else
   echo "conda not found in PATH; aborting" >&2
