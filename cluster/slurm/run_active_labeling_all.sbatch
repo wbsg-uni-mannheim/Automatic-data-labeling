@@ -1,11 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=active-label-all
-#SBATCH --partition=gpu-vram-48gb
+#SBATCH --job-name=active-label
+#SBATCH --partition=gpu-vram-12gb
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=12
+#SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
-#SBATCH --time=48:00:00
+#SBATCH --time=36:00:00
+#SBATCH --gres=gpu:1
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --error=logs/%x-%j.err
 
@@ -38,12 +39,12 @@ else
 fi
 
 CONFIG="${CONFIG:-configs/labeling/benchmarks_active.yaml}"
-BENCHMARKS_RAW="${BENCHMARKS:-wdc abt-buy amazon-google dblp-acm dblp-scholar walmart-amazon}"
+BENCHMARKS_RAW="${BENCHMARKS:-amazon-google dblp-acm dblp-scholar walmart-amazon}"
 BENCHMARKS_RAW="${BENCHMARKS_RAW//,/ }"
 read -r -a BENCHMARK_LIST <<< "${BENCHMARKS_RAW}"
 
 OUTPUT_ROOT="${OUTPUT_ROOT:-output/simple_labeling}"
-PROFILES="${PROFILES:-}"
+PROFILES="${PROFILES:-small,medium,large}"
 RUN_NAME_PREFIX="${RUN_NAME_PREFIX:-benchmark}"
 RESUME="${RESUME:-0}"
 
