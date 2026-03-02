@@ -21,6 +21,7 @@ RESERVED_FEATURE_FIELDS = {"id", "__rid", "pair_id", "label", "is_hard_negative"
 @dataclass(frozen=True)
 class ProfileSpec:
     name: str
+    all_examples: bool
     target_size: int
     target_pos: int
     target_neg: int
@@ -68,6 +69,21 @@ def _coerce_str_mapping(value: Any, name: str) -> Dict[str, str]:
             continue
         out[key] = val
     return out
+
+
+def _coerce_bool(value: Any, name: str) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if value is None:
+        return False
+    s = str(value).strip().lower()
+    if s in {"1", "true", "t", "yes", "y", "on"}:
+        return True
+    if s in {"0", "false", "f", "no", "n", "off", ""}:
+        return False
+    raise ValueError(f"{name} must be boolean-like, got: {value!r}")
 
 
 def _normalize_field_mapping(field_map: Dict[str, str]) -> Dict[str, str]:
@@ -199,6 +215,10 @@ def _materialize_source_csv(
 
 
 def _to_profile(name: str, payload: Dict[str, Any]) -> ProfileSpec:
+    all_examples = _coerce_bool(payload.get("all_examples", payload.get("all")), f"profiles.{name}.all_examples")
+    if all_examples:
+        return ProfileSpec(name=name, all_examples=True, target_size=0, target_pos=0, target_neg=0)
+
     target_pos_raw = payload.get("target_positives", payload.get("target_pos"))
     if target_pos_raw is None:
         raise ValueError(f"Profile '{name}' missing target_positives/target_pos")
@@ -223,7 +243,13 @@ def _to_profile(name: str, payload: Dict[str, Any]) -> ProfileSpec:
         )
     if min(target_size, target_pos, target_neg) < 0:
         raise ValueError(f"Profile '{name}' targets must be non-negative")
-    return ProfileSpec(name=name, target_size=target_size, target_pos=target_pos, target_neg=target_neg)
+    return ProfileSpec(
+        name=name,
+        all_examples=False,
+        target_size=target_size,
+        target_pos=target_pos,
+        target_neg=target_neg,
+    )
 
 
 def _select_profiles(config_profiles: Dict[str, Any], requested: List[str]) -> List[ProfileSpec]:
@@ -236,9 +262,12 @@ def _select_profiles(config_profiles: Dict[str, Any], requested: List[str]) -> L
         spec = _to_profile(name, _coerce_mapping(config_profiles[name], f"profiles.{name}"))
         selected.append(spec)
 
-    selected = sorted(selected, key=lambda p: (p.target_size, p.target_pos, p.target_neg, p.name))
+    numeric = [p for p in selected if not p.all_examples]
+    all_profiles = [p for p in selected if p.all_examples]
+
+    numeric = sorted(numeric, key=lambda p: (p.target_size, p.target_pos, p.target_neg, p.name))
     prev = None
-    for spec in selected:
+    for spec in numeric:
         if prev is not None:
             if spec.target_size < prev.target_size or spec.target_pos < prev.target_pos or spec.target_neg < prev.target_neg:
                 raise ValueError(
@@ -246,7 +275,7 @@ def _select_profiles(config_profiles: Dict[str, Any], requested: List[str]) -> L
                     f"{prev.name} -> {spec.name}"
                 )
         prev = spec
-    return selected
+    return numeric + all_profiles
 
 
 def _normalize_label(v: object) -> str:
@@ -326,7 +355,8 @@ def main() -> None:
     effective_profiles_cfg.update(benchmark_profile_overrides)
     requested_profiles = [x.strip() for x in args.profiles.split(",") if x.strip()]
     profiles = _select_profiles(effective_profiles_cfg, requested_profiles)
-    largest = profiles[-1]
+    numeric_profiles = [p for p in profiles if not p.all_examples]
+    largest = numeric_profiles[-1] if numeric_profiles else None
 
     output_root = Path(args.output_root or defaults.get("output_root", "output/simple_labeling"))
     run_prefix = str(defaults.get("run_prefix", args.benchmark)).strip() or args.benchmark
@@ -361,53 +391,76 @@ def main() -> None:
     for reserved in {"embeddings_dir", "left_csv", "right_csv", "target_size", "target_positives", "output_root", "run_name"}:
         labeling_args.pop(reserved, None)
 
-    run_simple_cmd = [
-        sys.executable,
-        "scripts/run_simple_labeling.py",
-        "--embeddings-dir",
-        str(benchmark_cfg["embeddings_dir"]),
-        "--left-csv",
-        str(left_canonical),
-        "--right-csv",
-        str(right_canonical),
-        "--left-emb",
-        str(benchmark_cfg["left_emb"]),
-        "--right-emb",
-        str(benchmark_cfg["right_emb"]),
-        "--target-size",
-        str(largest.target_size),
-        "--target-positives",
-        str(largest.target_pos),
-        "--output-root",
-        str(output_root),
-        "--run-name",
-        run_name,
-    ]
-    if train_fields:
-        run_simple_cmd.extend(["--feature-fields", ",".join(train_fields)])
-    if args.resume:
-        run_simple_cmd.append("--resume")
-    run_simple_cmd.extend(_flatten_cli_args(labeling_args))
+    run_simple_cmd: List[str] = []
+    if largest is not None:
+        run_simple_cmd = [
+            sys.executable,
+            "scripts/run_simple_labeling.py",
+            "--embeddings-dir",
+            str(benchmark_cfg["embeddings_dir"]),
+            "--left-csv",
+            str(left_canonical),
+            "--right-csv",
+            str(right_canonical),
+            "--left-emb",
+            str(benchmark_cfg["left_emb"]),
+            "--right-emb",
+            str(benchmark_cfg["right_emb"]),
+            "--target-size",
+            str(largest.target_size),
+            "--target-positives",
+            str(largest.target_pos),
+            "--output-root",
+            str(output_root),
+            "--run-name",
+            run_name,
+        ]
+        if train_fields:
+            run_simple_cmd.extend(["--feature-fields", ",".join(train_fields)])
+        if args.resume:
+            run_simple_cmd.append("--resume")
+        run_simple_cmd.extend(_flatten_cli_args(labeling_args))
 
     print(f"Benchmark: {args.benchmark}")
     print(f"Run directory: {run_dir}")
-    print(f"Largest target: total={largest.target_size} pos={largest.target_pos} neg={largest.target_neg}")
+    if largest is not None:
+        print(f"Largest target: total={largest.target_size} pos={largest.target_pos} neg={largest.target_neg}")
+    else:
+        print("Largest target: <none> (all requested profiles use all_examples=true)")
     if args.dry_run:
-        print("Dry run: run_simple_labeling command:")
-        print(" ".join(run_simple_cmd))
+        if run_simple_cmd:
+            print("Dry run: run_simple_labeling command:")
+            print(" ".join(run_simple_cmd))
+        else:
+            print("Dry run: no run_simple_labeling command (all_examples-only selection)")
         for spec in profiles:
-            print(
-                f"Profile plan {spec.name}: total={spec.target_size} pos={spec.target_pos} neg={spec.target_neg}"
-            )
+            if spec.all_examples:
+                print(f"Profile plan {spec.name}: all_examples=true")
+            else:
+                print(
+                    f"Profile plan {spec.name}: total={spec.target_size} pos={spec.target_pos} neg={spec.target_neg}"
+                )
         return
-    subprocess.run(run_simple_cmd, check=True)
+    if run_simple_cmd:
+        subprocess.run(run_simple_cmd, check=True)
+    else:
+        print("No numeric profile selected; skipping run_simple_labeling and exporting from existing outputs.")
 
     master_path = run_dir / "labels_final.csv"
-    if not master_path.exists():
-        raise FileNotFoundError(f"Expected master labels at {master_path}")
-    master = pd.read_csv(master_path).reset_index(drop=True)
-    if "label" not in master.columns:
-        raise ValueError(f"Missing label column in {master_path}")
+    active_master_path = run_dir / "active_labels_latest.csv"
+
+    master = pd.DataFrame()
+    if numeric_profiles:
+        if not master_path.exists():
+            raise FileNotFoundError(f"Expected master labels at {master_path}")
+        master = pd.read_csv(master_path).reset_index(drop=True)
+        if "label" not in master.columns:
+            raise ValueError(f"Missing label column in {master_path}")
+    elif not active_master_path.exists() and not master_path.exists():
+        raise FileNotFoundError(
+            "No export source found. Expected one of: "
+            f"{active_master_path} or {master_path}"
+        )
 
     profiles_root = run_dir / "profiles"
     profiles_root.mkdir(parents=True, exist_ok=True)
@@ -415,7 +468,8 @@ def main() -> None:
     manifest: Dict[str, Any] = {
         "benchmark": args.benchmark,
         "run_dir": str(run_dir),
-        "source_train_file": str(master_path),
+        "source_train_file": str(master_path if master_path.exists() else active_master_path),
+        "source_all_examples_file": str(active_master_path if active_master_path.exists() else master_path),
         "canonical_left_csv": str(left_canonical),
         "canonical_right_csv": str(right_canonical),
         "left_fields": left_fields,
@@ -425,7 +479,28 @@ def main() -> None:
     }
 
     for spec in profiles:
-        subset = _subset_from_master(master, target_pos=spec.target_pos, target_neg=spec.target_neg)
+        if spec.all_examples:
+            if active_master_path.exists():
+                subset = pd.read_csv(active_master_path).reset_index(drop=True)
+            elif master_path.exists():
+                subset = pd.read_csv(master_path).reset_index(drop=True)
+            else:
+                raise FileNotFoundError(
+                    "Profile requires all examples, but no source labels file exists at "
+                    f"{active_master_path} or {master_path}"
+                )
+            if "label" not in subset.columns:
+                raise ValueError(f"Missing label column for all-examples profile in source file")
+            subset = subset.copy()
+            subset["label"] = subset["label"].apply(_normalize_label)
+            target_total = int(len(subset))
+            target_pos = int((subset["label"].astype(str).str.upper() == "TRUE").sum())
+            target_neg = int((subset["label"].astype(str).str.upper() == "FALSE").sum())
+        else:
+            subset = _subset_from_master(master, target_pos=spec.target_pos, target_neg=spec.target_neg)
+            target_total = int(spec.target_size)
+            target_pos = int(spec.target_pos)
+            target_neg = int(spec.target_neg)
         profile_dir = profiles_root / spec.name
         profile_dir.mkdir(parents=True, exist_ok=True)
         labels_csv = profile_dir / "active_labels_latest.csv"
@@ -436,9 +511,10 @@ def main() -> None:
         pos = int((subset["label"].astype(str).str.upper() == "TRUE").sum())
         neg = int((subset["label"].astype(str).str.upper() == "FALSE").sum())
         profile_meta: Dict[str, Any] = {
-            "target_total": int(spec.target_size),
-            "target_pos": int(spec.target_pos),
-            "target_neg": int(spec.target_neg),
+            "all_examples": bool(spec.all_examples),
+            "target_total": target_total,
+            "target_pos": target_pos,
+            "target_neg": target_neg,
             "actual_total": int(len(subset)),
             "actual_pos": int(pos),
             "actual_neg": int(neg),

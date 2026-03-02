@@ -1,5 +1,6 @@
 defaults:
   output_root: output/ditto_benchmark_runs
+  active_profiles: [small, medium, large, all]
   model_name: roberta-base
   batch_size: 64
   max_len: 256
@@ -26,6 +27,7 @@ benchmarks:
     valid: data/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
     test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]
+    profiles: [small, medium, large, all]
 
   abt-buy:
     train: data/abt-buy/abt-buy-train.json
@@ -33,6 +35,7 @@ benchmarks:
     valid_pair_id_only: true
     test: data/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
+    profiles: [small, medium, large, all]
     field_aliases:
       title: [name]
 
@@ -41,21 +44,25 @@ benchmarks:
     valid: data/amazon-google/amazon-google-train-validation.csv
     test: data/amazon-google/amazon-google-gs.json.gz
     fields: [title, manufacturer, price]
+    profiles: [small, medium, large, all]
 
   dblp-acm:
     train: data/dblp-acm/dblp-acm-train.json.gz
     valid: data/dblp-acm/dblp-acm-valid.csv
     test: data/dblp-acm/dblp-acm-gs.json.gz
     fields: [title, authors, venue, year]
+    profiles: [small, medium, large, all]
 
   dblp-scholar:
     train: data/dblp-scholar/dblp-scholar-train.json.gz
     valid: data/dblp-scholar/dblp-scholar-valid.csv
     test: data/dblp-scholar/dblp-scholar-gs.json.gz
     fields: [title, authors, venue, year]
+    profiles: [small, medium, large, all]
 
   walmart-amazon:
     train: data/walmart-amazon/walmart-amazon-train.json.gz
     valid: data/walmart-amazon/walmart-amazon-valid.csv
     test: data/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
+    profiles: [small, medium, large, all]
