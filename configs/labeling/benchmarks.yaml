@@ -30,6 +30,8 @@ profiles:
   large:
     target_size: 20000
     target_positives: 5000
+  all:
+    all_examples: true
 
 benchmarks:
   wdc:
@@ -52,4 +54,3 @@ benchmarks:
       description: description
       price: price
       priceCurrency: priceCurrency
-

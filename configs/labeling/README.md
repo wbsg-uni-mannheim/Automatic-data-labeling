@@ -36,13 +36,15 @@ Missing optional fields are allowed and will be filled with empty strings.
 
 ## Nested Profiles
 
-Profiles are defined globally in `benchmarks.yaml` and are materialized as strict nested subsets:
+Profiles are defined globally in `benchmarks.yaml` (or overridden per benchmark) and can include:
 
-- `small ⊂ medium ⊂ large`
+- numeric targets (`small`, `medium`, `large`) as strict nested subsets
+- `all` with `{all_examples: true}` to export the full labeled pool
 
 You can override profile targets per benchmark via `benchmarks.<name>.profiles`.
 
-The runner labels once at the largest profile, then writes per-profile outputs:
+The runner labels once at the largest numeric profile, then writes per-profile outputs.
+For `all`, it exports from `active_labels_latest.csv` (untrimmed) when available.
 
 - `.../profiles/<profile>/active_labels_latest.csv`
 - `.../profiles/<profile>/labels_final.csv`

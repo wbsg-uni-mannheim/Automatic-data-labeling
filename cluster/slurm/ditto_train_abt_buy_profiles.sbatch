@@ -3,8 +3,8 @@
 #SBATCH --partition=gpu-vram-48gb
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=32G
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=64G
 #SBATCH --gres=gpu:1
 #SBATCH --time=24:00:00
 #SBATCH --output=logs/%x-%j.out
@@ -20,7 +20,7 @@ set -euo pipefail
 #   export LABEL_CONFIG=configs/labeling/benchmarks_active.yaml
 #   export LABEL_RUN_NAME=abt_buy_local_test
 #   export LABEL_OUTPUT_ROOT=output/simple_labeling
-#   export PROFILES="small,medium,large"
+#   export PROFILES="small,medium,large,all"
 #   export DITTO_OUTPUT_ROOT=output/ditto_runs
 #   export DITTO_RUN_PREFIX=abt_buy_profiles
 #   export DITTO_SEED=42
@@ -46,7 +46,7 @@ fi
 LABEL_CONFIG="${LABEL_CONFIG:-configs/labeling/benchmarks_active.yaml}"
 LABEL_OUTPUT_ROOT="${LABEL_OUTPUT_ROOT:-output/simple_labeling}"
 LABEL_RUN_NAME="${LABEL_RUN_NAME:-abt_buy_local_test}"
-PROFILES_RAW="${PROFILES:-small,medium,large}"
+PROFILES_RAW="${PROFILES:-small,medium,large,all}"
 DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-output/ditto_runs}"
 DITTO_RUN_PREFIX="${DITTO_RUN_PREFIX:-abt_buy_profiles}"
 DITTO_SEED="${DITTO_SEED:-42}"
@@ -171,4 +171,3 @@ done
 
 echo
 echo "Done. Outputs: ${BASE_OUT_DIR}"
-
