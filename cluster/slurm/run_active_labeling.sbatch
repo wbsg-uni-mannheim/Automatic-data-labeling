@@ -1,11 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=active-label-abt-buy
-#SBATCH --partition=gpu-vram-48gb
+#SBATCH --job-name=active-label
+#SBATCH --partition=gpu-vram-12gb
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=12
+#SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=24:00:00
+#SBATCH --gres=gpu:1
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --error=logs/%x-%j.err
 
@@ -39,8 +40,8 @@ else
 fi
 
 CONFIG="${CONFIG:-configs/labeling/benchmarks_active.yaml}"
-BENCHMARK="${BENCHMARK:-abt-buy}"
-PROFILES="${PROFILES:-small}"
+BENCHMARK="${BENCHMARK:-amazon-google,dblp-acm,dblp-scholar,walmart-amazon}"
+PROFILES="${PROFILES:-small,medium,large}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-output/simple_labeling}"
 RUN_NAME="${RUN_NAME:-abt_buy_local_test}"
 RESUME="${RESUME:-1}"
