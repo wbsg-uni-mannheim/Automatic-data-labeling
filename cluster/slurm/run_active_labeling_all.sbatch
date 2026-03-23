@@ -69,7 +69,7 @@ TS="$(date +%Y%m%d_%H%M%S)"
 for BENCH in "${BENCHMARK_LIST[@]}"; do
   RUN_NAME="${RUN_NAME_PREFIX}_${BENCH}_${TS}"
   CMD=(
-    python scripts/run_benchmark_labeling.py
+    python scripts/labeling/run_benchmark_labeling.py
     --config "${CONFIG}"
     --benchmark "${BENCH}"
     --output-root "${OUTPUT_ROOT}"

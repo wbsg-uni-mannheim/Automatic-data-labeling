@@ -92,7 +92,7 @@ if [ ! -f "${ALL_TRAIN_JSON}" ]; then
   RUN_NAME="$(basename "${RUN_DIR}")"
   OUTPUT_ROOT="$(dirname "${RUN_DIR}")"
   echo "Backfilling missing all-profile export for ${BENCHMARK} in ${RUN_DIR}"
-  python scripts/run_benchmark_labeling.py \
+  python scripts/labeling/run_benchmark_labeling.py \
     --config "${LABEL_CONFIG}" \
     --benchmark "${BENCHMARK}" \
     --profiles "all" \

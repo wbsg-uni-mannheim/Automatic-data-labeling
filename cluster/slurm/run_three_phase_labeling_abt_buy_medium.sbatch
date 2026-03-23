@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name=active-label
-#SBATCH --partition=gpu-vram-12gb
+#SBATCH --job-name=active-label-abt
+#SBATCH --partition=gpu-vram-48gb
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=64G
-#SBATCH --time=24:00:00
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=96G
+#SBATCH --time=48:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --error=logs/%x-%j.err
@@ -13,17 +13,16 @@
 set -euo pipefail
 
 # Submit from repo root:
-#   sbatch cluster/slurm/run_active_labeling_abt_buy.sbatch
+#   sbatch cluster/slurm/run_three_phase_labeling_abt_buy_medium.sbatch
 #
 # Optional overrides before sbatch:
 #   export CONDA_ENV_NAME=ditto-modern
 #   export CONFIG=configs/labeling/benchmarks_active.yaml
 #   export BENCHMARK=abt-buy
-#   export PROFILES=small
+#   export PROFILES=medium
 #   export OUTPUT_ROOT=output/simple_labeling
-#   export RUN_NAME=abt_buy_local_test
-#   export RESUME=1
-#   export NO_EXPORT_DITTO=1
+#   export RUN_NAME_PREFIX=benchmark
+#   export RESUME=0
 
 mkdir -p logs
 
@@ -40,17 +39,19 @@ else
 fi
 
 CONFIG="${CONFIG:-configs/labeling/benchmarks_active.yaml}"
-BENCHMARK="${BENCHMARK:-amazon-google,dblp-acm,dblp-scholar,walmart-amazon}"
-PROFILES="${PROFILES:-small,medium,large}"
-OUTPUT_ROOT="${OUTPUT_ROOT:-output/simple_labeling}"
-RUN_NAME="${RUN_NAME:-abt_buy_local_test}"
-RESUME="${RESUME:-1}"
-NO_EXPORT_DITTO="${NO_EXPORT_DITTO:-1}"
+BENCHMARK="${BENCHMARK:-abt-buy}"
+PROFILES="${PROFILES:-medium}"
+OUTPUT_ROOT="${OUTPUT_ROOT:-output/three_phase_labeling_ditto_only}"
+RUN_NAME_PREFIX="${RUN_NAME_PREFIX:-benchmark}"
+RESUME="${RESUME:-0}"
 
 if [ ! -f "${CONFIG}" ]; then
   echo "Config not found: ${CONFIG}" >&2
   exit 1
 fi
+
+TS="$(date +%Y%m%d_%H%M%S)"
+RUN_NAME="${RUN_NAME_PREFIX}_${BENCHMARK}_${TS}"
 
 CMD=(
   python scripts/labeling/run_benchmark_labeling.py
@@ -64,18 +65,13 @@ CMD=(
 if [ "${RESUME}" = "1" ]; then
   CMD+=(--resume)
 fi
-if [ "${NO_EXPORT_DITTO}" = "1" ]; then
-  CMD+=(--no-export-ditto)
-fi
 
-echo "Running benchmark labeling:"
-echo "  CONFIG=${CONFIG}"
-echo "  BENCHMARK=${BENCHMARK}"
-echo "  PROFILES=${PROFILES}"
-echo "  OUTPUT_ROOT=${OUTPUT_ROOT}"
-echo "  RUN_NAME=${RUN_NAME}"
-echo "  RESUME=${RESUME}"
-echo "  NO_EXPORT_DITTO=${NO_EXPORT_DITTO}"
+echo "Config:      ${CONFIG}"
+echo "Benchmark:   ${BENCHMARK}"
+echo "Profiles:    ${PROFILES}"
+echo "Output root: ${OUTPUT_ROOT}"
+echo "Run name:    ${RUN_NAME}"
+echo "Resume:      ${RESUME}"
 echo
 
 "${CMD[@]}"

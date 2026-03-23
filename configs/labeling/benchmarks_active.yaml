@@ -1,6 +1,7 @@
 defaults:
   output_root: output/simple_labeling
   run_prefix: benchmark
+  runner_script: scripts/labeling/run_simple_labeling.py
   labeling_args:
     model: gpt-5.2
     faiss_k: 20
@@ -24,6 +25,8 @@ benchmarks:
   wdc:
     left_csv: data/wdc/wdc_train_large_left.csv
     right_csv: data/wdc/wdc_train_large_right.csv
+    valid_path: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test_path: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     id_col: id
     fields:
       title: title
@@ -42,8 +45,11 @@ benchmarks:
       all:    {all_examples: true}
 
   abt-buy:
+    runner_script: scripts/labeling/run_three_phase_labeling.py
     left_csv: data/abt-buy/abt-buy-train-left.csv
     right_csv: data/abt-buy/abt-buy-train-right.csv
+    valid_path: data/abt-buy/abt-buy-valid.csv
+    test_path: data/abt-buy/abt-buy-gs.json.gz
     id_col: id
     fields:
       title: title
@@ -53,6 +59,11 @@ benchmarks:
       dir: data/abt-buy/embeddings
       left_file: abt-buy_left_embeddings.npy
       right_file: abt-buy_right_embeddings.npy
+    labeling_args:
+      phase2_target_size: 1000
+      phase3_batch_size: 500
+      phase3_candidates: 10000
+      phase3_ensemble_mode: ditto_only
     profiles:
       small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
       medium: {target_total: 3000, target_pos: 600, target_neg: 2400, label_budget: 4500}
@@ -62,6 +73,8 @@ benchmarks:
   amazon-google:
     left_csv: data/amazon-google/amazon-google-train-left.csv
     right_csv: data/amazon-google/amazon-google-train-right.csv
+    valid_path: data/amazon-google/amazon-google-valid.csv
+    test_path: data/amazon-google/amazon-google-gs.json.gz
     id_col: id
     fields:
       title: title
@@ -80,6 +93,8 @@ benchmarks:
   dblp-acm:
     left_csv: data/dblp-acm/dblp-acm-train-left.csv
     right_csv: data/dblp-acm/dblp-acm-train-right.csv
+    valid_path: data/dblp-acm/dblp-acm-valid.csv
+    test_path: data/dblp-acm/dblp-acm-gs.json.gz
     id_col: id
     fields:
       title: title
@@ -99,6 +114,8 @@ benchmarks:
   dblp-scholar:
     left_csv: data/dblp-scholar/dblp-scholar-train-left.csv
     right_csv: data/dblp-scholar/dblp-scholar-train-right.csv
+    valid_path: data/dblp-scholar/dblp-scholar-valid.csv
+    test_path: data/dblp-scholar/dblp-scholar-gs.json.gz
     id_col: id
     fields:
       title: title
@@ -116,8 +133,11 @@ benchmarks:
       all:    {all_examples: true}
 
   walmart-amazon:
+    runner_script: scripts/labeling/run_three_phase_labeling.py
     left_csv: data/walmart-amazon/walmart-amazon-train-left.csv
     right_csv: data/walmart-amazon/walmart-amazon-train-right.csv
+    valid_path: data/walmart-amazon/walmart-amazon-valid.csv
+    test_path: data/walmart-amazon/walmart-amazon-gs.json.gz
     id_col: id
     fields:
       title: title
@@ -129,6 +149,11 @@ benchmarks:
       dir: data/walmart-amazon/embeddings
       left_file: walmart-amazon_left_embeddings.npy
       right_file: walmart-amazon_right_embeddings.npy
+    labeling_args:
+      phase2_target_size: 1000
+      phase3_batch_size: 500
+      phase3_candidates: 10000
+      phase3_ensemble_mode: ditto_only
     profiles:
       small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
       medium: {target_total: 3000, target_pos: 500, target_neg: 2500, label_budget: 4500}
