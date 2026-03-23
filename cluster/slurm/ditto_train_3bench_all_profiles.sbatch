@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=ditto-3bench-profiles
+#SBATCH --job-name=ditto-walmart-profiles
 #SBATCH --partition=gpu-vram-48gb
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -19,8 +19,10 @@ set -euo pipefail
 #   export CONDA_ENV_NAME=ditto-modern
 #   export PROFILES="small,medium,large,all"
 #   export LABEL_CONFIG=configs/labeling/benchmarks_active.yaml
+#   export TRAIN_CONFIG=configs/ditto/benchmarks_training.yaml
+#   export RUN_DIR_WALMART_AMAZON=output/simple_labeling/benchmark_walmart-amazon_20260302_113733
 #   export DITTO_OUTPUT_ROOT=output/ditto_runs
-#   export DITTO_RUN_PREFIX=three_bench_profiles
+#   export DITTO_RUN_PREFIX=walmart_amazon_profiles
 #   export DITTO_SEED=42
 #   export MODEL_NAME=roberta-base
 #   export EPOCHS=50
@@ -41,34 +43,26 @@ else
   exit 1
 fi
 
+BENCHMARK="walmart-amazon"
 LABEL_CONFIG="${LABEL_CONFIG:-configs/labeling/benchmarks_active.yaml}"
 TRAIN_CONFIG="${TRAIN_CONFIG:-configs/ditto/benchmarks_training.yaml}"
 PROFILES_RAW="${PROFILES:-small,medium,large,all}"
 DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-output/ditto_runs}"
-DITTO_RUN_PREFIX="${DITTO_RUN_PREFIX:-three_bench_profiles}"
+DITTO_RUN_PREFIX="${DITTO_RUN_PREFIX:-walmart_amazon_profiles}"
 DITTO_SEED="${DITTO_SEED:-42}"
 MODEL_NAME="${MODEL_NAME:-roberta-base}"
 EPOCHS="${EPOCHS:-50}"
 EARLY_STOPPING_PATIENCE="${EARLY_STOPPING_PATIENCE:-10}"
 FP16="${FP16:-true}"
 
-# Fixed run dirs from the user request.
-RUN_DIR_DBLP_SCHOLAR="${RUN_DIR_DBLP_SCHOLAR:-output/simple_labeling/benchmark_dblp-scholar_20260302_113733}"
-RUN_DIR_DBLP_ACM="${RUN_DIR_DBLP_ACM:-output/simple_labeling/benchmark_dblp-acm_20260302_113733}"
-RUN_DIR_AMAZON_GOOGLE="${RUN_DIR_AMAZON_GOOGLE:-output/simple_labeling/benchmark_amazon-google_20260302_113733}"
+# Keep compatibility with previous env var naming from the request.
+RUN_DIR_DBLP_SCHOLAR="${RUN_DIR_WALMART_AMAZON:-output/simple_labeling/benchmark_walmart-amazon_20260302_113733}"
+RUN_DIR="${RUN_DIR_DBLP_SCHOLAR}"
 
-declare -A RUN_DIR_BY_BENCH=(
-  ["dblp-scholar"]="${RUN_DIR_DBLP_SCHOLAR}"
-  ["dblp-acm"]="${RUN_DIR_DBLP_ACM}"
-  ["amazon-google"]="${RUN_DIR_AMAZON_GOOGLE}"
-)
-
-for B in "${!RUN_DIR_BY_BENCH[@]}"; do
-  if [ ! -d "${RUN_DIR_BY_BENCH[$B]}" ]; then
-    echo "Missing run directory for ${B}: ${RUN_DIR_BY_BENCH[$B]}" >&2
-    exit 1
-  fi
-done
+if [ ! -d "${RUN_DIR}" ]; then
+  echo "Missing run directory for ${BENCHMARK}: ${RUN_DIR}" >&2
+  exit 1
+fi
 
 PROFILES_RAW="${PROFILES_RAW//,/ }"
 read -r -a PROFILE_LIST <<< "${PROFILES_RAW}"
@@ -92,57 +86,53 @@ if [ ! -f "${TRAIN_CONFIG}" ]; then
   exit 1
 fi
 
-# Ensure missing "all" exports are backfilled from existing active_labels_latest.csv.
-for B in "dblp-scholar" "dblp-acm" "amazon-google"; do
-  RUN_DIR="${RUN_DIR_BY_BENCH[$B]}"
-  ALL_TRAIN_JSON="${RUN_DIR}/profiles/all/active_labels_latest_${B}_all_train.json.gz"
-  if [ ! -f "${ALL_TRAIN_JSON}" ]; then
-    RUN_NAME="$(basename "${RUN_DIR}")"
-    OUTPUT_ROOT="$(dirname "${RUN_DIR}")"
-    echo "Backfilling missing all-profile export for ${B} in ${RUN_DIR}"
-    python scripts/run_benchmark_labeling.py \
-      --config "${LABEL_CONFIG}" \
-      --benchmark "${B}" \
-      --profiles "all" \
-      --output-root "${OUTPUT_ROOT}" \
-      --run-name "${RUN_NAME}" \
-      --resume
+# Ensure missing "all" export is backfilled from existing active_labels_latest.csv.
+ALL_TRAIN_JSON="${RUN_DIR}/profiles/all/active_labels_latest_${BENCHMARK}_all_train.json.gz"
+if [ ! -f "${ALL_TRAIN_JSON}" ]; then
+  RUN_NAME="$(basename "${RUN_DIR}")"
+  OUTPUT_ROOT="$(dirname "${RUN_DIR}")"
+  echo "Backfilling missing all-profile export for ${BENCHMARK} in ${RUN_DIR}"
+  python scripts/run_benchmark_labeling.py \
+    --config "${LABEL_CONFIG}" \
+    --benchmark "${BENCHMARK}" \
+    --profiles "all" \
+    --output-root "${OUTPUT_ROOT}" \
+    --run-name "${RUN_NAME}" \
+    --resume
+fi
+
+# Validate requested profile files exist.
+for P in "${PROFILE_LIST[@]}"; do
+  TRAIN_JSON="${RUN_DIR}/profiles/${P}/active_labels_latest_${BENCHMARK}_${P}_train.json.gz"
+  if [ ! -f "${TRAIN_JSON}" ]; then
+    echo "Missing train file: ${TRAIN_JSON}" >&2
+    exit 1
   fi
 done
 
-# Validate requested profile files exist.
-for B in "dblp-scholar" "dblp-acm" "amazon-google"; do
-  RUN_DIR="${RUN_DIR_BY_BENCH[$B]}"
-  for P in "${PROFILE_LIST[@]}"; do
-    TRAIN_JSON="${RUN_DIR}/profiles/${P}/active_labels_latest_${B}_${P}_train.json.gz"
-    if [ ! -f "${TRAIN_JSON}" ]; then
-      echo "Missing train file: ${TRAIN_JSON}" >&2
-      exit 1
-    fi
-  done
-done
-
-# Build normalized valid/test splits and benchmark train configs once.
+# Build normalized valid/test splits and benchmark train config.
 SPLIT_OUTPUT_ROOT="output/ditto_benchmark_runs"
-SPLIT_RUN_NAME="three_bench_splits_${SLURM_JOB_ID:-$(date +%Y%m%d_%H%M%S)}"
+SPLIT_RUN_NAME="walmart_amazon_splits_${SLURM_JOB_ID:-$(date +%Y%m%d_%H%M%S)}"
 python scripts/ditto/run_benchmark_training.py \
   --config "${TRAIN_CONFIG}" \
   --output-root "${SPLIT_OUTPUT_ROOT}" \
   --run-name "${SPLIT_RUN_NAME}" \
-  --benchmarks "dblp-scholar,dblp-acm,amazon-google" \
+  --benchmarks "${BENCHMARK}" \
   --dry-run
 
 SPLIT_ROOT="${SPLIT_OUTPUT_ROOT}/${SPLIT_RUN_NAME}"
-for B in "dblp-scholar" "dblp-acm" "amazon-google"; do
-  if [ ! -f "${SPLIT_ROOT}/${B}/splits/valid.json.gz" ] || [ ! -f "${SPLIT_ROOT}/${B}/splits/test.json.gz" ]; then
-    echo "Missing normalized valid/test splits for ${B} in ${SPLIT_ROOT}/${B}/splits" >&2
-    exit 1
-  fi
-  if [ ! -f "${SPLIT_ROOT}/${B}/train_config.yaml" ]; then
-    echo "Missing train config for ${B}: ${SPLIT_ROOT}/${B}/train_config.yaml" >&2
-    exit 1
-  fi
-done
+VAL_JSON="${SPLIT_ROOT}/${BENCHMARK}/splits/valid.json.gz"
+TEST_JSON="${SPLIT_ROOT}/${BENCHMARK}/splits/test.json.gz"
+TRAIN_CFG="${SPLIT_ROOT}/${BENCHMARK}/train_config.yaml"
+
+if [ ! -f "${VAL_JSON}" ] || [ ! -f "${TEST_JSON}" ]; then
+  echo "Missing normalized valid/test splits for ${BENCHMARK} in ${SPLIT_ROOT}/${BENCHMARK}/splits" >&2
+  exit 1
+fi
+if [ ! -f "${TRAIN_CFG}" ]; then
+  echo "Missing train config for ${BENCHMARK}: ${TRAIN_CFG}" >&2
+  exit 1
+fi
 
 RUN_STAMP="${SLURM_JOB_ID:-$(date +%Y%m%d_%H%M%S)}"
 BASE_OUT_DIR="${DITTO_OUTPUT_ROOT}/${DITTO_RUN_PREFIX}_${RUN_STAMP}"
@@ -152,49 +142,44 @@ SUMMARY_TSV="${BASE_OUT_DIR}/metrics.tsv"
 echo -e "benchmark\tprofile\trun_dir\tbest_val_f1\ttest_f1\ttest_precision\ttest_recall\ttest_accuracy" > "${SUMMARY_TSV}"
 
 echo "Starting Ditto training"
-echo "Benchmarks: dblp-scholar, dblp-acm, amazon-google"
+echo "Benchmark:  ${BENCHMARK}"
 echo "Profiles:   ${PROFILES_RAW}"
+echo "Run dir:    ${RUN_DIR}"
 echo "Output dir: ${BASE_OUT_DIR}"
 
-for B in "dblp-scholar" "dblp-acm" "amazon-google"; do
-  RUN_DIR="${RUN_DIR_BY_BENCH[$B]}"
-  VAL_JSON="${SPLIT_ROOT}/${B}/splits/valid.json.gz"
-  TEST_JSON="${SPLIT_ROOT}/${B}/splits/test.json.gz"
-  TRAIN_CFG="${SPLIT_ROOT}/${B}/train_config.yaml"
+for P in "${PROFILE_LIST[@]}"; do
+  TRAIN_JSON="${RUN_DIR}/profiles/${P}/active_labels_latest_${BENCHMARK}_${P}_train.json.gz"
+  PROFILE_OUT="${BASE_OUT_DIR}/${BENCHMARK}/${P}"
+  mkdir -p "${PROFILE_OUT}"
 
-  for P in "${PROFILE_LIST[@]}"; do
-    TRAIN_JSON="${RUN_DIR}/profiles/${P}/active_labels_latest_${B}_${P}_train.json.gz"
-    PROFILE_OUT="${BASE_OUT_DIR}/${B}/${P}"
-    mkdir -p "${PROFILE_OUT}"
+  echo
+  echo "=== Training ${BENCHMARK} / ${P} ==="
+  echo "Train: ${TRAIN_JSON}"
+  python scripts/ditto/train.py \
+    --train-json-gz "${TRAIN_JSON}" \
+    --val-json-gz "${VAL_JSON}" \
+    --test-json-gz "${TEST_JSON}" \
+    --output-dir "${PROFILE_OUT}" \
+    --config "${TRAIN_CFG}" \
+    --model-name "${MODEL_NAME}" \
+    --epochs "${EPOCHS}" \
+    --early-stopping-patience "${EARLY_STOPPING_PATIENCE}" \
+    --seed "${DITTO_SEED}" \
+    "${NO_FP16_FLAG[@]}"
 
-    echo
-    echo "=== Training ${B} / ${P} ==="
-    echo "Train: ${TRAIN_JSON}"
-    python scripts/ditto/train.py \
-      --train-json-gz "${TRAIN_JSON}" \
-      --val-json-gz "${VAL_JSON}" \
-      --test-json-gz "${TEST_JSON}" \
-      --output-dir "${PROFILE_OUT}" \
-      --config "${TRAIN_CFG}" \
-      --model-name "${MODEL_NAME}" \
-      --epochs "${EPOCHS}" \
-      --early-stopping-patience "${EARLY_STOPPING_PATIENCE}" \
-      --seed "${DITTO_SEED}" \
-      "${NO_FP16_FLAG[@]}"
+  RUN_PTR="${PROFILE_OUT}/LATEST_RUN"
+  if [ ! -f "${RUN_PTR}" ]; then
+    echo "Missing LATEST_RUN for ${BENCHMARK}/${P} at ${PROFILE_OUT}" >&2
+    exit 1
+  fi
+  RUN_PATH="$(cat "${RUN_PTR}")"
+  METRICS_JSON="${RUN_PATH}/metrics.json"
+  if [ ! -f "${METRICS_JSON}" ]; then
+    echo "Missing metrics.json for ${BENCHMARK}/${P}: ${METRICS_JSON}" >&2
+    exit 1
+  fi
 
-    RUN_PTR="${PROFILE_OUT}/LATEST_RUN"
-    if [ ! -f "${RUN_PTR}" ]; then
-      echo "Missing LATEST_RUN for ${B}/${P} at ${PROFILE_OUT}" >&2
-      exit 1
-    fi
-    RUN_PATH="$(cat "${RUN_PTR}")"
-    METRICS_JSON="${RUN_PATH}/metrics.json"
-    if [ ! -f "${METRICS_JSON}" ]; then
-      echo "Missing metrics.json for ${B}/${P}: ${METRICS_JSON}" >&2
-      exit 1
-    fi
-
-    python - "${B}" "${P}" "${RUN_PATH}" "${METRICS_JSON}" >> "${SUMMARY_TSV}" <<'PY'
+  python - "${BENCHMARK}" "${P}" "${RUN_PATH}" "${METRICS_JSON}" >> "${SUMMARY_TSV}" <<'PY'
 import json
 import sys
 
@@ -213,7 +198,6 @@ test_recall = float(test.get("recall", float("nan")))
 test_accuracy = float(test.get("accuracy", float("nan")))
 print(f"{benchmark}\t{profile}\t{run_dir}\t{best_val_f1}\t{test_f1}\t{test_precision}\t{test_recall}\t{test_accuracy}")
 PY
-  done
 done
 
 echo
