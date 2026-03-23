@@ -88,7 +88,7 @@ done
 
 if [ "${NEEDS_EXPORT}" = "1" ]; then
   PROFILE_CSV="$(IFS=,; echo "${PROFILE_LIST[*]}")"
-  python scripts/run_benchmark_labeling.py \
+  python scripts/labeling/run_benchmark_labeling.py \
     --config "${LABEL_CONFIG}" \
     --benchmark "abt-buy" \
     --profiles "${PROFILE_CSV}" \

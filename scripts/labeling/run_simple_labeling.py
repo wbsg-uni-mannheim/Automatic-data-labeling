@@ -40,6 +40,13 @@ CANONICAL_SCHEMA_FIELDS: Tuple[str, ...] = (
     "priceCurrency",
 )
 RESERVED_FEATURE_FIELDS = {"id", "__rid", "pair_id", "label", "is_hard_negative", "rid1", "rid2", "similarity"}
+MODEL_PRICING_USD_PER_MILLION: Dict[str, Dict[str, float]] = {
+    # Official OpenAI pricing for GPT-5.2 standard processing as of 2026-03-23:
+    # https://platform.openai.com/docs/models/gpt-5.2/
+    "gpt-5.2": {"input": 1.75, "output": 14.00},
+    "gpt-5.2-chat-latest": {"input": 1.75, "output": 14.00},
+}
+PRICING_SOURCE_URL = "https://platform.openai.com/docs/models/gpt-5.2/"
 
 
 def _parse_field_list_arg(raw: str | None) -> List[str]:
@@ -514,6 +521,39 @@ def _count_labels(df: pd.DataFrame) -> Tuple[int, int]:
     pos = int((labels == "TRUE").sum())
     neg = int((labels == "FALSE").sum())
     return pos, neg
+
+
+def _estimate_usage_costs(model: str, usage_stats: Dict[str, int]) -> Dict[str, object]:
+    model_key = str(model).strip()
+    pricing = MODEL_PRICING_USD_PER_MILLION.get(model_key)
+    prompt_tokens = int(usage_stats.get("prompt_tokens", 0) or 0)
+    completion_tokens = int(usage_stats.get("completion_tokens", 0) or 0)
+    out: Dict[str, object] = {
+        "model": model_key,
+        "pricing_source_url": PRICING_SOURCE_URL,
+        "prompt_tokens": prompt_tokens,
+        "completion_tokens": completion_tokens,
+        "cached_input_tokens_assumed": 0,
+        "pricing_mode": "standard",
+    }
+    if pricing is None:
+        out["available"] = False
+        out["reason"] = f"No pricing configured for model: {model_key}"
+        return out
+
+    input_cost = (prompt_tokens / 1_000_000.0) * float(pricing["input"])
+    output_cost = (completion_tokens / 1_000_000.0) * float(pricing["output"])
+    out.update(
+        {
+            "available": True,
+            "input_usd_per_million": float(pricing["input"]),
+            "output_usd_per_million": float(pricing["output"]),
+            "input_cost_usd": round(input_cost, 6),
+            "output_cost_usd": round(output_cost, 6),
+            "total_cost_usd": round(input_cost + output_cost, 6),
+        }
+    )
+    return out
 
 
 def _run_active_learning_same_prompt(
@@ -1984,6 +2024,7 @@ def main() -> None:
     final_out = _materialize_output_ids(final_df, left_rid_to_id, right_rid_to_id)
     final_out.to_csv(run_dir / "labels_final.csv", index=False)
     f_pos, f_neg = _count_labels(final_df)
+    cost_summary = _estimate_usage_costs(args.model, usage_stats)
     _save_json(
         run_dir / "summary.json",
         {
@@ -1998,6 +2039,7 @@ def main() -> None:
             "target_neg": int(target_neg),
             "faiss": faiss_stats,
             "token_usage": usage_stats,
+            "labeling_cost": cost_summary,
         },
     )
     _save_json(
@@ -2008,6 +2050,7 @@ def main() -> None:
             "final_pos": f_pos,
             "final_neg": f_neg,
             "token_usage": usage_stats,
+            "labeling_cost": cost_summary,
         },
     )
     print(f"Final: {len(final_out)} ({f_pos} pos, {f_neg} neg)")
@@ -2017,6 +2060,8 @@ def main() -> None:
         f"completion={usage_stats['completion_tokens']}, "
         f"total={usage_stats['total_tokens']}"
     )
+    if bool(cost_summary.get("available")):
+        print(f"Estimated labeling cost (USD): {float(cost_summary['total_cost_usd']):.6f}")
     print(f"Output: {run_dir / 'labels_final.csv'}")
 
 

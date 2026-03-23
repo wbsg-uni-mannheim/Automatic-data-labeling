@@ -15,12 +15,11 @@ from dotenv import load_dotenv
 
 DEFAULT_CONFIG_PATH = Path("configs/labeling/benchmarks_active.yaml")
 DEFAULT_DATA_ROOT = Path("data")
-DEFAULT_OUTPUT_ROOT = Path("output/batch_benchmark_eval")
+DEFAULT_OUTPUT_DIR = Path("output/batch_benchmark_eval")
 DEFAULT_MODEL = "gpt-5.2"
 DEFAULT_COMPLETION_WINDOW = "24h"
 DEFAULT_ENDPOINT = "/v1/chat/completions"
 DEFAULT_MAX_FIELD_LENGTH = 200
-LATEST_RUN_POINTER = "LATEST_RUN"
 
 SKIP_EXACT_FIELDS = {"id", "label", "pair_id", "explanation"}
 FIELD_ALIASES: Dict[str, tuple[str, ...]] = {
@@ -238,35 +237,12 @@ def build_messages(
     ]
 
 
-def _resolve_run_dir(
-    output_root: Path,
-    *,
-    create_new: bool,
-    run_dir: Optional[Path] = None,
-    run_name: Optional[str] = None,
-) -> Path:
-    if run_dir is not None:
-        if not run_dir.exists() and create_new:
-            run_dir.mkdir(parents=True, exist_ok=False)
-        return run_dir
-
-    output_root.mkdir(parents=True, exist_ok=True)
-    pointer = output_root / LATEST_RUN_POINTER
-    if create_new:
-        resolved_name = run_name or f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        target = output_root / resolved_name
-        target.mkdir(parents=True, exist_ok=False)
-        pointer.write_text(str(target), encoding="utf-8")
-        return target
-
-    if not pointer.exists():
-        raise FileNotFoundError(
-            f"No prior run found in {output_root}. Run 'prepare' first or pass --run-dir."
-        )
-    target = Path(pointer.read_text(encoding="utf-8").strip())
-    if not target.exists():
-        raise FileNotFoundError(f"Latest run pointer references missing directory: {target}")
-    return target
+def _resolve_output_dir(output_dir: Path, *, create: bool) -> Path:
+    if create:
+        output_dir.mkdir(parents=True, exist_ok=True)
+    elif not output_dir.exists():
+        raise FileNotFoundError(f"Output directory not found: {output_dir}")
+    return output_dir
 
 
 def _load_prompt_text(prompt_file: Optional[Path]) -> str:
@@ -299,47 +275,47 @@ def _prepare_single_dataset(
     model: str,
     system_prompt: str,
     max_field_length: int,
-) -> Dict[str, Any]:
+) -> tuple[Dict[str, Any], List[Dict[str, Any]]]:
     dataset_dir = _dataset_dir(run_dir, spec)
     dataset_dir.mkdir(parents=True, exist_ok=True)
 
     records = _read_jsonl_gz(Path(spec.data_path))
     metadata_rows: List[Dict[str, Any]] = []
-    batch_input_path = dataset_dir / "batch_input.jsonl"
+    requests: List[Dict[str, Any]] = []
 
-    with batch_input_path.open("w", encoding="utf-8") as handle:
-        for idx, record in enumerate(records):
-            custom_id = f"req_{idx}"
-            messages = build_messages(
-                record,
-                prompt_fields=spec.prompt_fields,
-                system_prompt=system_prompt,
-                max_field_length=max_field_length,
-            )
-            request = {
+    for idx, record in enumerate(records):
+        custom_id = f"{spec.output_slug}__req_{idx}"
+        messages = build_messages(
+            record,
+            prompt_fields=spec.prompt_fields,
+            system_prompt=system_prompt,
+            max_field_length=max_field_length,
+        )
+        requests.append(
+            {
                 "custom_id": custom_id,
                 "method": "POST",
                 "url": DEFAULT_ENDPOINT,
                 "body": {
                     "model": model,
-                    "temperature": 0,
+                    #"temperature": 0,
                     "messages": messages,
                 },
             }
-            handle.write(json.dumps(request, ensure_ascii=False) + "\n")
+        )
 
-            gold_bool = _normalize_gold_label(record.get("label"))
-            metadata_rows.append(
-                {
-                    "custom_id": custom_id,
-                    "pair_index": idx,
-                    "pair_id": _normalize_text(record.get("pair_id")),
-                    "id_left": _normalize_text(record.get("id_left")),
-                    "id_right": _normalize_text(record.get("id_right")),
-                    "gold_label": "TRUE" if gold_bool else "FALSE",
-                    "gold_match": gold_bool,
-                }
-            )
+        gold_bool = _normalize_gold_label(record.get("label"))
+        metadata_rows.append(
+            {
+                "custom_id": custom_id,
+                "pair_index": idx,
+                "pair_id": _normalize_text(record.get("pair_id")),
+                "id_left": _normalize_text(record.get("id_left")),
+                "id_right": _normalize_text(record.get("id_right")),
+                "gold_label": "TRUE" if gold_bool else "FALSE",
+                "gold_match": gold_bool,
+            }
+        )
 
     pd.DataFrame(metadata_rows).to_csv(dataset_dir / "metadata.csv", index=False)
 
@@ -353,99 +329,89 @@ def _prepare_single_dataset(
         "system_prompt": system_prompt,
         "max_field_length": int(max_field_length),
         "prompt_fields": list(spec.prompt_fields),
-        "batch_input_path": str(batch_input_path),
     }
     _write_json(dataset_dir / "dataset_manifest.json", dataset_manifest)
-    return dataset_manifest
+    return dataset_manifest, requests
 
 
 def prepare_run(
     *,
-    output_root: Path,
-    run_dir: Optional[Path],
-    run_name: Optional[str],
-    config_path: Path,
-    data_root: Path,
-    benchmarks: Optional[List[str]],
+    output_dir: Path,
     model: str,
-    prompt_file: Optional[Path],
-    max_field_length: int,
 ) -> Path:
-    resolved_run_dir = _resolve_run_dir(
-        output_root,
-        create_new=True,
-        run_dir=run_dir,
-        run_name=run_name,
-    )
-    system_prompt = _load_prompt_text(prompt_file)
-    specs = discover_test_sets(config_path=config_path, data_root=data_root, benchmarks=benchmarks)
+    resolved_run_dir = _resolve_output_dir(output_dir, create=True)
+    system_prompt = _load_prompt_text(None)
+    specs = discover_test_sets(config_path=DEFAULT_CONFIG_PATH, data_root=DEFAULT_DATA_ROOT, benchmarks=None)
 
-    dataset_manifests = [
-        _prepare_single_dataset(
+    dataset_manifests: List[Dict[str, Any]] = []
+    combined_requests: List[Dict[str, Any]] = []
+    for spec in specs:
+        dataset_manifest, requests = _prepare_single_dataset(
             run_dir=resolved_run_dir,
             spec=spec,
             model=model,
             system_prompt=system_prompt,
-            max_field_length=max_field_length,
+            max_field_length=DEFAULT_MAX_FIELD_LENGTH,
         )
-        for spec in specs
-    ]
+        dataset_manifests.append(dataset_manifest)
+        combined_requests.extend(requests)
+
+    batch_input_path = resolved_run_dir / "batch_input.jsonl"
+    with batch_input_path.open("w", encoding="utf-8") as handle:
+        for request in combined_requests:
+            handle.write(json.dumps(request, ensure_ascii=False) + "\n")
 
     run_manifest = {
         "created_at": datetime.now().isoformat(timespec="seconds"),
-        "config_path": str(config_path),
-        "data_root": str(data_root),
+        "config_path": str(DEFAULT_CONFIG_PATH),
+        "data_root": str(DEFAULT_DATA_ROOT),
         "model": model,
-        "system_prompt_source": str(prompt_file) if prompt_file else "active_learning_default",
+        "system_prompt_source": "active_learning_default",
         "system_prompt": system_prompt,
-        "max_field_length": int(max_field_length),
+        "max_field_length": int(DEFAULT_MAX_FIELD_LENGTH),
+        "batch_input_path": str(batch_input_path),
+        "request_count": len(combined_requests),
         "datasets": dataset_manifests,
     }
     _write_json(resolved_run_dir / "run_manifest.json", run_manifest)
     return resolved_run_dir
 
 
-def submit_run(run_dir: Path, *, completion_window: str = DEFAULT_COMPLETION_WINDOW) -> None:
+def submit_run(run_dir: Path) -> None:
     from openai import OpenAI
 
     client = OpenAI()
     run_manifest = _load_json(run_dir / "run_manifest.json")
-    datasets = run_manifest.get("datasets") or []
+    batch_info_path = run_dir / "batch_info.json"
+    if batch_info_path.exists():
+        batch_info = _load_json(batch_info_path)
+        status = str(batch_info.get("status", "")).lower()
+        if status not in {"failed", "expired", "cancelled"}:
+            return
 
-    for dataset in datasets:
-        slug = str(dataset["output_slug"])
-        dataset_dir = _dataset_dir(run_dir, slug)
-        batch_info_path = dataset_dir / "batch_info.json"
-        if batch_info_path.exists():
-            batch_info = _load_json(batch_info_path)
-            status = str(batch_info.get("status", "")).lower()
-            if status not in {"failed", "expired", "cancelled"}:
-                continue
+    batch_input_path = run_dir / "batch_input.jsonl"
+    with batch_input_path.open("rb") as handle:
+        file_obj = client.files.create(file=handle, purpose="batch")
 
-        batch_input_path = dataset_dir / "batch_input.jsonl"
-        with batch_input_path.open("rb") as handle:
-            file_obj = client.files.create(file=handle, purpose="batch")
-
-        batch = client.batches.create(
-            input_file_id=file_obj.id,
-            endpoint=DEFAULT_ENDPOINT,
-            completion_window=completion_window,
-            metadata={
-                "benchmark": str(dataset["benchmark"]),
-                "dataset_name": str(dataset["dataset_name"]),
-                "output_slug": slug,
-                "run_dir": run_dir.name,
-            },
-        )
-        batch_info = {
-            "submitted_at": datetime.now().isoformat(timespec="seconds"),
-            "status": batch.status,
-            "file_id": file_obj.id,
-            "batch_id": batch.id,
-            "output_file_id": getattr(batch, "output_file_id", None),
-            "error_file_id": getattr(batch, "error_file_id", None),
-        }
-        _write_json(batch_info_path, batch_info)
+    batch = client.batches.create(
+        input_file_id=file_obj.id,
+        endpoint=DEFAULT_ENDPOINT,
+        completion_window=DEFAULT_COMPLETION_WINDOW,
+        metadata={
+            "run_dir": run_dir.name,
+            "request_count": str(run_manifest.get("request_count", "")),
+            "dataset_count": str(len(run_manifest.get("datasets") or [])),
+        },
+    )
+    batch_info = {
+        "submitted_at": datetime.now().isoformat(timespec="seconds"),
+        "status": batch.status,
+        "file_id": file_obj.id,
+        "batch_id": batch.id,
+        "output_file_id": getattr(batch, "output_file_id", None),
+        "error_file_id": getattr(batch, "error_file_id", None),
+    }
+    _write_json(batch_info_path, batch_info)
 
 
 def _download_file_if_missing(client: Any, file_id: Optional[str], target_path: Path) -> None:
@@ -456,62 +422,96 @@ def _download_file_if_missing(client: Any, file_id: Optional[str], target_path: 
         handle.write(content.read())
 
 
-def refresh_status(run_dir: Path, *, download: bool = True) -> List[Dict[str, Any]]:
+def _legacy_batch_info_paths(run_dir: Path) -> List[Path]:
+    return sorted(run_dir.glob("*/batch_info.json"))
+
+
+def refresh_status(run_dir: Path) -> List[Dict[str, Any]]:
     from openai import OpenAI
 
     client = OpenAI()
     run_manifest = _load_json(run_dir / "run_manifest.json")
-    datasets = run_manifest.get("datasets") or []
-    statuses: List[Dict[str, Any]] = []
-
-    for dataset in datasets:
-        slug = str(dataset["output_slug"])
-        dataset_dir = _dataset_dir(run_dir, slug)
-        batch_info_path = dataset_dir / "batch_info.json"
-        if not batch_info_path.exists():
-            statuses.append(
-                {
-                    "output_slug": slug,
-                    "benchmark": dataset["benchmark"],
-                    "dataset_name": dataset["dataset_name"],
-                    "status": "not_submitted",
-                }
-            )
-            continue
-
-        batch_info = _load_json(batch_info_path)
-        batch = client.batches.retrieve(str(batch_info["batch_id"]))
-        request_counts = getattr(batch, "request_counts", None)
-        updated = {
-            **batch_info,
-            "checked_at": datetime.now().isoformat(timespec="seconds"),
-            "status": batch.status,
-            "output_file_id": getattr(batch, "output_file_id", None),
-            "error_file_id": getattr(batch, "error_file_id", None),
-            "request_counts": {
-                "completed": int(getattr(request_counts, "completed", 0) or 0),
-                "failed": int(getattr(request_counts, "failed", 0) or 0),
-                "total": int(getattr(request_counts, "total", 0) or 0),
-            },
-        }
-        _write_json(batch_info_path, updated)
-
-        if download:
-            _download_file_if_missing(client, updated.get("output_file_id"), dataset_dir / "batch_output.jsonl")
-            _download_file_if_missing(client, updated.get("error_file_id"), dataset_dir / "batch_error.jsonl")
-
-        statuses.append(
-            {
-                "output_slug": slug,
-                "benchmark": dataset["benchmark"],
-                "dataset_name": dataset["dataset_name"],
-                "status": updated["status"],
-                "completed": updated["request_counts"]["completed"],
-                "failed": updated["request_counts"]["failed"],
-                "total": updated["request_counts"]["total"],
+    batch_info_path = run_dir / "batch_info.json"
+    if not batch_info_path.exists():
+        legacy_paths = _legacy_batch_info_paths(run_dir)
+        if legacy_paths:
+            statuses: List[Dict[str, Any]] = []
+            dataset_map = {
+                str(dataset["output_slug"]): dataset for dataset in (run_manifest.get("datasets") or [])
             }
-        )
-    return statuses
+            for info_path in legacy_paths:
+                slug = info_path.parent.name
+                dataset = dataset_map.get(slug, {})
+                batch_info = _load_json(info_path)
+                batch = client.batches.retrieve(str(batch_info["batch_id"]))
+                request_counts = getattr(batch, "request_counts", None)
+                updated = {
+                    **batch_info,
+                    "checked_at": datetime.now().isoformat(timespec="seconds"),
+                    "status": batch.status,
+                    "output_file_id": getattr(batch, "output_file_id", None),
+                    "error_file_id": getattr(batch, "error_file_id", None),
+                    "request_counts": {
+                        "completed": int(getattr(request_counts, "completed", 0) or 0),
+                        "failed": int(getattr(request_counts, "failed", 0) or 0),
+                        "total": int(getattr(request_counts, "total", 0) or 0),
+                    },
+                }
+                _write_json(info_path, updated)
+                _download_file_if_missing(client, updated.get("output_file_id"), info_path.parent / "batch_output.jsonl")
+                _download_file_if_missing(client, updated.get("error_file_id"), info_path.parent / "batch_error.jsonl")
+                statuses.append(
+                    {
+                        "output_slug": slug,
+                        "benchmark": dataset.get("benchmark", ""),
+                        "dataset_name": dataset.get("dataset_name", ""),
+                        "status": updated["status"],
+                        "completed": updated["request_counts"]["completed"],
+                        "failed": updated["request_counts"]["failed"],
+                        "total": updated["request_counts"]["total"],
+                    }
+                )
+            return statuses
+        return [
+            {
+                "run_dir": run_dir.name,
+                "status": "not_submitted",
+                "datasets": len(run_manifest.get("datasets") or []),
+                "requests": int(run_manifest.get("request_count", 0) or 0),
+            }
+        ]
+
+    batch_info = _load_json(batch_info_path)
+    batch = client.batches.retrieve(str(batch_info["batch_id"]))
+    request_counts = getattr(batch, "request_counts", None)
+    updated = {
+        **batch_info,
+        "checked_at": datetime.now().isoformat(timespec="seconds"),
+        "status": batch.status,
+        "output_file_id": getattr(batch, "output_file_id", None),
+        "error_file_id": getattr(batch, "error_file_id", None),
+        "request_counts": {
+            "completed": int(getattr(request_counts, "completed", 0) or 0),
+            "failed": int(getattr(request_counts, "failed", 0) or 0),
+            "total": int(getattr(request_counts, "total", 0) or 0),
+        },
+    }
+    _write_json(batch_info_path, updated)
+
+    _download_file_if_missing(client, updated.get("output_file_id"), run_dir / "batch_output.jsonl")
+    _download_file_if_missing(client, updated.get("error_file_id"), run_dir / "batch_error.jsonl")
+
+    return [
+        {
+            "run_dir": run_dir.name,
+            "status": updated["status"],
+            "datasets": len(run_manifest.get("datasets") or []),
+            "requests": int(run_manifest.get("request_count", 0) or 0),
+            "completed": updated["request_counts"]["completed"],
+            "failed": updated["request_counts"]["failed"],
+            "total": updated["request_counts"]["total"],
+        }
+    ]
 
 
 def parse_match_from_content(content: str) -> Optional[bool]:
@@ -603,16 +603,20 @@ def evaluate_run(run_dir: Path) -> pd.DataFrame:
     run_manifest = _load_json(run_dir / "run_manifest.json")
     datasets = run_manifest.get("datasets") or []
     summary_rows: List[Dict[str, Any]] = []
+    root_predictions: Dict[str, Dict[str, Any]] = {}
+    root_output_path = run_dir / "batch_output.jsonl"
+    if root_output_path.exists():
+        root_predictions = _parse_batch_output(root_output_path)
 
     for dataset in datasets:
         slug = str(dataset["output_slug"])
         dataset_dir = _dataset_dir(run_dir, slug)
         metadata_path = dataset_dir / "metadata.csv"
-        output_path = dataset_dir / "batch_output.jsonl"
         metadata = pd.read_csv(metadata_path)
-        predictions: Dict[str, Dict[str, Any]] = {}
-        if output_path.exists():
-            predictions = _parse_batch_output(output_path)
+        predictions = root_predictions
+        legacy_output_path = dataset_dir / "batch_output.jsonl"
+        if not predictions and legacy_output_path.exists():
+            predictions = _parse_batch_output(legacy_output_path)
 
         predicted_matches: List[Optional[bool]] = []
         response_texts: List[str] = []
@@ -709,29 +713,17 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     prepare = subparsers.add_parser("prepare", help="Create batch JSONL files for all configured test sets.")
-    prepare.add_argument("--config", default=str(DEFAULT_CONFIG_PATH))
-    prepare.add_argument("--data-root", default=str(DEFAULT_DATA_ROOT))
-    prepare.add_argument("--output-root", default=str(DEFAULT_OUTPUT_ROOT))
-    prepare.add_argument("--run-dir", default=None)
-    prepare.add_argument("--run-name", default=None)
-    prepare.add_argument("--benchmarks", default="")
+    prepare.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
     prepare.add_argument("--model", default=DEFAULT_MODEL)
-    prepare.add_argument("--system-prompt-file", default=None)
-    prepare.add_argument("--max-field-length", type=int, default=DEFAULT_MAX_FIELD_LENGTH)
 
     submit = subparsers.add_parser("submit", help="Upload and submit all prepared batches in a run.")
-    submit.add_argument("--output-root", default=str(DEFAULT_OUTPUT_ROOT))
-    submit.add_argument("--run-dir", default=None)
-    submit.add_argument("--completion-window", default=DEFAULT_COMPLETION_WINDOW)
+    submit.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
 
     status = subparsers.add_parser("status", help="Refresh batch status and download completed outputs.")
-    status.add_argument("--output-root", default=str(DEFAULT_OUTPUT_ROOT))
-    status.add_argument("--run-dir", default=None)
-    status.add_argument("--no-download", action="store_true")
+    status.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
 
     evaluate = subparsers.add_parser("evaluate", help="Score completed batch outputs against gold labels.")
-    evaluate.add_argument("--output-root", default=str(DEFAULT_OUTPUT_ROOT))
-    evaluate.add_argument("--run-dir", default=None)
+    evaluate.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
 
     return parser
 
@@ -743,32 +735,21 @@ def main() -> None:
 
     if args.command == "prepare":
         run_dir = prepare_run(
-            output_root=Path(args.output_root),
-            run_dir=Path(args.run_dir) if args.run_dir else None,
-            run_name=args.run_name,
-            config_path=Path(args.config),
-            data_root=Path(args.data_root),
-            benchmarks=_split_csv_arg(args.benchmarks),
+            output_dir=Path(args.output_dir),
             model=args.model,
-            prompt_file=Path(args.system_prompt_file) if args.system_prompt_file else None,
-            max_field_length=int(args.max_field_length),
         )
         print(run_dir)
         return
 
-    resolved_run_dir = _resolve_run_dir(
-        Path(args.output_root),
-        create_new=False,
-        run_dir=Path(args.run_dir) if args.run_dir else None,
-    )
+    resolved_run_dir = _resolve_output_dir(Path(args.output_dir), create=False)
 
     if args.command == "submit":
-        submit_run(resolved_run_dir, completion_window=str(args.completion_window))
+        submit_run(resolved_run_dir)
         print(resolved_run_dir)
         return
 
     if args.command == "status":
-        rows = refresh_status(resolved_run_dir, download=not args.no_download)
+        rows = refresh_status(resolved_run_dir)
         print_status_table(rows)
         return
 

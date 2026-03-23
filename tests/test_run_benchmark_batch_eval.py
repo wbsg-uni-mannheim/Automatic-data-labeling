@@ -116,7 +116,7 @@ def test_evaluate_run_computes_metrics_from_batch_output(tmp_path: Path) -> None
     pd.DataFrame(
         [
             {
-                "custom_id": "req_0",
+                "custom_id": "alpha__alpha-gs__req_0",
                 "pair_index": 0,
                 "pair_id": "p0",
                 "id_left": "l0",
@@ -125,7 +125,7 @@ def test_evaluate_run_computes_metrics_from_batch_output(tmp_path: Path) -> None
                 "gold_match": True,
             },
             {
-                "custom_id": "req_1",
+                "custom_id": "alpha__alpha-gs__req_1",
                 "pair_index": 1,
                 "pair_id": "p1",
                 "id_left": "l1",
@@ -136,17 +136,17 @@ def test_evaluate_run_computes_metrics_from_batch_output(tmp_path: Path) -> None
         ]
     ).to_csv(dataset_dir / "metadata.csv", index=False)
 
-    (dataset_dir / "batch_output.jsonl").write_text(
+    (run_dir / "batch_output.jsonl").write_text(
         json.dumps(
             {
-                "custom_id": "req_0",
+                "custom_id": "alpha__alpha-gs__req_0",
                 "response": {"body": {"choices": [{"message": {"content": '{"match": true}'}}]}},
             }
         )
         + "\n"
         + json.dumps(
             {
-                "custom_id": "req_1",
+                "custom_id": "alpha__alpha-gs__req_1",
                 "response": {"body": {"choices": [{"message": {"content": '{"match": false}'}}]}},
             }
         )
@@ -164,3 +164,98 @@ def test_evaluate_run_computes_metrics_from_batch_output(tmp_path: Path) -> None
     assert row["precision"] == 1.0
     assert row["recall"] == 1.0
     assert row["f1"] == 1.0
+
+
+def test_prepare_run_writes_single_combined_batch_file(tmp_path: Path) -> None:
+    module = _load_module()
+
+    data_root = tmp_path / "data"
+    config_path = tmp_path / "benchmarks.yaml"
+    (data_root / "alpha").mkdir(parents=True)
+    (data_root / "beta").mkdir(parents=True)
+    _write_jsonl_gz(
+        data_root / "alpha" / "alpha-gs.json.gz",
+        [{"id_left": "l1", "id_right": "r1", "title_left": "A", "title_right": "B", "label": 1}],
+    )
+    _write_jsonl_gz(
+        data_root / "beta" / "beta-gs.json.gz",
+        [{"id_left": "l2", "id_right": "r2", "title_left": "C", "title_right": "D", "label": 0}],
+    )
+    config_path.write_text(
+        "benchmarks:\n"
+        "  alpha:\n"
+        "    fields:\n"
+        "      title: title\n"
+        "  beta:\n"
+        "    fields:\n"
+        "      title: title\n",
+        encoding="utf-8",
+    )
+
+    module.DEFAULT_CONFIG_PATH = config_path
+    module.DEFAULT_DATA_ROOT = data_root
+    out_dir = tmp_path / "out"
+
+    module.prepare_run(output_dir=out_dir, model="gpt-5.2")
+
+    batch_input = out_dir / "batch_input.jsonl"
+    assert batch_input.exists()
+    assert not (out_dir / "alpha__alpha-gs" / "batch_input.jsonl").exists()
+    lines = batch_input.read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 2
+    payloads = [json.loads(line) for line in lines]
+    assert payloads[0]["custom_id"] == "alpha__alpha-gs__req_0"
+    assert payloads[1]["custom_id"] == "beta__beta-gs__req_0"
+
+
+def test_evaluate_run_supports_legacy_per_dataset_outputs(tmp_path: Path) -> None:
+    module = _load_module()
+    run_dir = tmp_path / "run_legacy"
+    dataset_dir = run_dir / "alpha__alpha-gs"
+    dataset_dir.mkdir(parents=True)
+
+    module._write_json(
+        run_dir / "run_manifest.json",
+        {
+            "datasets": [
+                {
+                    "benchmark": "alpha",
+                    "dataset_name": "alpha-gs",
+                    "output_slug": "alpha__alpha-gs",
+                    "model": "gpt-5.2",
+                }
+            ]
+        },
+    )
+
+    pd.DataFrame(
+        [
+            {
+                "custom_id": "req_0",
+                "pair_index": 0,
+                "pair_id": "p0",
+                "id_left": "l0",
+                "id_right": "r0",
+                "gold_label": "TRUE",
+                "gold_match": True,
+            }
+        ]
+    ).to_csv(dataset_dir / "metadata.csv", index=False)
+
+    (dataset_dir / "batch_output.jsonl").write_text(
+        json.dumps(
+            {
+                "custom_id": "req_0",
+                "response": {"body": {"choices": [{"message": {"content": '{"match": true}'}}]}},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    summary_df = module.evaluate_run(run_dir)
+
+    assert len(summary_df) == 1
+    row = summary_df.iloc[0].to_dict()
+    assert row["pairs_scored"] == 1
+    assert row["accuracy"] == 1.0

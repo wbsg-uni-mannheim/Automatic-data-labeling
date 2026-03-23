@@ -320,8 +320,18 @@ def _subset_from_master(master: pd.DataFrame, target_pos: int, target_neg: int) 
     return out
 
 
+def _read_json_if_exists(path: Path) -> Dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text())
+    except Exception:
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Benchmark-aware wrapper around run_simple_labeling.py")
+    parser = argparse.ArgumentParser(description="Benchmark-aware wrapper around a config-selected labeling runner")
     parser.add_argument("--config", default="configs/labeling/benchmarks.yaml")
     parser.add_argument("--benchmark", required=True, help="Benchmark key from the config file")
     parser.add_argument(
@@ -390,12 +400,21 @@ def main() -> None:
     labeling_args.update(labeling_override)
     for reserved in {"embeddings_dir", "left_csv", "right_csv", "target_size", "target_positives", "output_root", "run_name"}:
         labeling_args.pop(reserved, None)
+    runner_script = str(
+        benchmark_cfg.get(
+            "runner_script",
+            defaults.get("runner_script", "scripts/labeling/run_simple_labeling.py"),
+        )
+    ).strip() or "scripts/labeling/run_simple_labeling.py"
+    runner_path = Path(runner_script)
+    if not runner_path.exists():
+        raise FileNotFoundError(f"Configured runner_script does not exist: {runner_script}")
 
     run_simple_cmd: List[str] = []
     if largest is not None:
         run_simple_cmd = [
             sys.executable,
-            "scripts/run_simple_labeling.py",
+            runner_script,
             "--embeddings-dir",
             str(benchmark_cfg["embeddings_dir"]),
             "--left-csv",
@@ -429,7 +448,7 @@ def main() -> None:
         print("Largest target: <none> (all requested profiles use all_examples=true)")
     if args.dry_run:
         if run_simple_cmd:
-            print("Dry run: run_simple_labeling command:")
+            print(f"Dry run: runner command ({runner_script}):")
             print(" ".join(run_simple_cmd))
         else:
             print("Dry run: no run_simple_labeling command (all_examples-only selection)")
@@ -465,9 +484,13 @@ def main() -> None:
     profiles_root = run_dir / "profiles"
     profiles_root.mkdir(parents=True, exist_ok=True)
     export_ditto = not args.no_export_ditto
+    run_summary = _read_json_if_exists(run_dir / "summary.json")
     manifest: Dict[str, Any] = {
         "benchmark": args.benchmark,
         "run_dir": str(run_dir),
+        "runner_script": runner_script,
+        "run_summary_json": str(run_dir / "summary.json"),
+        "labeling_cost": run_summary.get("labeling_cost"),
         "source_train_file": str(master_path if master_path.exists() else active_master_path),
         "source_all_examples_file": str(active_master_path if active_master_path.exists() else master_path),
         "canonical_left_csv": str(left_canonical),

@@ -7,7 +7,7 @@ This folder contains config-driven entry points for running automatic labeling a
 Use:
 
 ```bash
-python scripts/run_benchmark_labeling.py \
+python scripts/labeling/run_benchmark_labeling.py \
   --config configs/labeling/benchmarks.yaml \
   --benchmark wdc
 ```
@@ -15,7 +15,7 @@ python scripts/run_benchmark_labeling.py \
 Dry-run (prints resolved command and profile plan without API labeling):
 
 ```bash
-python scripts/run_benchmark_labeling.py \
+python scripts/labeling/run_benchmark_labeling.py \
   --config configs/labeling/benchmarks.yaml \
   --benchmark wdc \
   --dry-run
