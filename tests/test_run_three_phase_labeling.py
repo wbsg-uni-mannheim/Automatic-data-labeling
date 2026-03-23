@@ -35,7 +35,7 @@ def test_resolve_phase_target_counts_uses_final_ratio() -> None:
     assert neg == 800
 
 
-def test_find_vote_conflicts_ranks_highest_conflict_first() -> None:
+def test_rank_probability_disagreements_prioritizes_score_variance() -> None:
     module = _load_module()
 
     correspondences = [
@@ -46,7 +46,7 @@ def test_find_vote_conflicts_ranks_highest_conflict_first() -> None:
                 [
                     {"id1": "a", "id2": "b", "score": 0.90},
                     {"id1": "c", "id2": "d", "score": 0.90},
-                    {"id1": "e", "id2": "f", "score": 0.95},
+                    {"id1": "e", "id2": "f", "score": 0.60},
                 ]
             ),
         },
@@ -57,7 +57,7 @@ def test_find_vote_conflicts_ranks_highest_conflict_first() -> None:
                 [
                     {"id1": "a", "id2": "b", "score": 0.85},
                     {"id1": "c", "id2": "d", "score": 0.80},
-                    {"id1": "e", "id2": "f", "score": 0.91},
+                    {"id1": "e", "id2": "f", "score": 0.58},
                 ]
             ),
         },
@@ -68,7 +68,7 @@ def test_find_vote_conflicts_ranks_highest_conflict_first() -> None:
                 [
                     {"id1": "a", "id2": "b", "score": 0.20},
                     {"id1": "c", "id2": "d", "score": 0.40},
-                    {"id1": "e", "id2": "f", "score": 0.99},
+                    {"id1": "e", "id2": "f", "score": 0.62},
                 ]
             ),
         },
@@ -79,7 +79,7 @@ def test_find_vote_conflicts_ranks_highest_conflict_first() -> None:
                 [
                     {"id1": "a", "id2": "b", "score": 0.30},
                     {"id1": "c", "id2": "d", "score": 0.60},
-                    {"id1": "e", "id2": "f", "score": 0.88},
+                    {"id1": "e", "id2": "f", "score": 0.57},
                 ]
             ),
         },
@@ -90,18 +90,17 @@ def test_find_vote_conflicts_ranks_highest_conflict_first() -> None:
                 [
                     {"id1": "a", "id2": "b", "score": 0.75},
                     {"id1": "c", "id2": "d", "score": 0.70},
-                    {"id1": "e", "id2": "f", "score": 0.93},
+                    {"id1": "e", "id2": "f", "score": 0.61},
                 ]
             ),
         },
     ]
 
-    ranked = module._find_vote_conflicts(correspondences)
+    ranked = module._rank_probability_disagreements(correspondences)
 
     assert ranked[["id1", "id2"]].iloc[0].to_dict() == {"id1": "a", "id2": "b"}
-    assert ranked.iloc[0]["conflict_count"] == 2
-    assert ranked.iloc[1]["conflict_count"] == 1
-    assert not ((ranked["id1"] == "e") & (ranked["id2"] == "f")).any()
+    assert ranked.iloc[0]["score_variance"] > ranked.iloc[1]["score_variance"]
+    assert ((ranked["id1"] == "e") & (ranked["id2"] == "f")).any()
 
 
 def test_make_bagged_split_preserves_both_classes() -> None:
@@ -124,6 +123,28 @@ def test_make_bagged_split_preserves_both_classes() -> None:
     assert not valid_df.empty
     assert train_df["label"].nunique() == 2
     assert valid_df["label"].nunique() == 2
+
+
+def test_make_bagged_split_targets_requested_ratio() -> None:
+    module = _load_module()
+    labeled = pd.DataFrame(
+        [
+            {"pair_id": f"p{i}", "label": 1 if i < 15 else 0}
+            for i in range(100)
+        ]
+    )
+
+    train_df, _valid_df = module._make_bagged_split(
+        labeled,
+        valid_fraction=0.2,
+        bootstrap_fraction=1.0,
+        seed=7,
+        target_pos_ratio=0.4,
+    )
+
+    pos_ratio = float((train_df["label"] == 1).mean())
+    assert len(train_df) == 80
+    assert 0.35 <= pos_ratio <= 0.45
 
 
 def test_estimate_usage_costs_for_gpt52() -> None:

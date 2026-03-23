@@ -1,7 +1,7 @@
 defaults:
   output_root: output/simple_labeling
   run_prefix: benchmark
-  runner_script: scripts/labeling/run_simple_labeling.py
+  runner_script: scripts/labeling/run_three_phase_labeling.py
   labeling_args:
     model: gpt-5.2
     faiss_k: 20
@@ -20,6 +20,10 @@ defaults:
     adaptive_round_size: 0
     adaptive_neg_min_share: 0.30
     adaptive_neg_max_share: 0.90
+    phase2_target_size: 1000
+    phase3_batch_size: 500
+    phase3_candidates: 20000
+    phase3_ensemble_mode: ditto_only
 
 benchmarks:
   wdc:
@@ -45,7 +49,6 @@ benchmarks:
       all:    {all_examples: true}
 
   abt-buy:
-    runner_script: scripts/labeling/run_three_phase_labeling.py
     left_csv: data/abt-buy/abt-buy-train-left.csv
     right_csv: data/abt-buy/abt-buy-train-right.csv
     valid_path: data/abt-buy/abt-buy-valid.csv
@@ -62,7 +65,6 @@ benchmarks:
     labeling_args:
       phase2_target_size: 1000
       phase3_batch_size: 500
-      phase3_candidates: 10000
       phase3_ensemble_mode: ditto_only
     profiles:
       small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
@@ -133,7 +135,6 @@ benchmarks:
       all:    {all_examples: true}
 
   walmart-amazon:
-    runner_script: scripts/labeling/run_three_phase_labeling.py
     left_csv: data/walmart-amazon/walmart-amazon-train-left.csv
     right_csv: data/walmart-amazon/walmart-amazon-train-right.csv
     valid_path: data/walmart-amazon/walmart-amazon-valid.csv
@@ -152,7 +153,6 @@ benchmarks:
     labeling_args:
       phase2_target_size: 1000
       phase3_batch_size: 500
-      phase3_candidates: 10000
       phase3_ensemble_mode: ditto_only
     profiles:
       small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}

@@ -235,6 +235,7 @@ def _make_bagged_split(
     valid_fraction: float,
     bootstrap_fraction: float,
     seed: int,
+    target_pos_ratio: float | None = None,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     if labeled_wdc.empty:
         raise ValueError("Cannot bag an empty labeled set")
@@ -261,14 +262,29 @@ def _make_bagged_split(
             continue
 
         train_n = max(2, int(round(len(train_base) * bootstrap_fraction)))
-        rng = np.random.default_rng(seed + offset)
-        for _attempt in range(10):
-            sample_idx = rng.choice(len(train_base), size=train_n, replace=True)
-            train_df = train_base.iloc[sample_idx].reset_index(drop=True)
-            if train_df["label"].nunique() >= 2:
-                return train_df, valid_df
+        ratio = float(target_pos_ratio) if target_pos_ratio is not None else float(train_base["label"].mean())
+        ratio = float(min(max(ratio, 1e-6), 1.0 - 1e-6))
+        pos_base = train_base[train_base["label"] == 1].reset_index(drop=True)
+        neg_base = train_base[train_base["label"] == 0].reset_index(drop=True)
+        if pos_base.empty or neg_base.empty:
+            continue
 
-        return train_base.copy(), valid_df
+        pos_n = int(round(train_n * ratio))
+        pos_n = max(1, min(pos_n, train_n - 1))
+        neg_n = max(1, train_n - pos_n)
+        rng = np.random.default_rng(seed + offset)
+
+        pos_idx = rng.choice(len(pos_base), size=pos_n, replace=True)
+        neg_idx = rng.choice(len(neg_base), size=neg_n, replace=True)
+        train_df = pd.concat(
+            [
+                pos_base.iloc[pos_idx],
+                neg_base.iloc[neg_idx],
+            ],
+            ignore_index=True,
+        )
+        train_df = train_df.sample(frac=1.0, random_state=seed + offset).reset_index(drop=True)
+        return train_df, valid_df
 
     raise RuntimeError("Could not create a bagged train/validation split with both classes present")
 
@@ -286,6 +302,7 @@ def _train_ditto_bagged_ensemble(
     num_models: int,
     valid_fraction: float,
     bootstrap_fraction: float,
+    target_pos_ratio: float,
     train_cfg: TrainConfig,
     max_field_len: int,
 ) -> Tuple[List[DittoMember], Dict[str, object]]:
@@ -319,6 +336,7 @@ def _train_ditto_bagged_ensemble(
             valid_fraction=valid_fraction,
             bootstrap_fraction=bootstrap_fraction,
             seed=base_seed + model_idx,
+            target_pos_ratio=target_pos_ratio,
         )
         member_cfg = TrainConfig(**{**asdict(train_cfg), "seed": base_seed + model_idx})
 
@@ -383,6 +401,7 @@ def _train_ditto_bagged_ensemble(
             "labeled_pos": label_summary["pos"],
             "labeled_neg": label_summary["neg"],
             "num_models": int(num_models),
+            "target_pos_ratio": float(target_pos_ratio),
             "members": summary_rows,
         },
     )
@@ -454,7 +473,7 @@ def _predict_ditto_scores(
     return out
 
 
-def _find_vote_conflicts(
+def _rank_probability_disagreements(
     correspondences_list: List[Dict[str, object]],
 ) -> pd.DataFrame:
     valid = [
@@ -501,13 +520,14 @@ def _find_vote_conflicts(
         votes_pos = int(sum(votes))
         votes_neg = int(len(votes) - votes_pos)
         conflict_count = int(min(votes_pos, votes_neg))
-        if conflict_count <= 0:
-            continue
         p = float(votes_pos / len(votes))
         vote_entropy = 0.0
         if 0.0 < p < 1.0:
             vote_entropy = float(-(p * np.log2(p) + (1.0 - p) * np.log2(1.0 - p)))
         mean_score = float(np.mean(scores))
+        score_variance = float(np.var(scores))
+        if score_variance <= 0.0 and vote_entropy <= 0.0:
+            continue
         rows.append(
             {
                 "id1": id1,
@@ -517,8 +537,9 @@ def _find_vote_conflicts(
                 "votes_neg": votes_neg,
                 "conflict_count": conflict_count,
                 "vote_entropy": vote_entropy,
-                "score_variance": float(np.var(scores)),
+                "score_variance": score_variance,
                 "mean_score": mean_score,
+                "mean_margin": float(abs(mean_score - 0.5)),
             }
         )
 
@@ -534,12 +555,13 @@ def _find_vote_conflicts(
                 "vote_entropy",
                 "score_variance",
                 "mean_score",
+                "mean_margin",
             ]
         )
 
     return pd.DataFrame(rows).sort_values(
-        ["conflict_count", "vote_entropy", "score_variance", "mean_score"],
-        ascending=[False, False, False, True],
+        ["score_variance", "vote_entropy", "mean_margin", "conflict_count"],
+        ascending=[False, False, True, False],
     ).reset_index(drop=True)
 
 
@@ -605,6 +627,7 @@ def _run_phase3_active_learning(
     ditto_model_count: int,
     ditto_valid_fraction: float,
     ditto_bootstrap_fraction: float,
+    ditto_target_pos_ratio: float,
     ditto_train_cfg: TrainConfig,
     ditto_max_field_len: int,
     ditto_inference_batch_size: int,
@@ -670,6 +693,7 @@ def _run_phase3_active_learning(
             num_models=ditto_model_count,
             valid_fraction=ditto_valid_fraction,
             bootstrap_fraction=ditto_bootstrap_fraction,
+            target_pos_ratio=ditto_target_pos_ratio,
             train_cfg=ditto_train_cfg,
             max_field_len=ditto_max_field_len,
         )
@@ -730,23 +754,23 @@ def _run_phase3_active_learning(
                 correspondences_list.extend(classic_corrs)
                 classic_matchers_used = [str(x.get("matcher", "")) for x in top_classic]
 
-        conflicts = _find_vote_conflicts(correspondences_list)
-        if conflicts.empty:
+        disagreements = _rank_probability_disagreements(correspondences_list)
+        if disagreements.empty:
             rounds.append(
                 {
                     "iteration": int(iteration),
                     "status": "stopped",
-                    "reason": "no_vote_conflicts",
+                    "reason": "no_probability_disagreements",
                     "ensemble_mode": ensemble_mode,
                 }
             )
             break
 
-        select = conflicts.merge(pool[["id1", "id2", "similarity"]], on=["id1", "id2"], how="left")
+        select = disagreements.merge(pool[["id1", "id2", "similarity"]], on=["id1", "id2"], how="left")
         select = select.head(quota).reset_index(drop=True)
         print(
             f"Phase 3 iter {iteration}: selected {len(select)} pairs "
-            f"from {len(conflicts)} conflicts using mode={ensemble_mode}",
+            f"from {len(disagreements)} probability disagreements using mode={ensemble_mode}",
             flush=True,
         )
         if select.empty:
@@ -816,7 +840,7 @@ def _run_phase3_active_learning(
                 "status": "ok",
                 "ensemble_mode": ensemble_mode,
                 "pool_size": int(len(pool)),
-                "conflicts_found": int(len(conflicts)),
+                "disagreements_found": int(len(disagreements)),
                 "selected_pairs": int(len(select)),
                 "new_labels": int(len(add_df)),
                 "total_size": int(len(training_set)),
@@ -1223,6 +1247,7 @@ def main() -> None:
             f"target={final_target_pos}/{final_target_neg} mode={args.phase3_ensemble_mode}",
             flush=True,
         )
+        final_target_ratio = float(final_target_pos / max(final_target_pos + final_target_neg, 1))
         labeled, phase3_summary = _run_phase3_active_learning(
             client=client,
             model=args.model,
@@ -1248,6 +1273,7 @@ def main() -> None:
             ditto_model_count=int(args.phase3_ditto_models),
             ditto_valid_fraction=float(args.phase3_ditto_valid_fraction),
             ditto_bootstrap_fraction=float(args.phase3_ditto_bootstrap_fraction),
+            ditto_target_pos_ratio=final_target_ratio,
             ditto_train_cfg=ditto_cfg,
             ditto_max_field_len=ditto_max_field_len,
             ditto_inference_batch_size=int(args.phase3_ditto_inference_batch_size),
