@@ -44,7 +44,7 @@ LABEL_RUN_ROOT="${LABEL_RUN_ROOT:-output/three_phase_labeling_ditto_only_v2}"
 RUN_GLOB="${RUN_GLOB:-benchmark_*}"
 PROFILES="${PROFILES:-small,medium}"
 TRAIN_CONFIG="${TRAIN_CONFIG:-configs/ditto/benchmarks_training.yaml}"
-DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-output/ditto_generated_labels}"
+DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-output/three_phase_labeling_ditto_only_v2}"
 RUN_NAME_PREFIX="${RUN_NAME_PREFIX:-generated_ditto}"
 
 if [ ! -d "${LABEL_RUN_ROOT}" ]; then
