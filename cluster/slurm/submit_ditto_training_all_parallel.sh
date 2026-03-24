@@ -31,14 +31,14 @@ read -r -a BENCHMARK_LIST <<< "${BENCHMARKS_RAW}"
 
 PROFILES="${PROFILES:-small,medium,small_plus20random,medium_plus20random,all,all_plus20random}"
 TRAIN_CONFIG="${TRAIN_CONFIG:-configs/ditto/benchmarks_training.yaml}"
-DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-output/ditto_generated_labels}"
+DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-output/training_from_generated_labels/three_phase_labeling_ditto_only_v2}"
 RUN_NAME_PREFIX="${RUN_NAME_PREFIX:-generated_ditto}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-ditto-modern}"
 
 PARTITION="${PARTITION:-gpu-vram-48gb}"
-CPUS_PER_TASK="${CPUS_PER_TASK:-12}"
-MEM="${MEM:-64G}"
-TIME_LIMIT="${TIME_LIMIT:-72:00:00}"
+CPUS_PER_TASK="${CPUS_PER_TASK:-4}"
+MEM="${MEM:-32G}"
+TIME_LIMIT="${TIME_LIMIT:-6:00:00}"
 GPU_COUNT="${GPU_COUNT:-1}"
 
 if [ ! -d "${LABEL_RUN_ROOT}" ]; then
