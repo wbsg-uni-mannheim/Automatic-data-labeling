@@ -387,6 +387,54 @@ def _merge_base_with_random_labels(
     return out.sample(frac=1.0, random_state=42).reset_index(drop=True)
 
 
+def _write_profile_outputs(
+    *,
+    benchmark: str,
+    profile_name: str,
+    subset: pd.DataFrame,
+    profile_dir: Path,
+    left_canonical: Path,
+    right_canonical: Path,
+    train_fields: Sequence[str],
+    export_ditto: bool,
+) -> Dict[str, Any]:
+    profile_dir.mkdir(parents=True, exist_ok=True)
+    labels_csv = profile_dir / "active_labels_latest.csv"
+    subset.to_csv(labels_csv, index=False)
+    subset.to_csv(profile_dir / "labels_final.csv", index=False)
+
+    pos = int((subset["label"].astype(str).str.upper() == "TRUE").sum())
+    neg = int((subset["label"].astype(str).str.upper() == "FALSE").sum())
+    meta: Dict[str, Any] = {
+        "actual_total": int(len(subset)),
+        "actual_pos": int(pos),
+        "actual_neg": int(neg),
+        "labels_csv": str(labels_csv),
+    }
+
+    if export_ditto:
+        ditto_json_gz = profile_dir / f"active_labels_latest_{benchmark}_{profile_name}_train.json.gz"
+        convert_cmd = [
+            sys.executable,
+            "scripts/ditto/convert_active_labels_to_wdc.py",
+            "--labels-csv",
+            str(labels_csv),
+            "--left-csv",
+            str(left_canonical),
+            "--right-csv",
+            str(right_canonical),
+            "--output-json-gz",
+            str(ditto_json_gz),
+        ]
+        if train_fields:
+            convert_cmd.extend(["--fields", ",".join(train_fields)])
+        subprocess.run(convert_cmd, check=True)
+        meta["ditto_train_json_gz"] = str(ditto_json_gz)
+        meta["ditto_fields"] = list(train_fields)
+
+    return meta
+
+
 def _resolve_random_profile_settings(defaults: Dict[str, Any], benchmark_cfg: Dict[str, Any]) -> Dict[str, Any]:
     enabled = _coerce_bool(
         benchmark_cfg.get("random_profile_enabled", defaults.get("random_profile_enabled", False)),
@@ -793,44 +841,23 @@ def main() -> None:
             target_pos = int(spec.target_pos)
             target_neg = int(spec.target_neg)
         profile_dir = profiles_root / spec.name
-        profile_dir.mkdir(parents=True, exist_ok=True)
-        labels_csv = profile_dir / "active_labels_latest.csv"
-        subset.to_csv(labels_csv, index=False)
-        # Keep naming consistent with the existing pipeline outputs.
-        subset.to_csv(profile_dir / "labels_final.csv", index=False)
-
-        pos = int((subset["label"].astype(str).str.upper() == "TRUE").sum())
-        neg = int((subset["label"].astype(str).str.upper() == "FALSE").sum())
+        output_meta = _write_profile_outputs(
+            benchmark=args.benchmark,
+            profile_name=spec.name,
+            subset=subset,
+            profile_dir=profile_dir,
+            left_canonical=left_canonical,
+            right_canonical=right_canonical,
+            train_fields=train_fields,
+            export_ditto=export_ditto,
+        )
         profile_meta: Dict[str, Any] = {
             "all_examples": bool(spec.all_examples),
             "target_total": target_total,
             "target_pos": target_pos,
             "target_neg": target_neg,
-            "actual_total": int(len(subset)),
-            "actual_pos": int(pos),
-            "actual_neg": int(neg),
-            "labels_csv": str(labels_csv),
         }
-
-        if export_ditto:
-            ditto_json_gz = profile_dir / f"active_labels_latest_{args.benchmark}_{spec.name}_train.json.gz"
-            convert_cmd = [
-                sys.executable,
-                "scripts/ditto/convert_active_labels_to_wdc.py",
-                "--labels-csv",
-                str(labels_csv),
-                "--left-csv",
-                str(left_canonical),
-                "--right-csv",
-                str(right_canonical),
-                "--output-json-gz",
-                str(ditto_json_gz),
-            ]
-            if train_fields:
-                convert_cmd.extend(["--fields", ",".join(train_fields)])
-            subprocess.run(convert_cmd, check=True)
-            profile_meta["ditto_train_json_gz"] = str(ditto_json_gz)
-            profile_meta["ditto_fields"] = list(train_fields)
+        profile_meta.update(output_meta)
         manifest["profiles"][spec.name] = profile_meta
         print(
             f"Profile {spec.name}: total={profile_meta['actual_total']} "
@@ -841,55 +868,76 @@ def main() -> None:
             extra_n = min(int(random_profile_counts.get(spec.name, 0)), int(len(random_labels_df)))
             augmented_name = _build_random_profile_name(spec.name, float(random_profile_settings["fraction"]))
             augmented_dir = profiles_root / augmented_name
-            augmented_dir.mkdir(parents=True, exist_ok=True)
             augmented_subset = _merge_base_with_random_labels(subset, random_labels_df, extra_n=extra_n)
-            augmented_labels_csv = augmented_dir / "active_labels_latest.csv"
-            augmented_subset.to_csv(augmented_labels_csv, index=False)
-            augmented_subset.to_csv(augmented_dir / "labels_final.csv", index=False)
-
-            aug_pos = int((augmented_subset["label"].astype(str).str.upper() == "TRUE").sum())
-            aug_neg = int((augmented_subset["label"].astype(str).str.upper() == "FALSE").sum())
+            augmented_output_meta = _write_profile_outputs(
+                benchmark=args.benchmark,
+                profile_name=augmented_name,
+                subset=augmented_subset,
+                profile_dir=augmented_dir,
+                left_canonical=left_canonical,
+                right_canonical=right_canonical,
+                train_fields=train_fields,
+                export_ditto=export_ditto,
+            )
             augmented_meta: Dict[str, Any] = {
                 "all_examples": False,
                 "base_profile": spec.name,
                 "random_fraction": float(random_profile_settings["fraction"]),
                 "random_additions": int(extra_n),
                 "target_total": int(len(augmented_subset)),
-                "target_pos": int(aug_pos),
-                "target_neg": int(aug_neg),
-                "actual_total": int(len(augmented_subset)),
-                "actual_pos": int(aug_pos),
-                "actual_neg": int(aug_neg),
-                "labels_csv": str(augmented_labels_csv),
                 "shared_random_pool": True,
                 "shared_random_model": str(random_profile_settings["model"]),
             }
-
-            if export_ditto:
-                aug_ditto_json_gz = augmented_dir / f"active_labels_latest_{args.benchmark}_{augmented_name}_train.json.gz"
-                convert_cmd = [
-                    sys.executable,
-                    "scripts/ditto/convert_active_labels_to_wdc.py",
-                    "--labels-csv",
-                    str(augmented_labels_csv),
-                    "--left-csv",
-                    str(left_canonical),
-                    "--right-csv",
-                    str(right_canonical),
-                    "--output-json-gz",
-                    str(aug_ditto_json_gz),
-                ]
-                if train_fields:
-                    convert_cmd.extend(["--fields", ",".join(train_fields)])
-                subprocess.run(convert_cmd, check=True)
-                augmented_meta["ditto_train_json_gz"] = str(aug_ditto_json_gz)
-                augmented_meta["ditto_fields"] = list(train_fields)
+            augmented_meta["target_pos"] = int(augmented_output_meta["actual_pos"])
+            augmented_meta["target_neg"] = int(augmented_output_meta["actual_neg"])
+            augmented_meta.update(augmented_output_meta)
 
             manifest["profiles"][augmented_name] = augmented_meta
             print(
                 f"Profile {augmented_name}: total={augmented_meta['actual_total']} "
                 f"pos={augmented_meta['actual_pos']} neg={augmented_meta['actual_neg']} "
                 f"(base={spec.name}, random_additions={extra_n})"
+            )
+
+    if random_profile_settings["enabled"] and not random_labels_df.empty:
+        all_augmented_name = _build_random_profile_name("all", float(random_profile_settings["fraction"]))
+        all_base_path = active_master_path if active_master_path.exists() else master_path
+        if all_base_path.exists():
+            all_base_subset = pd.read_csv(all_base_path).reset_index(drop=True)
+            all_base_subset["label"] = all_base_subset["label"].apply(_normalize_label)
+            all_augmented_subset = _merge_base_with_random_labels(
+                all_base_subset,
+                random_labels_df,
+                extra_n=int(len(random_labels_df)),
+            )
+            all_augmented_dir = profiles_root / all_augmented_name
+            all_augmented_output_meta = _write_profile_outputs(
+                benchmark=args.benchmark,
+                profile_name=all_augmented_name,
+                subset=all_augmented_subset,
+                profile_dir=all_augmented_dir,
+                left_canonical=left_canonical,
+                right_canonical=right_canonical,
+                train_fields=train_fields,
+                export_ditto=export_ditto,
+            )
+            all_augmented_meta: Dict[str, Any] = {
+                "all_examples": True,
+                "base_profile": "all",
+                "random_fraction": float(random_profile_settings["fraction"]),
+                "random_additions": int(len(random_labels_df)),
+                "target_total": int(len(all_augmented_subset)),
+                "target_pos": int(all_augmented_output_meta["actual_pos"]),
+                "target_neg": int(all_augmented_output_meta["actual_neg"]),
+                "shared_random_pool": True,
+                "shared_random_model": str(random_profile_settings["model"]),
+            }
+            all_augmented_meta.update(all_augmented_output_meta)
+            manifest["profiles"][all_augmented_name] = all_augmented_meta
+            print(
+                f"Profile {all_augmented_name}: total={all_augmented_meta['actual_total']} "
+                f"pos={all_augmented_meta['actual_pos']} neg={all_augmented_meta['actual_neg']} "
+                f"(base=all, random_additions={len(random_labels_df)})"
             )
 
     if manifest.get("labeling_cost") and manifest.get("random_profile_cost", {}).get("available"):
