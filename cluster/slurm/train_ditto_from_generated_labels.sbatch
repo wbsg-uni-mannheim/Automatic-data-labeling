@@ -88,6 +88,9 @@ for RUN_DIR in "${RUN_DIRS[@]}"; do
   fi
 
   while IFS=$'\t' read -r BENCHMARK PROFILE TMP_CFG; do
+    if [ -z "${BENCHMARK}" ] || [ -z "${PROFILE}" ] || [ -z "${TMP_CFG}" ]; then
+      continue
+    fi
     RUN_STEM="$(basename "${RUN_DIR}")"
     EXISTING_DONE="$(find "${DITTO_OUTPUT_ROOT}" -maxdepth 1 -type d -name "${RUN_NAME_PREFIX}_${RUN_STEM}_${PROFILE}_*" | sort | while read -r CANDIDATE; do
       if [ -f "${CANDIDATE}/${BENCHMARK}/metrics.json" ]; then
@@ -203,7 +206,11 @@ for profile in profiles:
                     "--output-json-gz",
                     str(train_json_out),
                 ]
-                subprocess.run(cmd, check=True)
+                completed = subprocess.run(cmd, check=True, capture_output=True, text=True)
+                if completed.stdout:
+                    print(completed.stdout, file=sys.stderr, end="")
+                if completed.stderr:
+                    print(completed.stderr, file=sys.stderr, end="")
             meta = {
                 "ditto_train_json_gz": str(train_json_out),
                 "ditto_fields": base_meta.get("ditto_fields") or manifest.get("ditto_fields") or [],
