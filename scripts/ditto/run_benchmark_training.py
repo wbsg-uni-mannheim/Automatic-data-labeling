@@ -214,6 +214,27 @@ def _build_valid_from_pair_ids(valid_df: pd.DataFrame, train_df: pd.DataFrame, b
     return merged.reset_index(drop=True)
 
 
+def _resolve_valid_lookup_df(
+    *,
+    benchmark: str,
+    bcfg: Dict[str, Any],
+    fields: Sequence[str],
+    field_aliases: Dict[str, List[str]],
+    train_df: pd.DataFrame,
+) -> pd.DataFrame:
+    lookup_path_raw = str(bcfg.get("valid_lookup_train", "")).strip()
+    if not lookup_path_raw:
+        return train_df
+    lookup_raw = _read_table(Path(lookup_path_raw))
+    return _normalize_split_df(
+        lookup_raw,
+        fields=fields,
+        field_aliases=field_aliases,
+        split_name="valid_lookup_train",
+        benchmark=benchmark,
+    )
+
+
 def _label_stats(df: pd.DataFrame) -> Dict[str, int]:
     pos = int((df["label"] == 1).sum())
     neg = int((df["label"] == 0).sum())
@@ -355,7 +376,14 @@ def main() -> None:
             valid_pair_id_only = bool(bcfg.get("valid_pair_id_only", False))
             if valid_pair_id_only:
                 valid_raw = _read_table(valid_path)
-                valid_df = _build_valid_from_pair_ids(valid_raw, train_df=train_df, benchmark=benchmark)
+                valid_lookup_df = _resolve_valid_lookup_df(
+                    benchmark=benchmark,
+                    bcfg=bcfg,
+                    fields=fields,
+                    field_aliases=field_aliases,
+                    train_df=train_df,
+                )
+                valid_df = _build_valid_from_pair_ids(valid_raw, train_df=valid_lookup_df, benchmark=benchmark)
             else:
                 valid_raw = _read_table(valid_path)
                 valid_df = _normalize_split_df(

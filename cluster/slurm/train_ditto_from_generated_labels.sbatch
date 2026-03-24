@@ -207,6 +207,8 @@ for profile in profiles:
         )
 
     bench_cfg = dict(benchmarks[benchmark])
+    if bench_cfg.get("valid_pair_id_only", False):
+        bench_cfg["valid_lookup_train"] = str(bench_cfg.get("train", "")).strip()
     bench_cfg["train"] = train_json
     if meta.get("ditto_fields"):
         bench_cfg["fields"] = list(meta["ditto_fields"])
