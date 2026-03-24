@@ -14,7 +14,7 @@ set -euo pipefail
 #   export OUTPUT_ROOT=output/three_phase_labeling_ditto_only_v2
 #   export PROFILES=small,medium
 #   export RUN_NAME_PREFIX=benchmark
-#   export RESUME=0
+#   export RESUME=1
 #   export PARTITION=gpu-vram-48gb
 #   export CPUS_PER_TASK=4
 #   export MEM=32G
@@ -32,7 +32,7 @@ read -r -a BENCHMARK_LIST <<< "${BENCHMARKS_RAW}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-output/three_phase_labeling_ditto_only_v2}"
 PROFILES="${PROFILES:-small,medium}"
 RUN_NAME_PREFIX="${RUN_NAME_PREFIX:-benchmark}"
-RESUME="${RESUME:-0}"
+RESUME="${RESUME:-1}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-ditto-modern}"
 
 PARTITION="${PARTITION:-gpu-vram-48gb}"
@@ -63,10 +63,16 @@ echo "Time:        ${TIME_LIMIT}"
 echo "GPUs:        ${GPU_COUNT}"
 echo
 
-TS="$(date +%Y%m%d_%H%M%S)"
-
 for BENCH in "${BENCHMARK_LIST[@]}"; do
-  RUN_NAME="${RUN_NAME_PREFIX}_${BENCH}_${TS}"
+  EXISTING_RUN=""
+  if [ "${RESUME}" = "1" ] && [ -d "${OUTPUT_ROOT}" ]; then
+    EXISTING_RUN="$(find "${OUTPUT_ROOT}" -maxdepth 1 -type d -name "${RUN_NAME_PREFIX}_${BENCH}_*" | sort | tail -n 1 || true)"
+  fi
+  if [ -n "${EXISTING_RUN}" ]; then
+    RUN_NAME="$(basename "${EXISTING_RUN}")"
+  else
+    RUN_NAME="${RUN_NAME_PREFIX}_${BENCH}_$(date +%Y%m%d_%H%M%S)"
+  fi
   SAFE_BENCH="${BENCH//[^a-zA-Z0-9]/-}"
 
   JOB_ID="$(
@@ -116,5 +122,9 @@ echo "=== Running benchmark: ${BENCH} (run_name=${RUN_NAME}) ==="
 EOF
   )"
 
-  echo "Submitted ${BENCH}: job ${JOB_ID} (run_name=${RUN_NAME})"
+  if [ -n "${EXISTING_RUN}" ]; then
+    echo "Submitted ${BENCH}: job ${JOB_ID} (resuming run_name=${RUN_NAME})"
+  else
+    echo "Submitted ${BENCH}: job ${JOB_ID} (new run_name=${RUN_NAME})"
+  fi
 done

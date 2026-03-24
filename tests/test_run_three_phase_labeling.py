@@ -103,6 +103,19 @@ def test_rank_probability_disagreements_prioritizes_score_variance() -> None:
     assert ((ranked["id1"] == "e") & (ranked["id2"] == "f")).any()
 
 
+def test_remaining_class_budget_uses_class_deficits_not_total_size() -> None:
+    module = _load_module()
+
+    budget = module._remaining_class_budget(
+        current_pos=1018,
+        current_neg=1982,
+        target_pos=600,
+        target_neg=2400,
+    )
+
+    assert budget == 418
+
+
 def test_make_bagged_split_preserves_both_classes() -> None:
     module = _load_module()
     labeled = pd.DataFrame(

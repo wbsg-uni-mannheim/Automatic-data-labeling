@@ -2,6 +2,10 @@ defaults:
   output_root: output/simple_labeling
   run_prefix: benchmark
   runner_script: scripts/labeling/run_three_phase_labeling.py
+  random_profile_enabled: true
+  random_profile_fraction: 0.20
+  random_profile_model: gpt-5.2
+  random_profile_seed: 42
   labeling_args:
     model: gpt-5.2
     faiss_k: 20

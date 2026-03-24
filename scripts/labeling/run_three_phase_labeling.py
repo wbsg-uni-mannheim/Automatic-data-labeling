@@ -144,6 +144,17 @@ def _resolve_phase_target_counts(
     return stage_pos, stage_neg
 
 
+def _remaining_class_budget(
+    current_pos: int,
+    current_neg: int,
+    target_pos: int,
+    target_neg: int,
+) -> int:
+    pos_gap = max(0, int(target_pos) - int(current_pos))
+    neg_gap = max(0, int(target_neg) - int(current_neg))
+    return int(pos_gap + neg_gap)
+
+
 def _pairs_to_ditto_df(
     pairs: pd.DataFrame,
     *,
@@ -655,7 +666,12 @@ def _run_phase3_active_learning(
         if cur_pos >= target_pos and cur_neg >= target_neg:
             break
 
-        remaining_budget = max(0, int(target_pos + target_neg - len(training_set)))
+        remaining_budget = _remaining_class_budget(
+            current_pos=cur_pos,
+            current_neg=cur_neg,
+            target_pos=target_pos,
+            target_neg=target_neg,
+        )
         quota = min(int(labels_per_iteration), remaining_budget) if remaining_budget > 0 else 0
         if quota <= 0:
             break
@@ -805,7 +821,7 @@ def _run_phase3_active_learning(
                     "id2": id2,
                     "label": label,
                     "similarity": float(row.get("similarity", 0.0) or 0.0),
-                    "al_source": f"phase3_{ensemble_mode}_vote_conflict",
+                    "al_source": f"phase3_{ensemble_mode}_probability_disagreement",
                     "iteration": int(iteration),
                     "phase3_conflict_count": int(row.get("conflict_count", 0) or 0),
                     "phase3_votes_pos": int(row.get("votes_pos", 0) or 0),

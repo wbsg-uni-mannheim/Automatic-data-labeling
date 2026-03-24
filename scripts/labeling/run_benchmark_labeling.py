@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import subprocess
 import sys
@@ -10,12 +11,37 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Sequence
 
+import numpy as np
 import pandas as pd
 import yaml
+from dotenv import load_dotenv
+from openai import OpenAI
 
 POSITIVE_LABELS = {"TRUE", "1", "YES", "Y", "T"}
 NEGATIVE_LABELS = {"FALSE", "0", "NO", "N", "F"}
 RESERVED_FEATURE_FIELDS = {"id", "__rid", "pair_id", "label", "is_hard_negative", "rid1", "rid2", "similarity"}
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def _load_base_module():
+    base_path = Path(__file__).resolve().with_name("run_simple_labeling.py")
+    spec = importlib.util.spec_from_file_location("_run_simple_labeling_base", base_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Could not load base labeling module from {base_path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+base = _load_base_module()
+
+_build_candidates = base._build_candidates
+_count_labels = base._count_labels
+_estimate_usage_costs = base._estimate_usage_costs
+_label_pair = base._label_pair
+_load_df = base._load_df
+_materialize_output_ids = base._materialize_output_ids
 
 
 @dataclass(frozen=True)
@@ -330,6 +356,214 @@ def _read_json_if_exists(path: Path) -> Dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
+def _write_json(path: Path, payload: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2))
+
+
+def _build_random_profile_name(base_name: str, fraction: float) -> str:
+    pct = max(1, int(round(float(fraction) * 100.0)))
+    return f"{base_name}_plus{pct}random"
+
+
+def _merge_base_with_random_labels(
+    base_subset: pd.DataFrame,
+    random_labels: pd.DataFrame,
+    *,
+    extra_n: int,
+) -> pd.DataFrame:
+    if extra_n <= 0 or random_labels.empty:
+        out = base_subset.copy().reset_index(drop=True)
+        out["label"] = out["label"].apply(_normalize_label)
+        return out
+
+    extra = random_labels.head(int(extra_n)).copy()
+    out = pd.concat([base_subset.copy(), extra], ignore_index=True)
+    pair_cols = [c for c in ["rid1", "rid2"] if c in out.columns]
+    if len(pair_cols) != 2:
+        pair_cols = ["id1", "id2"]
+    out = out.drop_duplicates(subset=pair_cols, keep="first").reset_index(drop=True)
+    out["label"] = out["label"].apply(_normalize_label)
+    return out.sample(frac=1.0, random_state=42).reset_index(drop=True)
+
+
+def _resolve_random_profile_settings(defaults: Dict[str, Any], benchmark_cfg: Dict[str, Any]) -> Dict[str, Any]:
+    enabled = _coerce_bool(
+        benchmark_cfg.get("random_profile_enabled", defaults.get("random_profile_enabled", False)),
+        "random_profile_enabled",
+    )
+    fraction = float(benchmark_cfg.get("random_profile_fraction", defaults.get("random_profile_fraction", 0.0)) or 0.0)
+    seed = int(benchmark_cfg.get("random_profile_seed", defaults.get("random_profile_seed", 42)) or 42)
+    model = str(
+        benchmark_cfg.get(
+            "random_profile_model",
+            defaults.get("random_profile_model", benchmark_cfg.get("model", defaults.get("model", "gpt-5.2"))),
+        )
+    ).strip() or "gpt-5.2"
+    return {
+        "enabled": bool(enabled and fraction > 0.0),
+        "fraction": float(max(0.0, fraction)),
+        "seed": int(seed),
+        "model": model,
+    }
+
+
+def _candidate_paths_for_random_profiles(
+    benchmark_cfg: Dict[str, Any],
+    labeling_args: Dict[str, Any],
+    left_canonical: Path,
+    right_canonical: Path,
+) -> tuple[pd.DataFrame, Dict[str, Dict[str, object]], Dict[str, Dict[str, object]], Dict[str, str], Dict[str, str]]:
+    left_df = _load_df(left_canonical, side="left", schema_map={})
+    right_df = _load_df(right_canonical, side="right", schema_map={})
+
+    left_rid_to_id = dict(zip(left_df["__rid"].astype(str), left_df["id"].astype(str)))
+    right_rid_to_id = dict(zip(right_df["__rid"].astype(str), right_df["id"].astype(str)))
+    left_map = {str(row["__rid"]): row.to_dict() for _, row in left_df.iterrows()}
+    right_map = {str(row["__rid"]): row.to_dict() for _, row in right_df.iterrows()}
+
+    embeddings_dir = Path(str(benchmark_cfg["embeddings_dir"]))
+    left_emb = np.load(embeddings_dir / str(benchmark_cfg["left_emb"]))
+    right_emb = np.load(embeddings_dir / str(benchmark_cfg["right_emb"]))
+
+    candidates, _faiss_stats = _build_candidates(
+        left_ids=left_df["__rid"].astype(str).to_numpy(),
+        right_ids=right_df["__rid"].astype(str).to_numpy(),
+        right_source_ids=right_df["id"].astype(str).to_numpy(),
+        left_emb=left_emb,
+        right_emb=right_emb,
+        k=int(labeling_args.get("faiss_k", 20) or 20),
+        candidate_cap=int(labeling_args.get("candidate_cap", 0) or 0),
+        bottom_k=int(labeling_args.get("seed_bottom_k", 2) or 2),
+        random_state=int(labeling_args.get("faiss_random_state", 42) or 42),
+    )
+    candidates = candidates.copy()
+    candidates["src_id1"] = candidates["id1"].astype(str).map(left_rid_to_id)
+    candidates["src_id2"] = candidates["id2"].astype(str).map(right_rid_to_id)
+    candidates = candidates.drop_duplicates(subset=["src_id1", "src_id2"], keep="first").reset_index(drop=True)
+    return candidates, left_map, right_map, left_rid_to_id, right_rid_to_id
+
+
+def _build_random_profile_labels(
+    *,
+    run_dir: Path,
+    benchmark_cfg: Dict[str, Any],
+    labeling_args: Dict[str, Any],
+    left_canonical: Path,
+    right_canonical: Path,
+    active_master_path: Path,
+    master: pd.DataFrame,
+    sample_n: int,
+    model: str,
+    seed: int,
+) -> tuple[pd.DataFrame, Dict[str, int], Dict[str, Any]]:
+    candidates_path = run_dir / "random_profile_candidates.csv"
+    labels_path = run_dir / "random_profile_labels.csv"
+    usage_path = run_dir / "random_profile_usage.json"
+
+    if candidates_path.exists():
+        sampled = pd.read_csv(candidates_path).reset_index(drop=True)
+        candidates = None
+        left_map: Dict[str, Dict[str, object]] = {}
+        right_map: Dict[str, Dict[str, object]] = {}
+        left_rid_to_id: Dict[str, str] = {}
+        right_rid_to_id: Dict[str, str] = {}
+    else:
+        candidates, left_map, right_map, left_rid_to_id, right_rid_to_id = _candidate_paths_for_random_profiles(
+            benchmark_cfg=benchmark_cfg,
+            labeling_args=labeling_args,
+            left_canonical=left_canonical,
+            right_canonical=right_canonical,
+        )
+        source_df = pd.read_csv(active_master_path if active_master_path.exists() else run_dir / "labels_final.csv").reset_index(drop=True)
+        if {"rid1", "rid2"}.issubset(source_df.columns):
+            labeled_keys = set(zip(source_df["rid1"].astype(str), source_df["rid2"].astype(str)))
+            keep_mask = ~candidates.apply(lambda r: (str(r["id1"]), str(r["id2"])) in labeled_keys, axis=1)
+        else:
+            labeled_keys = set(zip(source_df["id1"].astype(str), source_df["id2"].astype(str)))
+            keep_mask = ~candidates.apply(lambda r: (str(r["src_id1"]), str(r["src_id2"])) in labeled_keys, axis=1)
+        remaining = candidates.loc[keep_mask].reset_index(drop=True)
+        take_n = min(int(sample_n), len(remaining))
+        sampled = remaining.sample(n=take_n, random_state=int(seed)).reset_index(drop=True) if take_n > 0 else remaining.head(0).copy()
+        sampled.to_csv(candidates_path, index=False)
+
+    if labels_path.exists():
+        labeled_random = pd.read_csv(labels_path).reset_index(drop=True)
+    else:
+        labeled_random = pd.DataFrame(columns=["id1", "id2", "label", "similarity", "rid1", "rid2"])
+
+    usage_stats = {
+        "prompt_tokens": int(_read_json_if_exists(usage_path).get("prompt_tokens", 0) or 0),
+        "completion_tokens": int(_read_json_if_exists(usage_path).get("completion_tokens", 0) or 0),
+        "total_tokens": int(_read_json_if_exists(usage_path).get("total_tokens", 0) or 0),
+    }
+
+    if sampled.empty:
+        return labeled_random, usage_stats, {"candidate_count": 0, "labeled_count": int(len(labeled_random))}
+
+    if candidates_path.exists() and "rid1" in labeled_random.columns:
+        labeled_pairs = set(zip(labeled_random["rid1"].astype(str), labeled_random["rid2"].astype(str)))
+    else:
+        labeled_pairs = set()
+
+    if "id1" in sampled.columns and "id2" in sampled.columns:
+        remaining = sampled.loc[
+            ~sampled.apply(lambda r: (str(r["id1"]), str(r["id2"])) in labeled_pairs, axis=1)
+        ].reset_index(drop=True)
+    else:
+        remaining = sampled.head(0).copy()
+
+    if remaining.empty:
+        return labeled_random, usage_stats, {
+            "candidate_count": int(len(sampled)),
+            "labeled_count": int(len(labeled_random)),
+        }
+
+    if candidates is None:
+        _candidates, left_map, right_map, left_rid_to_id, right_rid_to_id = _candidate_paths_for_random_profiles(
+            benchmark_cfg=benchmark_cfg,
+            labeling_args=labeling_args,
+            left_canonical=left_canonical,
+            right_canonical=right_canonical,
+        )
+    load_dotenv()
+    client = OpenAI()
+    new_rows: List[Dict[str, object]] = []
+    for idx, row in remaining.iterrows():
+        rid1 = str(row["id1"])
+        rid2 = str(row["id2"])
+        label, usage = _label_pair(client, model, left_map[rid1], right_map[rid2])
+        usage_stats["prompt_tokens"] += int(usage.get("prompt_tokens", 0) or 0)
+        usage_stats["completion_tokens"] += int(usage.get("completion_tokens", 0) or 0)
+        usage_stats["total_tokens"] += int(usage.get("total_tokens", 0) or 0)
+        new_rows.append(
+            {
+                "id1": rid1,
+                "id2": rid2,
+                "label": label,
+                "similarity": float(row.get("similarity", 0.0) or 0.0),
+            }
+        )
+        if (idx + 1) % 10 == 0 or (idx + 1) == len(remaining):
+            new_checkpoint_rows = pd.DataFrame(new_rows)
+            if not new_checkpoint_rows.empty:
+                new_checkpoint_rows = _materialize_output_ids(new_checkpoint_rows, left_rid_to_id, right_rid_to_id)
+            checkpoint = pd.concat([labeled_random, new_checkpoint_rows], ignore_index=True)
+            checkpoint.to_csv(labels_path, index=False)
+            _write_json(usage_path, usage_stats)
+            print(
+                f"Random profile labeling: labeled {len(checkpoint)}/{len(sampled)} "
+                f"(tokens={usage_stats['total_tokens']})",
+                flush=True,
+            )
+
+    labeled_random = pd.read_csv(labels_path).reset_index(drop=True)
+    return labeled_random, usage_stats, {
+        "candidate_count": int(len(sampled)),
+        "labeled_count": int(len(labeled_random)),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Benchmark-aware wrapper around a config-selected labeling runner")
     parser.add_argument("--config", default="configs/labeling/benchmarks.yaml")
@@ -359,6 +593,7 @@ def main() -> None:
     right_fields = _coerce_str_mapping(benchmark_cfg.get("right_fields"), "benchmarks.*.right_fields")
     train_fields_raw = _coerce_field_list(benchmark_cfg.get("train_fields"), "benchmarks.*.train_fields")
     train_fields = _resolve_train_fields(train_fields_raw, left_fields=left_fields, right_fields=right_fields)
+    random_profile_settings = _resolve_random_profile_settings(defaults, benchmark_cfg)
 
     benchmark_profile_overrides = _coerce_mapping(benchmark_cfg.get("profiles"), "benchmarks.*.profiles")
     effective_profiles_cfg = dict(profiles_cfg)
@@ -498,8 +733,41 @@ def main() -> None:
         "left_fields": left_fields,
         "right_fields": right_fields,
         "ditto_fields": train_fields,
+        "random_profile_settings": random_profile_settings,
         "profiles": {},
     }
+
+    random_profile_counts: Dict[str, int] = {}
+    random_labels_df = pd.DataFrame()
+    random_usage: Dict[str, int] = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+    random_meta: Dict[str, Any] = {"candidate_count": 0, "labeled_count": 0}
+    if random_profile_settings["enabled"] and numeric_profiles:
+        random_profile_counts = {
+            spec.name: max(1, int(round(spec.target_size * float(random_profile_settings["fraction"]))))
+            for spec in numeric_profiles
+        }
+        max_random_additions = max(random_profile_counts.values()) if random_profile_counts else 0
+        if max_random_additions > 0:
+            random_labels_df, random_usage, random_meta = _build_random_profile_labels(
+                run_dir=run_dir,
+                benchmark_cfg=benchmark_cfg,
+                labeling_args=labeling_args,
+                left_canonical=left_canonical,
+                right_canonical=right_canonical,
+                active_master_path=active_master_path,
+                master=master,
+                sample_n=max_random_additions,
+                model=str(random_profile_settings["model"]),
+                seed=int(random_profile_settings["seed"]),
+            )
+            manifest["random_profile_usage"] = random_usage
+            manifest["random_profile_cost"] = _estimate_usage_costs(str(random_profile_settings["model"]), random_usage)
+            manifest["random_profile_meta"] = random_meta
+            print(
+                f"Random profile pool: labeled {len(random_labels_df)}/{max_random_additions} "
+                f"examples with model={random_profile_settings['model']}",
+                flush=True,
+            )
 
     for spec in profiles:
         if spec.all_examples:
@@ -568,6 +836,69 @@ def main() -> None:
             f"Profile {spec.name}: total={profile_meta['actual_total']} "
             f"pos={profile_meta['actual_pos']} neg={profile_meta['actual_neg']}"
         )
+
+        if not spec.all_examples and random_profile_settings["enabled"]:
+            extra_n = min(int(random_profile_counts.get(spec.name, 0)), int(len(random_labels_df)))
+            augmented_name = _build_random_profile_name(spec.name, float(random_profile_settings["fraction"]))
+            augmented_dir = profiles_root / augmented_name
+            augmented_dir.mkdir(parents=True, exist_ok=True)
+            augmented_subset = _merge_base_with_random_labels(subset, random_labels_df, extra_n=extra_n)
+            augmented_labels_csv = augmented_dir / "active_labels_latest.csv"
+            augmented_subset.to_csv(augmented_labels_csv, index=False)
+            augmented_subset.to_csv(augmented_dir / "labels_final.csv", index=False)
+
+            aug_pos = int((augmented_subset["label"].astype(str).str.upper() == "TRUE").sum())
+            aug_neg = int((augmented_subset["label"].astype(str).str.upper() == "FALSE").sum())
+            augmented_meta: Dict[str, Any] = {
+                "all_examples": False,
+                "base_profile": spec.name,
+                "random_fraction": float(random_profile_settings["fraction"]),
+                "random_additions": int(extra_n),
+                "target_total": int(len(augmented_subset)),
+                "target_pos": int(aug_pos),
+                "target_neg": int(aug_neg),
+                "actual_total": int(len(augmented_subset)),
+                "actual_pos": int(aug_pos),
+                "actual_neg": int(aug_neg),
+                "labels_csv": str(augmented_labels_csv),
+                "shared_random_pool": True,
+                "shared_random_model": str(random_profile_settings["model"]),
+            }
+
+            if export_ditto:
+                aug_ditto_json_gz = augmented_dir / f"active_labels_latest_{args.benchmark}_{augmented_name}_train.json.gz"
+                convert_cmd = [
+                    sys.executable,
+                    "scripts/ditto/convert_active_labels_to_wdc.py",
+                    "--labels-csv",
+                    str(augmented_labels_csv),
+                    "--left-csv",
+                    str(left_canonical),
+                    "--right-csv",
+                    str(right_canonical),
+                    "--output-json-gz",
+                    str(aug_ditto_json_gz),
+                ]
+                if train_fields:
+                    convert_cmd.extend(["--fields", ",".join(train_fields)])
+                subprocess.run(convert_cmd, check=True)
+                augmented_meta["ditto_train_json_gz"] = str(aug_ditto_json_gz)
+                augmented_meta["ditto_fields"] = list(train_fields)
+
+            manifest["profiles"][augmented_name] = augmented_meta
+            print(
+                f"Profile {augmented_name}: total={augmented_meta['actual_total']} "
+                f"pos={augmented_meta['actual_pos']} neg={augmented_meta['actual_neg']} "
+                f"(base={spec.name}, random_additions={extra_n})"
+            )
+
+    if manifest.get("labeling_cost") and manifest.get("random_profile_cost", {}).get("available"):
+        try:
+            manifest["combined_labeling_cost_usd"] = float(manifest["labeling_cost"]["total_cost_usd"]) + float(
+                manifest["random_profile_cost"]["total_cost_usd"]
+            )
+        except Exception:
+            pass
 
     manifest_path = run_dir / "profile_manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2))
