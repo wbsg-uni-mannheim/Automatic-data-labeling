@@ -11,7 +11,7 @@ set -euo pipefail
 #   export CONDA_ENV_NAME=ditto-modern
 #   export LABEL_RUN_ROOT=output/three_phase_labeling_ditto_only_v2
 #   export BENCHMARKS="wdc abt-buy amazon-google dblp-acm dblp-scholar walmart-amazon"
-#   export PROFILES=small,medium,small_plus20random,medium_plus20random,all,all_plus20random
+#   export PROFILE_FILTER="small,medium,small_plus20random,medium_plus20random,all,all_plus20random"
 #   export TRAIN_CONFIG=configs/ditto/benchmarks_training.yaml
 #   export DITTO_OUTPUT_ROOT=output/ditto_generated_labels
 #   export RUN_NAME_PREFIX=generated_ditto
@@ -29,7 +29,7 @@ BENCHMARKS_RAW="${BENCHMARKS:-wdc abt-buy amazon-google dblp-acm dblp-scholar wa
 BENCHMARKS_RAW="${BENCHMARKS_RAW//,/ }"
 read -r -a BENCHMARK_LIST <<< "${BENCHMARKS_RAW}"
 
-PROFILES="${PROFILES:-small,medium,small_plus20random,medium_plus20random,all,all_plus20random}"
+PROFILE_FILTER="${PROFILE_FILTER:-__all__}"
 TRAIN_CONFIG="${TRAIN_CONFIG:-configs/ditto/benchmarks_training.yaml}"
 DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-output/training_from_generated_labels/three_phase_labeling_ditto_only_v2}"
 RUN_NAME_PREFIX="${RUN_NAME_PREFIX:-generated_ditto}"
@@ -58,7 +58,7 @@ fi
 
 echo "Label run root: ${LABEL_RUN_ROOT}"
 echo "Benchmarks:     ${BENCHMARKS_RAW}"
-echo "Profiles:       ${PROFILES}"
+echo "Profile filter: ${PROFILE_FILTER}"
 echo "Train config:   ${TRAIN_CONFIG}"
 echo "Ditto output:   ${DITTO_OUTPUT_ROOT}"
 echo "Run prefix:     ${RUN_NAME_PREFIX}"
@@ -82,7 +82,7 @@ for BENCH in "${BENCHMARK_LIST[@]}"; do
       --mem="${MEM}" \
       --time="${TIME_LIMIT}" \
       --gres="gpu:${GPU_COUNT}" \
-      --export=ALL,CONDA_ENV_NAME="${CONDA_ENV_NAME}",LABEL_RUN_ROOT="${LABEL_RUN_ROOT}",RUN_GLOB="${RUN_GLOB}",PROFILES="${PROFILES}",TRAIN_CONFIG="${TRAIN_CONFIG}",DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT}",RUN_NAME_PREFIX="${RUN_NAME_PREFIX}" \
+      --export=ALL,CONDA_ENV_NAME="${CONDA_ENV_NAME}",LABEL_RUN_ROOT="${LABEL_RUN_ROOT}",RUN_GLOB="${RUN_GLOB}",PROFILE_FILTER="${PROFILE_FILTER}",TRAIN_CONFIG="${TRAIN_CONFIG}",DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT}",RUN_NAME_PREFIX="${RUN_NAME_PREFIX}" \
       cluster/slurm/train_ditto_from_generated_labels.sbatch
   )"
 

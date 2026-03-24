@@ -21,7 +21,7 @@ set -euo pipefail
 #   export CONDA_ENV_NAME=ditto-modern
 #   export LABEL_RUN_ROOT=output/three_phase_labeling_ditto_only_v2
 #   export RUN_GLOB="benchmark_*"
-#   export PROFILES=small,medium,small_plus20random,medium_plus20random,all,all_plus20random
+#   export PROFILE_FILTER="small,medium,small_plus20random,medium_plus20random,all,all_plus20random"
 #   export TRAIN_CONFIG=configs/ditto/benchmarks_training.yaml
 #   export DITTO_OUTPUT_ROOT=output/ditto_generated_labels
 #   export RUN_NAME_PREFIX=generated_ditto
@@ -42,9 +42,9 @@ fi
 
 LABEL_RUN_ROOT="${LABEL_RUN_ROOT:-output/three_phase_labeling_ditto_only_v2}"
 RUN_GLOB="${RUN_GLOB:-benchmark_*}"
-PROFILES="${PROFILES:-small,medium,small_plus20random,medium_plus20random,all,all_plus20random}"
+PROFILE_FILTER="${PROFILE_FILTER:-__all__}"
 TRAIN_CONFIG="${TRAIN_CONFIG:-configs/ditto/benchmarks_training.yaml}"
-DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-output/three_phase_labeling_ditto_only_v2}"
+DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-output/ditto_generated_labels}"
 RUN_NAME_PREFIX="${RUN_NAME_PREFIX:-generated_ditto}"
 
 if [ ! -d "${LABEL_RUN_ROOT}" ]; then
@@ -61,7 +61,7 @@ mkdir -p "${DITTO_OUTPUT_ROOT}"
 
 echo "Label run root:   ${LABEL_RUN_ROOT}"
 echo "Run glob:         ${RUN_GLOB}"
-echo "Profiles:         ${PROFILES}"
+echo "Profile filter:   ${PROFILE_FILTER}"
 echo "Train config:     ${TRAIN_CONFIG}"
 echo "Ditto output:     ${DITTO_OUTPUT_ROOT}"
 echo "Run name prefix:  ${RUN_NAME_PREFIX}"
@@ -110,7 +110,7 @@ for RUN_DIR in "${RUN_DIRS[@]}"; do
       --output-root "${DITTO_OUTPUT_ROOT}" \
       --run-name "${TRAIN_RUN_NAME}"
   done < <(
-    python - "${MANIFEST}" "${TRAIN_CONFIG}" "${PROFILES}" "${TMP_DIR}" <<'PY'
+    python - "${MANIFEST}" "${TRAIN_CONFIG}" "${PROFILE_FILTER}" "${TMP_DIR}" <<'PY'
 import json
 import subprocess
 import sys
@@ -134,11 +134,23 @@ benchmark = str(manifest.get("benchmark", "")).strip()
 if benchmark not in benchmarks:
     raise SystemExit(f"Benchmark {benchmark!r} not found in {train_cfg_path}")
 
-profiles = [p.strip() for p in profiles_raw.replace(",", " ").split() if p.strip()]
-if not profiles:
-    raise SystemExit("No profiles requested")
-
 manifest_profiles = manifest.get("profiles") or {}
+random_profile_settings = manifest.get("random_profile_settings") or {}
+random_fraction = float(random_profile_settings.get("fraction", 0.20) or 0.20)
+random_pct = max(1, int(round(random_fraction * 100.0)))
+
+profiles = [p.strip() for p in profiles_raw.replace(",", " ").split() if p.strip()]
+if not profiles or profiles == ["__all__"]:
+    profiles = list(manifest_profiles.keys())
+    if (run_dir / "random_profile_labels.csv").exists():
+        base_names = [name for name in manifest_profiles.keys() if not str(name).endswith("random")]
+        if "all" not in base_names and (run_dir / "active_labels_latest.csv").exists():
+            base_names.append("all")
+        for base_name in base_names:
+            candidate = f"{base_name}_plus{random_pct}random"
+            if candidate not in profiles:
+                profiles.append(candidate)
+
 for profile in profiles:
     meta = manifest_profiles.get(profile)
     if meta is None and profile.endswith("random") and "_plus" in profile:
