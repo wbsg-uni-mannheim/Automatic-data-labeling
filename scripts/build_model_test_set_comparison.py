@@ -461,71 +461,78 @@ def _build_dataset_wide_frame(dataset_rows: pd.DataFrame) -> pd.DataFrame:
     return wide_df.sort_values(by=["benchmark", "dataset_name"]).reset_index(drop=True)
 
 
-def _select_representative_dataset_rows(dataset_wide_df: pd.DataFrame) -> pd.DataFrame:
-    selected_rows: List[pd.Series] = []
-    grouped = dataset_wide_df.groupby(["benchmark"], dropna=False)
-    for _, group in grouped:
-        ranked = group.sort_values(
-            by=["models_present", "complete_models_present", "pair_count", "dataset_name"],
-            ascending=[False, False, False, True],
-        )
-        selected_rows.append(ranked.iloc[0])
-
-    out = pd.DataFrame(selected_rows).reset_index(drop=True)
-    out = out.rename(columns={"dataset_name": "selected_dataset_name", "dataset_key": "selected_dataset_key"})
-    return out.sort_values(by=["benchmark"]).reset_index(drop=True)
-
-
-def _build_representative_long_frame(dataset_rows: pd.DataFrame, dataset_wide_df: pd.DataFrame) -> pd.DataFrame:
-    selected_df = _select_representative_dataset_rows(dataset_wide_df)
-    selected_keys = set(selected_df["selected_dataset_key"].astype(str))
-    filtered = dataset_rows[dataset_rows["dataset_key"].astype(str).isin(selected_keys)].copy()
-
-    selected_lookup = {
-        str(row["selected_dataset_key"]): row for _, row in selected_df.iterrows()
-    }
-
+def _build_dataset_model_long_frame(dataset_rows: pd.DataFrame) -> pd.DataFrame:
     output_rows: List[Dict[str, Any]] = []
-    for _, row in filtered.iterrows():
-        selected = selected_lookup[str(row["dataset_key"])]
-        output_rows.append(
-            {
-                "benchmark": row["benchmark"],
-                "selected_dataset_name": selected["selected_dataset_name"],
-                "selected_dataset_key": selected["selected_dataset_key"],
-                "model": row["model"],
-                "model_type": row["model_type"],
-                "run_family": row["run_family"],
-                "execution_provider": row["execution_provider"],
-                "pair_count": row["pair_count"],
-                "pairs_scored": row["pairs_scored"],
-                "coverage": row["coverage"],
-                "parse_failures": row["parse_failures"],
-                "accuracy": row["accuracy"],
-                "precision": row["precision"],
-                "recall": row["recall"],
-                "f1": row["f1"],
-                "tp": row["tp"],
-                "tn": row["tn"],
-                "fp": row["fp"],
-                "fn": row["fn"],
-                "status": row["status"],
-                "best_model_by_f1_any": selected["best_model_by_f1_any"],
-                "best_f1_any": selected["best_f1_any"],
-                "best_model_by_f1_complete": selected["best_model_by_f1_complete"],
-                "best_f1_complete": selected["best_f1_complete"],
-                "source_path": row["source_path"],
-            }
-        )
+    grouped = dataset_rows.groupby(["benchmark", "dataset_name", "dataset_key"], dropna=False)
+    for (_, dataset_name, dataset_key), group in grouped:
+        best_any = _pick_best_row(group)
+        complete_group = group[group["status"].eq("complete")].copy()
+        best_complete = _pick_best_row(complete_group) if not complete_group.empty else None
+
+        for _, row in group.iterrows():
+            output_rows.append(
+                {
+                    "benchmark": row["benchmark"],
+                    "dataset_name": dataset_name,
+                    "dataset_key": dataset_key,
+                    "model": row["model"],
+                    "model_type": row["model_type"],
+                    "run_family": row["run_family"],
+                    "execution_provider": row["execution_provider"],
+                    "pair_count": row["pair_count"],
+                    "pairs_scored": row["pairs_scored"],
+                    "coverage": row["coverage"],
+                    "parse_failures": row["parse_failures"],
+                    "accuracy": row["accuracy"],
+                    "precision": row["precision"],
+                    "recall": row["recall"],
+                    "f1": row["f1"],
+                    "tp": row["tp"],
+                    "tn": row["tn"],
+                    "fp": row["fp"],
+                    "fn": row["fn"],
+                    "status": row["status"],
+                    "best_model_by_f1_any": best_any["model"] if best_any is not None else "",
+                    "best_f1_any": best_any["f1"] if best_any is not None else None,
+                    "best_model_by_f1_complete": best_complete["model"] if best_complete is not None else "",
+                    "best_f1_complete": best_complete["f1"] if best_complete is not None else None,
+                    "source_path": row["source_path"],
+                }
+            )
 
     output_df = pd.DataFrame(output_rows)
     output_df["_benchmark"] = output_df["benchmark"].astype(str)
+    output_df["_dataset"] = output_df["dataset_name"].astype(str)
     output_df["_f1"] = pd.to_numeric(output_df["f1"], errors="coerce").fillna(-1.0)
     output_df = output_df.sort_values(
+        by=["_benchmark", "_dataset", "_f1", "model"],
+        ascending=[True, True, False, True],
+    ).drop(columns=["_benchmark", "_dataset", "_f1"])
+    return output_df.reset_index(drop=True)
+
+
+def _select_best_row_per_benchmark_model(long_df: pd.DataFrame) -> pd.DataFrame:
+    selected_rows: List[pd.Series] = []
+    grouped = long_df.groupby(["benchmark", "model"], dropna=False)
+    for _, group in grouped:
+        ranked = group.copy()
+        ranked["_f1"] = pd.to_numeric(ranked["f1"], errors="coerce").fillna(-1.0)
+        ranked["_coverage"] = pd.to_numeric(ranked["coverage"], errors="coerce").fillna(-1.0)
+        ranked["_pairs_scored"] = pd.to_numeric(ranked["pairs_scored"], errors="coerce").fillna(-1)
+        ranked = ranked.sort_values(
+            by=["_f1", "_coverage", "_pairs_scored", "dataset_name"],
+            ascending=[False, False, False, True],
+        )
+        selected_rows.append(ranked.iloc[0].drop(labels=["_f1", "_coverage", "_pairs_scored"]))
+
+    out = pd.DataFrame(selected_rows).reset_index(drop=True)
+    out["_benchmark"] = out["benchmark"].astype(str)
+    out["_f1"] = pd.to_numeric(out["f1"], errors="coerce").fillna(-1.0)
+    out = out.sort_values(
         by=["_benchmark", "_f1", "model"],
         ascending=[True, False, True],
     ).drop(columns=["_benchmark", "_f1"])
-    return output_df.reset_index(drop=True)
+    return out.reset_index(drop=True)
 
 
 def build_comparison_frame() -> pd.DataFrame:
@@ -538,8 +545,8 @@ def build_comparison_frame() -> pd.DataFrame:
     if dataset_df.empty:
         raise FileNotFoundError("No benchmark test-set model results were found under output/")
 
-    dataset_wide_df = _build_dataset_wide_frame(dataset_df)
-    return _build_representative_long_frame(dataset_df, dataset_wide_df)
+    long_df = _build_dataset_model_long_frame(dataset_df)
+    return _select_best_row_per_benchmark_model(long_df)
 
 
 def main() -> None:

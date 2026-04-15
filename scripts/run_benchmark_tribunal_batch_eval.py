@@ -175,6 +175,7 @@ def _resolve_prompt_fields(benchmark_cfg: Dict[str, Any]) -> tuple[str, ...]:
 def discover_test_sets(
     config_path: Optional[Path] = None,
     data_root: Optional[Path] = None,
+    benchmarks: Optional[Iterable[str]] = None,
 ) -> List[TestSetSpec]:
     config_path = config_path or DEFAULT_CONFIG_PATH
     data_root = data_root or DEFAULT_DATA_ROOT
@@ -183,8 +184,15 @@ def discover_test_sets(
     if not isinstance(benchmark_cfg, dict) or not benchmark_cfg:
         raise ValueError(f"No benchmarks found in {config_path}")
 
+    requested = set(benchmarks or [])
+    missing = sorted(requested.difference(benchmark_cfg.keys()))
+    if missing:
+        raise ValueError(f"Requested benchmarks missing from config: {', '.join(missing)}")
+
     specs: List[TestSetSpec] = []
     for benchmark, raw_cfg in benchmark_cfg.items():
+        if requested and benchmark not in requested:
+            continue
         benchmark_fields = _resolve_prompt_fields(_coerce_mapping(raw_cfg, f"benchmarks.{benchmark}"))
         benchmark_dir = data_root / benchmark
         matches = sorted(benchmark_dir.glob("*gs.json.gz"))
@@ -362,9 +370,13 @@ def _prepare_single_dataset(
     return manifest
 
 
-def prepare_run(*, output_dir: Path, model: str) -> Path:
+def _split_csv_arg(value: str) -> List[str]:
+    return [part.strip() for part in str(value).split(",") if part.strip()]
+
+
+def prepare_run(*, output_dir: Path, model: str, benchmarks: Optional[Iterable[str]] = None) -> Path:
     resolved_run_dir = _resolve_output_dir(output_dir, create=True)
-    specs = discover_test_sets()
+    specs = discover_test_sets(benchmarks=benchmarks)
     dataset_manifests = [
         _prepare_single_dataset(
             run_dir=resolved_run_dir,
@@ -379,6 +391,7 @@ def prepare_run(*, output_dir: Path, model: str) -> Path:
         "config_path": str(DEFAULT_CONFIG_PATH),
         "data_root": str(DEFAULT_DATA_ROOT),
         "model": model,
+        "benchmarks": list(benchmarks or []),
         "max_field_length": DEFAULT_MAX_FIELD_LENGTH,
         "agents": {key: cfg["name"] for key, cfg in AGENTS.items()},
         "datasets": dataset_manifests,
@@ -949,6 +962,7 @@ def build_parser() -> argparse.ArgumentParser:
     prepare = subparsers.add_parser("prepare", help="Create one batch_input.jsonl per test set with five personalities.")
     prepare.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
     prepare.add_argument("--model", default=DEFAULT_MODEL)
+    prepare.add_argument("--benchmarks", default="", help="Comma-separated benchmark keys, e.g. abt-buy")
 
     submit = subparsers.add_parser("submit", help="Submit one batch per test set.")
     submit.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
@@ -968,7 +982,11 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.command == "prepare":
-        run_dir = prepare_run(output_dir=Path(args.output_dir), model=args.model)
+        run_dir = prepare_run(
+            output_dir=Path(args.output_dir),
+            model=args.model,
+            benchmarks=_split_csv_arg(args.benchmarks),
+        )
         print(run_dir)
         return
 
