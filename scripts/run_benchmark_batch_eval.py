@@ -338,10 +338,15 @@ def prepare_run(
     *,
     output_dir: Path,
     model: str,
+    benchmarks: Optional[Iterable[str]] = None,
 ) -> Path:
     resolved_run_dir = _resolve_output_dir(output_dir, create=True)
     system_prompt = _load_prompt_text(None)
-    specs = discover_test_sets(config_path=DEFAULT_CONFIG_PATH, data_root=DEFAULT_DATA_ROOT, benchmarks=None)
+    specs = discover_test_sets(
+        config_path=DEFAULT_CONFIG_PATH,
+        data_root=DEFAULT_DATA_ROOT,
+        benchmarks=benchmarks,
+    )
 
     dataset_manifests: List[Dict[str, Any]] = []
     combined_requests: List[Dict[str, Any]] = []
@@ -366,6 +371,7 @@ def prepare_run(
         "config_path": str(DEFAULT_CONFIG_PATH),
         "data_root": str(DEFAULT_DATA_ROOT),
         "model": model,
+        "benchmarks": list(benchmarks or []),
         "system_prompt_source": "active_learning_default",
         "system_prompt": system_prompt,
         "max_field_length": int(DEFAULT_MAX_FIELD_LENGTH),
@@ -715,6 +721,7 @@ def build_parser() -> argparse.ArgumentParser:
     prepare = subparsers.add_parser("prepare", help="Create batch JSONL files for all configured test sets.")
     prepare.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
     prepare.add_argument("--model", default=DEFAULT_MODEL)
+    prepare.add_argument("--benchmarks", default="", help="Comma-separated benchmark keys, e.g. abt-buy")
 
     submit = subparsers.add_parser("submit", help="Upload and submit all prepared batches in a run.")
     submit.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
@@ -737,6 +744,7 @@ def main() -> None:
         run_dir = prepare_run(
             output_dir=Path(args.output_dir),
             model=args.model,
+            benchmarks=_split_csv_arg(args.benchmarks),
         )
         print(run_dir)
         return
