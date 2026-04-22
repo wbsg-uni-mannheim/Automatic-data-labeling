@@ -218,3 +218,6 @@ outputoutput/ditto_runs/run_20260220_235713/checkpoints/best/model.pt
 data
 
 voice_generation/
+
+export_*/
+old/

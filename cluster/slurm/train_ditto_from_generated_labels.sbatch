@@ -25,6 +25,7 @@ set -euo pipefail
 #   export TRAIN_CONFIG=configs/ditto/benchmarks_training.yaml
 #   export DITTO_OUTPUT_ROOT=output/ditto_generated_labels
 #   export RUN_NAME_PREFIX=generated_ditto
+#   export DITTO_SEEDS="42 52 62"
 
 mkdir -p logs
 
@@ -46,6 +47,10 @@ PROFILE_FILTER="${PROFILE_FILTER:-__all__}"
 TRAIN_CONFIG="${TRAIN_CONFIG:-configs/ditto/benchmarks_training.yaml}"
 DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-output/ditto_generated_labels}"
 RUN_NAME_PREFIX="${RUN_NAME_PREFIX:-generated_ditto}"
+METHOD_NAME="${METHOD_NAME:-$(basename "${LABEL_RUN_ROOT}")}"
+SEEDS_RAW="${DITTO_SEEDS:-42 52 62}"
+SEEDS_RAW="${SEEDS_RAW//,/ }"
+read -r -a SEED_LIST <<< "${SEEDS_RAW}"
 
 if [ ! -d "${LABEL_RUN_ROOT}" ]; then
   echo "Label run root not found: ${LABEL_RUN_ROOT}" >&2
@@ -57,14 +62,21 @@ if [ ! -f "${TRAIN_CONFIG}" ]; then
   exit 1
 fi
 
+if [ "${#SEED_LIST[@]}" -eq 0 ]; then
+  echo "No seeds provided in DITTO_SEEDS" >&2
+  exit 1
+fi
+
 mkdir -p "${DITTO_OUTPUT_ROOT}"
 
+echo "Method name:      ${METHOD_NAME}"
 echo "Label run root:   ${LABEL_RUN_ROOT}"
 echo "Run glob:         ${RUN_GLOB}"
 echo "Profile filter:   ${PROFILE_FILTER}"
 echo "Train config:     ${TRAIN_CONFIG}"
 echo "Ditto output:     ${DITTO_OUTPUT_ROOT}"
 echo "Run name prefix:  ${RUN_NAME_PREFIX}"
+echo "Ditto seeds:      ${SEEDS_RAW}"
 echo
 
 shopt -s nullglob
@@ -87,33 +99,33 @@ for RUN_DIR in "${RUN_DIRS[@]}"; do
     continue
   fi
 
-  while IFS=$'\t' read -r BENCHMARK PROFILE TMP_CFG; do
-    if [ -z "${BENCHMARK}" ] || [ -z "${PROFILE}" ] || [ -z "${TMP_CFG}" ]; then
+  while IFS=$'\t' read -r BENCHMARK PROFILE REPEAT_IDX SEED TMP_CFG; do
+    if [ -z "${BENCHMARK}" ] || [ -z "${PROFILE}" ] || [ -z "${REPEAT_IDX}" ] || [ -z "${SEED}" ] || [ -z "${TMP_CFG}" ]; then
       continue
     fi
     RUN_STEM="$(basename "${RUN_DIR}")"
-    EXISTING_DONE="$(find "${DITTO_OUTPUT_ROOT}" -maxdepth 1 -type d -name "${RUN_NAME_PREFIX}_${RUN_STEM}_${PROFILE}_*" | sort | while read -r CANDIDATE; do
+    EXISTING_DONE="$(find "${DITTO_OUTPUT_ROOT}" -maxdepth 1 -type d -name "${RUN_NAME_PREFIX}_${RUN_STEM}_${PROFILE}_r${REPEAT_IDX}_*" | sort | while read -r CANDIDATE; do
       if [ -f "${CANDIDATE}/${BENCHMARK}/metrics.json" ]; then
         echo "${CANDIDATE}"
       fi
     done | tail -n 1 || true)"
     if [ -n "${EXISTING_DONE}" ]; then
       echo
-      echo "=== Ditto training: benchmark=${BENCHMARK} profile=${PROFILE} run=${RUN_STEM} ==="
+      echo "=== Ditto training: method=${METHOD_NAME} benchmark=${BENCHMARK} profile=${PROFILE} run=${RUN_STEM} repeat=${REPEAT_IDX}/${#SEED_LIST[@]} seed=${SEED} ==="
       echo "Skipping completed training: ${EXISTING_DONE}"
       continue
     fi
 
-    TRAIN_RUN_NAME="${RUN_NAME_PREFIX}_${RUN_STEM}_${PROFILE}_${TS}"
+    TRAIN_RUN_NAME="${RUN_NAME_PREFIX}_${RUN_STEM}_${PROFILE}_r${REPEAT_IDX}_${TS}"
     echo
-    echo "=== Ditto training: benchmark=${BENCHMARK} profile=${PROFILE} run=${RUN_STEM} ==="
+    echo "=== Ditto training: method=${METHOD_NAME} benchmark=${BENCHMARK} profile=${PROFILE} run=${RUN_STEM} repeat=${REPEAT_IDX}/${#SEED_LIST[@]} seed=${SEED} ==="
     python scripts/ditto/run_benchmark_training.py \
       --config "${TMP_CFG}" \
       --benchmarks "${BENCHMARK}" \
       --output-root "${DITTO_OUTPUT_ROOT}" \
       --run-name "${TRAIN_RUN_NAME}"
   done < <(
-    python - "${MANIFEST}" "${TRAIN_CONFIG}" "${PROFILE_FILTER}" "${TMP_DIR}" <<'PY'
+    python - "${MANIFEST}" "${TRAIN_CONFIG}" "${PROFILE_FILTER}" "${TMP_DIR}" "${SEEDS_RAW}" <<'PY'
 import json
 import subprocess
 import sys
@@ -126,6 +138,7 @@ manifest_path = Path(sys.argv[1])
 train_cfg_path = Path(sys.argv[2])
 profiles_raw = sys.argv[3]
 tmp_dir = Path(sys.argv[4])
+seeds_raw = sys.argv[5]
 
 manifest = json.loads(manifest_path.read_text())
 base = yaml.safe_load(train_cfg_path.read_text()) or {}
@@ -240,9 +253,20 @@ for profile in profiles:
     }
     cfg["defaults"]["early_stopping_patience"] = 10
 
-    out_path = tmp_dir / f"{manifest_path.parent.name}__{profile}.yaml"
-    out_path.write_text(yaml.safe_dump(cfg, sort_keys=False))
-    print(f"{benchmark}\t{profile}\t{out_path}")
+    seed_values = [part.strip() for part in seeds_raw.replace(",", " ").split() if part.strip()]
+    if not seed_values:
+        raise SystemExit("No seeds provided")
+
+    for repeat_idx, seed_text in enumerate(seed_values, start=1):
+        seed = int(seed_text)
+        cfg_with_seed = {
+            "defaults": dict(cfg["defaults"]),
+            "benchmarks": cfg["benchmarks"],
+        }
+        cfg_with_seed["defaults"]["seed"] = seed
+        out_path = tmp_dir / f"{manifest_path.parent.name}__{profile}__r{repeat_idx}.yaml"
+        out_path.write_text(yaml.safe_dump(cfg_with_seed, sort_keys=False))
+        print(f"{benchmark}\t{profile}\t{repeat_idx}\t{seed}\t{out_path}")
 PY
   )
 done

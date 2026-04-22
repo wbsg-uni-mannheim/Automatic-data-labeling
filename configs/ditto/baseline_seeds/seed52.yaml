@@ -1,0 +1,115 @@
+defaults:
+  output_root: output/ditto_benchmark_runs
+  active_profiles:
+  - small
+  - medium
+  - large
+  - all
+  model_name: roberta-base
+  batch_size: 64
+  max_len: 256
+  epochs: 50
+  lr: 5.0e-05
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  grad_accum_steps: 1
+  early_stopping_patience: 10
+  seed: 52
+  num_workers: 2
+  fp16: true
+  da: del
+  alpha_aug: 0.8
+  summarize: false
+  dk: null
+  spacy_model: en_core_web_sm
+  max_field_len: 350
+  exclude_valid_from_train: true
+benchmarks:
+  wdc:
+    train: data/wdc/wdcproducts80cc20rnd000un_train_medium.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields:
+    - title
+    - brand
+    - description
+    - price
+    - priceCurrency
+    profiles:
+    - small
+    - medium
+    - large
+    - all
+  abt-buy:
+    train: data/abt-buy/abt-buy-train.json
+    valid: data/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    test: data/abt-buy/abt-buy-gs.json.gz
+    fields:
+    - title
+    - description
+    - price
+    profiles:
+    - small
+    - medium
+    - large
+    - all
+    field_aliases:
+      title:
+      - name
+  amazon-google:
+    train: data/amazon-google/amazon-google-train.json
+    valid: data/amazon-google/amazon-google-train-validation.csv
+    test: data/amazon-google/amazon-google-gs.json.gz
+    fields:
+    - title
+    - manufacturer
+    - price
+    profiles:
+    - small
+    - medium
+    - large
+    - all
+  dblp-acm:
+    train: data/dblp-acm/dblp-acm-train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields:
+    - title
+    - authors
+    - venue
+    - year
+    profiles:
+    - small
+    - medium
+    - large
+    - all
+  dblp-scholar:
+    train: data/dblp-scholar/dblp-scholar-train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields:
+    - title
+    - authors
+    - venue
+    - year
+    profiles:
+    - small
+    - medium
+    - large
+    - all
+  walmart-amazon:
+    train: data/walmart-amazon/walmart-amazon-train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields:
+    - title
+    - category
+    - brand
+    - modelno
+    - price
+    profiles:
+    - small
+    - medium
+    - large
+    - all
