@@ -9,6 +9,7 @@ from typing import Iterable, List, Tuple
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE_DIR = ROOT / "output"
+DEFAULT_DATA_DIR = ROOT / "data"
 
 CSV_ALLOWLIST = {
     "summary.csv",
@@ -48,6 +49,16 @@ EXCLUDED_DIR_NAMES = {
 EXCLUDED_FILE_NAMES = {
     ".ds_store",
 }
+ERROR_ANALYSIS_RESULT_FILES = {
+    "predictions.csv",
+    "predictions.csv.gz",
+    "results.jsonl",
+    "results.jsonl.gz",
+}
+ERROR_ANALYSIS_BENCHMARK_GLOB = "*gs.json.gz"
+ERROR_ANALYSIS_SUPPORT_FILES = [
+    ROOT / "scripts" / "run_error_analysis.py",
+]
 
 
 def _parse_args() -> argparse.Namespace:
@@ -70,6 +81,14 @@ def _parse_args() -> argparse.Namespace:
         "--include-predictions",
         action="store_true",
         help="Also copy predictions.csv / predictions.csv.gz files.",
+    )
+    parser.add_argument(
+        "--include-error-analysis",
+        action="store_true",
+        help=(
+            "Export everything needed by scripts/run_error_analysis.py: predictions/results files, "
+            "benchmark *gs.json.gz data files, and the error-analysis script itself."
+        ),
     )
     parser.add_argument(
         "--dry-run",
@@ -100,14 +119,19 @@ def _is_excluded(rel_path: Path) -> bool:
     return rel_path.name.lower() in EXCLUDED_FILE_NAMES
 
 
-def _should_copy(rel_path: Path, include_predictions: bool) -> Tuple[bool, str]:
+def _should_copy(rel_path: Path, include_predictions: bool, include_error_analysis: bool) -> Tuple[bool, str]:
     if _is_excluded(rel_path):
         return False, ""
 
     name = rel_path.name.lower()
 
     if name in {"predictions.csv", "predictions.csv.gz"}:
-        return include_predictions, "predictions" if include_predictions else ""
+        if include_predictions or include_error_analysis:
+            return True, "predictions"
+        return False, ""
+
+    if name in {"results.jsonl", "results.jsonl.gz"}:
+        return (include_error_analysis, "results_jsonl" if include_error_analysis else "")
 
     if _is_csv_like(rel_path):
         if name in CSV_ALLOWLIST or any(keyword in name for keyword in CSV_KEYWORDS):
@@ -120,13 +144,37 @@ def _should_copy(rel_path: Path, include_predictions: bool) -> Tuple[bool, str]:
     return False, ""
 
 
-def _collect_files(source_dir: Path, include_predictions: bool) -> List[Tuple[Path, str]]:
-    selected: List[Tuple[Path, str]] = []
+def _collect_output_files(
+    source_dir: Path,
+    include_predictions: bool,
+    include_error_analysis: bool,
+) -> List[Tuple[Path, Path, str]]:
+    selected: List[Tuple[Path, Path, str]] = []
     for path in sorted(p for p in source_dir.rglob("*") if p.is_file()):
         rel_path = path.relative_to(source_dir)
-        should_copy, category = _should_copy(rel_path, include_predictions=include_predictions)
+        should_copy, category = _should_copy(
+            rel_path,
+            include_predictions=include_predictions,
+            include_error_analysis=include_error_analysis,
+        )
         if should_copy:
-            selected.append((rel_path, category))
+            selected.append((path, rel_path, category))
+    return selected
+
+
+def _collect_error_analysis_support_files() -> List[Tuple[Path, Path, str]]:
+    selected: List[Tuple[Path, Path, str]] = []
+
+    if DEFAULT_DATA_DIR.exists():
+        for path in sorted(DEFAULT_DATA_DIR.rglob(ERROR_ANALYSIS_BENCHMARK_GLOB)):
+            rel_path = path.relative_to(ROOT)
+            selected.append((path, rel_path, "benchmark_data"))
+
+    for path in ERROR_ANALYSIS_SUPPORT_FILES:
+        if path.exists():
+            rel_path = path.relative_to(ROOT)
+            selected.append((path, rel_path, "script"))
+
     return selected
 
 
@@ -141,16 +189,14 @@ def _format_bytes(size: int) -> str:
 
 
 def _copy_files(
-    source_dir: Path,
     destination_dir: Path,
-    selected_files: Iterable[Tuple[Path, str]],
+    selected_files: Iterable[Tuple[Path, Path, str]],
     dry_run: bool,
 ) -> Tuple[int, int]:
     file_count = 0
     total_bytes = 0
 
-    for rel_path, category in selected_files:
-        source_path = source_dir / rel_path
+    for source_path, rel_path, category in selected_files:
         destination_path = destination_dir / rel_path
         size = source_path.stat().st_size
         total_bytes += size
@@ -180,10 +226,17 @@ def main() -> None:
             f"Destination must not be inside the source directory: {destination_dir}"
         )
 
-    selected_files = _collect_files(
+    selected_files = _collect_output_files(
         source_dir=source_dir,
         include_predictions=args.include_predictions,
+        include_error_analysis=args.include_error_analysis,
     )
+    if args.include_error_analysis:
+        selected_files.extend(_collect_error_analysis_support_files())
+        dedup: dict[Path, Tuple[Path, Path, str]] = {}
+        for source_path, rel_path, category in selected_files:
+            dedup[rel_path] = (source_path, rel_path, category)
+        selected_files = [dedup[key] for key in sorted(dedup.keys())]
     if not selected_files:
         print("No matching result files found.")
         return
@@ -192,7 +245,6 @@ def main() -> None:
         destination_dir.mkdir(parents=True, exist_ok=True)
 
     file_count, total_bytes = _copy_files(
-        source_dir=source_dir,
         destination_dir=destination_dir,
         selected_files=selected_files,
         dry_run=args.dry_run,

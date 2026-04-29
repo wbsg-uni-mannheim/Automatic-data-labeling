@@ -220,3 +220,6 @@ data
 voice_generation/
 
 export/
+analysis/
+training_data/
+cluster/

@@ -120,6 +120,25 @@ def _build_method_guide_rows(methods_in_overview: List[str]) -> pd.DataFrame:
             "prompt_source": "not recoverable from output/autolabel_v1 artifacts",
             "notes": "Method is included for result comparison, but prompt provenance is incomplete.",
         },
+        "Seed Round Only": {
+            "method": "Seed Round Only",
+            "labeling_model": "gpt-5.2 by default",
+            "how_it_works": (
+                "Uses only the simple-active-learning seed-round strategy. It builds nearest-neighbor "
+                "candidates, labels per left-query until the per-query positive/negative seed targets "
+                "are met, then materializes the usual profiles from that seed-only master set. It does "
+                "not run the active-learning loop and does not use Ditto disagreement sampling."
+            ),
+            "prompts_used": (
+                "Uses the same entity-matcher JSON prompt as Simple Active Learning: "
+                f"{SIMPLE_LABELING_SYSTEM_PROMPT}"
+            ),
+            "prompt_source": (
+                "scripts/labeling/run_seed_round_only_profiles.py, reusing seed functions from "
+                "scripts/labeling/run_simple_labeling.py"
+            ),
+            "notes": "Pure seed-selection baseline for separating seed sampling from later active-learning gains.",
+        },
         "Simple Active Learning": {
             "method": "Simple Active Learning",
             "labeling_model": "gpt-5.2",
@@ -172,6 +191,84 @@ def _build_method_guide_rows(methods_in_overview: List[str]) -> pd.DataFrame:
                 "scripts/labeling/relabel_three_phase_generated_labels_batch.py"
             ),
             "notes": "This is the only method in the compact overview that changes labels after the initial run.",
+        },
+        "Three-Phase v2 + Drop Changed": {
+            "method": "Three-Phase v2 + Drop Changed",
+            "labeling_model": "gpt-5.2 -> gpt-5-mini signal, labels unchanged",
+            "how_it_works": (
+                "Starts from the original three-phase v2 labels and uses the batch-relabel run only as "
+                "a disagreement detector. Any pair whose label changed during relabeling is removed from "
+                "every profile instead of being assigned the new label."
+            ),
+            "prompts_used": (
+                "Initial labels use the same Phase 1/2 entity-matcher JSON prompt as three-phase v2. "
+                "The agent_precision batch prompt is used only to identify unstable pairs; its changed "
+                "labels are not adopted."
+            ),
+            "prompt_source": (
+                "Initial prompt: scripts/labeling/run_simple_labeling.py (_label_pair). "
+                "Disagreement signal: scripts/experiments/evidence_first_abstain/prompts/"
+                "agent_precision_system_prompt.txt via "
+                "scripts/labeling/build_drop_changed_profiles.py"
+            ),
+            "notes": "Conservative noise-removal variant: drop disputed examples rather than flip their labels.",
+        },
+        "Three-Phase v2 + Closure Bridge Drop": {
+            "method": "Three-Phase v2 + Closure Bridge Drop",
+            "labeling_model": "gpt-5.2 labels, no extra labeling model",
+            "how_it_works": (
+                "Starts from the original three-phase v2 labels, builds a graph over positive matches, "
+                "identifies positive bridge edges, and removes those bridge pairs from every profile. "
+                "All remaining labels stay unchanged."
+            ),
+            "prompts_used": (
+                "No new LLM prompt. The method only filters labels that were already produced by the "
+                "three-phase v2 entity-matcher prompt."
+            ),
+            "prompt_source": "scripts/labeling/build_closure_bridge_profiles.py",
+            "notes": "Closure-only noise-removal variant; it can remove many positives on dense datasets.",
+        },
+        "Three-Phase v2 + Closure Bridge + Relabel-Changed Drop": {
+            "method": "Three-Phase v2 + Closure Bridge + Relabel-Changed Drop",
+            "labeling_model": "gpt-5.2 -> gpt-5-mini signal, labels unchanged",
+            "how_it_works": (
+                "Combines two filters with AND logic: a pair is removed only when it is a positive "
+                "bridge edge in the original three-phase v2 graph and the batch-relabel pass changed "
+                "that pair's label. All remaining labels stay unchanged."
+            ),
+            "prompts_used": (
+                "Initial labels use the same Phase 1/2 entity-matcher JSON prompt as three-phase v2. "
+                "The agent_precision batch prompt is used only as a relabel-changed signal; changed "
+                "labels are not adopted."
+            ),
+            "prompt_source": (
+                "Initial prompt: scripts/labeling/run_simple_labeling.py (_label_pair). "
+                "Bridge filter: scripts/labeling/build_closure_bridge_profiles.py with "
+                "--require-relabel-changed. Relabel signal: scripts/experiments/"
+                "evidence_first_abstain/prompts/agent_precision_system_prompt.txt"
+            ),
+            "notes": "Conservative intersection variant: drops only structurally suspicious positives that also changed under relabeling.",
+        },
+        "Three-Phase v2 + Closure Bridge OR Relabel-Changed Drop": {
+            "method": "Three-Phase v2 + Closure Bridge OR Relabel-Changed Drop",
+            "labeling_model": "gpt-5.2 -> gpt-5-mini signal, labels unchanged",
+            "how_it_works": (
+                "Combines the two filters with OR logic: a pair is removed when it is either a "
+                "positive bridge edge in the original three-phase v2 graph or the batch-relabel pass "
+                "changed that pair's label. All remaining labels stay unchanged."
+            ),
+            "prompts_used": (
+                "Initial labels use the same Phase 1/2 entity-matcher JSON prompt as three-phase v2. "
+                "The agent_precision batch prompt is used only as a changed-label signal; changed "
+                "labels are not adopted."
+            ),
+            "prompt_source": (
+                "Initial prompt: scripts/labeling/run_simple_labeling.py (_label_pair). "
+                "Bridge/OR filter: scripts/labeling/build_closure_bridge_profiles.py with "
+                "--include-relabel-changed. Relabel signal: scripts/experiments/"
+                "evidence_first_abstain/prompts/agent_precision_system_prompt.txt"
+            ),
+            "notes": "Aggressive union variant: drops all bridge positives plus every relabel-disagreement pair.",
         },
     }
 
