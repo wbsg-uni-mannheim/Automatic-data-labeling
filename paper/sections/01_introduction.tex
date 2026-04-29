@@ -1,0 +1,52 @@
+\section{Introduction}
+
+Entity matching (EM) is a core step in data integration projects: given two collections of records, decide which pairs refer to the same real-world entity \cite{christophides2020overview,christophides2015webdata}. Modern EM systems increasingly rely on supervised models, including transformer-based matchers \cite{mudgal2018deep,brunner2020transformer,li2020ditto,barlaug2021survey}, but these models need labeled pairs before they can be deployed in a new domain \cite{konda2016magellan,peeters2024wdcproducts}. Creating such training data is expensive because useful labels must include not only obvious matches and non-matches, but also boundary cases: same-family products, compatible components, near-duplicate publication titles, and other pairs that are easy to confuse \cite{christen2012data,peeters2024wdcproducts}.
+
+Large language models (LLMs) make it possible to revisit this bottleneck. Prior work has shown that LLMs can directly classify entity pairs in zero-shot settings and can be fine-tuned for EM \cite{peeters2025llmem,steiner2025finetuning}. In this paper, we study a different, more operational question. If a strong LLM can label pairs, is it still necessary to manually label training data for every new EM task, or can the training-data construction step be automated?
+
+We answer this question by studying whether an LLM-based system can \emph{build an entire training dataset by selecting pairs from the two source tables and labeling those pairs}. The goal is not to replace the downstream matcher with an LLM at inference time. Instead, the LLM is used as a data construction tool: it labels selected examples once, after which the resulting training set can be used to train a conventional downstream matcher such as Ditto or a smaller local model.
+
+This distinction matters because a useful training-set construction system has to solve two coupled problems. First, it must select which candidate pairs should be included in the final training set. A random or nearest-neighbor-only strategy may spend most of the annotation budget on easy negatives, while missing positives or hard non-matches. Second, it must label the selected pairs. The LLM component is responsible for assigning match/non-match labels, but the downstream value of the selected-and-labeled training set depends just as much on the selection component as on the labeling component.
+
+The main question of the paper is therefore practical:
+
+%\begin{quote}
+%Can an LLM-based training-set construction system replace manual EM training-data labeling by selecting and labeling training sets that match or beat the official training sets of standard benchmarks?
+%\end{quote}
+
+\begin{quote}
+Can a LLM combined with an active learning-based pair selection strategy label training sets that have the same quality as the training sets that are part of widely-used entity matching benchmarks?
+\end{quote}
+
+Training set quality = Performance of downstream system~\cite{FelixDataQualityandML2025}.
+
+Our conclusion: 
+1. Current LLMs combined with an active learning-based pair selection strategy can label training sets having same or a better quality as the training sets that are part of widely-used entity matching benchmarks.
+2. This means that a large part of the training data labeling process can be automated, resulting in substantially reduced costs. 
+3. If in addition to the LLM also human effort is invested in labeling training sets, this effort can be directed towards deciding tricky corner-cases, for instance cases where different LLMs disagree or the LLM outputs a low confidence in its decision.
+
+
+We answer this question empirically by constructing selected-and-labeled training sets for multiple EM benchmarks, training downstream matchers on these selected-and-labeled sets, and comparing their performance to matchers trained on the official benchmark training splits. Preliminary results show that selected-and-labeled training sets can perform equally or better than official training sets on several benchmarks. The second part of the paper then asks why this happens. We compare selected-and-labeled and official training sets by pair overlap, entity coverage, class balance, similarity and difficulty distributions, and qualitative categories of selected examples.
+
+The central finding is that the result is not only a labeling result. Selection matters. A simple similarity-search strategy can spend much of its budget on repetitive or easy negatives. An active-learning strategy, especially one that uses the downstream matcher in the loop, selects more positives and more decision-boundary examples. This changes both downstream F1 and labeling cost. We therefore treat the workflow as a combined \emph{selection-and-labeling} problem rather than as a pure LLM classification problem.
+
+The paper is organized around five research questions.
+
+\begin{description}
+  \item[RQ1] Can selected-and-labeled training sets match or outperform official benchmark training sets for downstream EM?
+  \item[RQ2] Which example-selection strategies and training-set sizes are most effective?
+  \item[RQ3] How expensive is LLM-based training-set construction, and how does cost differ across selection strategies?
+  \item[RQ4] Do the findings depend on one proprietary LLM labeler, or do they transfer to other strong LLMs, including open-weight models?
+  \item[RQ5] How do selected-and-labeled training sets differ from official training sets at the pair, entity, label, and difficulty levels, and which differences explain downstream performance gains or losses?
+\end{description}
+
+The intended contributions are:
+
+\begin{itemize}
+  \item an LLM-based system for selecting and labeling EM training data that combines candidate selection with LLM labeling;
+  \item an empirical comparison of selected-and-labeled versus official training sets across standard EM benchmarks;
+  \item evidence that active-learning-based example selection produces more useful training data than simpler similarity-based selection;
+  \item a cost analysis showing that targeted selection can reduce the amount of LLM labeling needed;
+  \item a robustness analysis plan across different LLM labelers, including an open-weight labeling model for settings where data cannot be sent to a hosted API;
+  \item a detailed analysis methodology for explaining what selected-and-labeled training sets contain and how they differ from official splits.
+\end{itemize}

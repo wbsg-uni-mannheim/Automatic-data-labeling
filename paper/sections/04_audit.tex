@@ -1,0 +1,19 @@
+\section{Comparing Selected-and-Labeled and Official Training Sets}
+
+The first empirical claim of the paper is about downstream performance: selected-and-labeled training sets can match or slightly outperform official training sets. The second claim is explanatory: selected-and-labeled sets differ from official splits in systematic ways. This section defines the training-set comparison used to support that explanation.
+
+\subsection{Pair-Level Overlap}
+
+For each selected pair, we compute a canonical pair key from the left and right record identifiers. Exact-key joins against official train, validation, and test splits measure how much of the selected-and-labeled data reuses existing benchmark pairs. Pair-level overlap answers two different questions. Overlap with the official training split indicates how much of the selected-and-labeled set is a reconstruction of known training examples. Overlap with validation or test splits flags cases that must be handled carefully when using selected-and-labeled data for training.
+
+\subsection{Entity Coverage and Class Balance}
+
+Pair overlap alone does not describe the training distribution. A selected-and-labeled set can reuse many entities while still creating different pair combinations. We therefore measure coverage over left and right entities, the number of pairs per entity, and the positive rate. This is important because selected-and-labeled training data should contain enough positive examples to teach the model what a match looks like, while also including hard negatives that prevent over-generalization.
+
+\subsection{Similarity and Difficulty}
+
+The central hypothesis is that example selection changes downstream performance by changing the difficulty mix. We therefore analyze textual and embedding similarity between records in a pair. For negative examples, high similarity often indicates a hard non-match; for positive examples, low similarity often indicates a hard match. We also classify selected examples into qualitative difficulty categories such as easy negative, hard same-family negative, accessory-vs-main-product negative, straightforward positive, and boundary positive.
+
+\subsection{Consistency and Label Quality}
+
+When cluster identifiers or other weak correctness signals are available, we use them as proxy checks for label quality. These checks are not treated as ground truth; they are used to identify likely false positives, likely false negatives, and examples that merit manual inspection. The final paper should report label-quality checks separately from training-set usefulness, because a selected-and-labeled set can be useful for downstream training while still containing systematic noise that should be understood.

@@ -1,0 +1,48 @@
+\section{Experimental Setup}
+
+\subsection{Benchmarks}
+
+The experimental plan uses standard EM benchmark families represented in the repository. The product benchmarks are \textsc{Abt-Buy}, \textsc{Amazon-Google}, and \textsc{Walmart-Amazon}; the bibliographic benchmarks are \textsc{DBLP-ACM} and \textsc{DBLP-Scholar}. These domains have different attribute structures and error profiles.
+
+\subsection{Training Sets}
+
+For each benchmark, we compare at least two training sources.
+
+\begin{itemize}
+  \item \textbf{Official:} the benchmark-provided training split.
+  \item \textbf{Selected-and-labeled:} pairs selected from the two source tables and labeled with the LLM.
+\end{itemize}
+
+For benchmarks with multiple selected-and-labeled profiles, we compare different training budgets and selection strategies. The main comparison separates the base selection strategies from later quality-improvement variants. The base strategies are similarity search, generic active learning, and Ditto-based active learning. The refinement table then starts from the strongest base strategy and tests relabeling and consistency-based dropping. This separation keeps the empirical story readable: first identify which selection family works best, then ask whether label cleaning improves it further.
+
+\subsection{Downstream Matchers}
+
+The primary evaluation trains the same downstream EM architecture on different training sets and evaluates all models on the same official test split. Ditto is the natural first downstream matcher because the repository already contains Ditto export and training support. The downstream model is fixed when comparing official and selected-and-labeled training sets; otherwise, performance differences could be caused by model changes rather than training-data quality.
+
+We additionally plan a deployment-oriented comparison with a small local LLM matcher. This is not the main paper claim, but it answers a practical question: if an organization has more inference compute than a BERT-style deployment requires, does a compact local LLM recover additional F1 after the training labels have been constructed? These experiments should be reported separately from the main replacement experiment.
+
+\subsection{Evaluation Metrics}
+
+The main model metric is test-set F1, with precision and recall reported to explain tradeoffs. We also report accuracy where useful, but F1 is more informative for imbalanced EM datasets. For selected-and-labeled training data, we additionally report selection and dataset metrics: training-set size, positive rate, exact overlap with official splits, entity coverage, similarity distributions, difficulty classes, and proxy label-quality indicators.
+
+For the construction process, we report LLM labeling cost in addition to model performance. Cost is measured from recorded token usage and model pricing metadata where available. The cost table reports API labeling cost only; local retrieval, embedding computation, and active-learning training overhead are discussed separately because they depend on the local infrastructure.
+
+\subsection{Main Comparison}
+
+The main result table has one row per benchmark and training source:
+
+\begin{itemize}
+  \item benchmark and test split;
+  \item training source: official, selected-and-labeled, and optionally official plus selected-and-labeled;
+  \item training-set size and positive rate;
+  \item downstream precision, recall, and F1;
+  \item F1 difference between selected-and-labeled and official training.
+\end{itemize}
+
+This table supports the paper's first claim directly: selected-and-labeled training sets can match or slightly outperform the official training sets. The later analysis sections then explain what is inside those selected-and-labeled sets.
+
+\subsection{Robustness Across LLM Labelers}
+
+The main method search uses one strong LLM labeler so that the selection-strategy comparison is not confounded by model changes. After selecting the strongest workflow, we relabel the resulting selected pairs with additional models and, where feasible, rerun the full active-learning workflow with an open-weight LLM. The planned comparison has two levels. First, we measure direct label agreement on the selected training pairs to estimate how many labels would change under another model. Second, we train the downstream matcher on the relabeled data to test whether these label differences are large enough to change F1.
+
+The key robustness claim is modest: the workflow should work with a sufficiently capable LLM labeler and should not require one particular proprietary model. If the open-weight model reaches comparable performance, the paper can also support a deployment argument for settings where source data cannot be sent to an external API.

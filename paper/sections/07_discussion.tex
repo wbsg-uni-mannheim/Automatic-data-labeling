@@ -1,0 +1,23 @@
+\section{Analysis}
+
+\subsection{Why Selected-and-Labeled Training Data Can Work}
+
+The core argument is not simply that LLMs can label entity pairs. The stronger claim is that a system can construct useful EM training data when it combines a capable labeler with a selection strategy that chooses informative examples. The selection component determines whether the training set contains positives, hard negatives, and boundary cases that teach the downstream model useful decision boundaries. The LLM component then makes it possible to label those selected examples without manual annotation at benchmark scale.
+
+This distinction is important for the paper's positioning. A plain ``LLM labels pairs'' story would mostly be another LLM-for-EM classification result. The more data-management-oriented contribution is that the system decides which pairs should be labeled in the first place. The \textsc{Abt-Buy} analysis shows why this matters: active learning preserves the useful positive signal from simpler retrieval while adding many additional positives and a larger share of boundary-relevant negatives.
+
+\subsection{Selected-and-Labeled Data Is Not Automatically Better}
+
+Selected-and-labeled training data can fail in several ways. The selection strategy may over-sample easy negatives, miss rare positives, or duplicate existing benchmark pairs. The LLM labeler may introduce systematic false positives or false negatives. A selected-and-labeled set can also perform well on a downstream test while containing artifacts that make the result hard to interpret. For this reason, the paper presents downstream performance and training-set composition together.
+
+The refinement results also argue against a single universal cleaning recipe. Relabeling helps some product datasets, closure-based dropping helps others, and the bibliographic datasets appear less sensitive to these refinements. Cleaning is therefore a quality-control layer around the best selection method, not the main contribution.
+
+\subsection{Model Choice and Deployment}
+
+The main experiments can use one strong hosted LLM labeler to keep the selection comparison controlled. For deployment, however, the model choice has two separate roles. The labeling model can be large and expensive because it is used offline to build a finite training set. The production matcher can remain a cheaper Ditto/BERT-style model, or a compact local LLM if the extra inference cost is justified by higher F1 on a specific dataset.
+
+The planned open-weight labeler experiment supports the privacy and deployment argument. If a sufficiently capable open-weight model produces similar labels and downstream F1, organizations with proprietary data can run the labeling step locally instead of sending source records to an external API. This is a robustness and applicability result, not a claim that every smaller model will work equally well.
+
+\subsection{Positioning Against Prior Work}
+
+Prior work from this group studied direct LLM matching and fine-tuning LLMs for EM \cite{peeters2025llmem,steiner2025finetuning}. This paper is positioned as the next step: using LLM systems to select and label training examples for conventional downstream matchers. That framing makes the contribution a data construction and data management contribution, not only another LLM-for-classification study.

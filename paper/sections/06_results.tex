@@ -1,0 +1,95 @@
+\section{Results}
+
+This section establishes the main empirical story in four steps. First, selected-and-labeled training sets are compared against official benchmark training sets. Second, we show that the selection strategy matters. Third, we analyze labeling cost and planned model robustness checks. Fourth, we explain the performance differences by inspecting the composition of the generated training data.
+
+\subsection{RQ1: Selected-and-Labeled Versus Official Training Sets}
+
+The first result compares downstream matchers trained on official training data with the same matcher trained on selected-and-labeled training data. This is the central claim of the paper. We separate the result into two parts. Table~\ref{tab:selection-strategies} compares the main ways of selecting pairs before LLM labeling. Table~\ref{tab:ditto-refinements} then focuses only on refinements of the best-performing selection family.
+
+The important methodological constraint is that the downstream model, test split, and evaluation code must remain fixed. Only the training set changes. This makes the comparison a direct test of whether the selected-and-labeled training set can replace the official training split.
+
+We use Active learning (ML) for the generic active-learning selector and Active learning (Ditto) for the variant that uses Ditto during the selection loop.
+
+\begin{table*}[t]
+  \centering
+  \caption{Main selection strategies. Each cell reports F1 $\pm$ standard deviation over three runs. The non-official columns train Ditto on pairs selected from the two source tables and labeled with the LLM-based system.}
+  \label{tab:selection-strategies}
+  \small
+  \begin{tabular}{lrrrr}
+    \toprule
+    Benchmark & Benchmark set & Similarity search & Active learning (ML) & Active learning (Ditto) \\
+    \midrule
+    \textsc{Abt-Buy} & 88.30 $\pm$ 1.50 & 87.60 $\pm$ 0.60 & 87.70 $\pm$ 0.90 & \textbf{90.10 $\pm$ 0.20} \\
+    \textsc{Walmart-Amazon} & 85.70 $\pm$ 1.00 & 85.50 $\pm$ 2.10 & 86.70 $\pm$ 0.10 & \textbf{86.90 $\pm$ 0.40} \\
+    \textsc{WDC} & \textbf{71.90 $\pm$ 1.00} & 69.50 $\pm$ 0.40 & 71.10 $\pm$ 0.50 & 71.70 $\pm$ 0.90 \\
+    \\
+    \textsc{DBLP-ACM} & \textbf{98.40 $\pm$ 0.30} & 98.10 $\pm$ 0.20 & 97.50 $\pm$ 0.40 & 98.10 $\pm$ 0.30 \\
+    \textsc{DBLP-Scholar} & \textbf{95.60 $\pm$ 0.30} & 93.70 $\pm$ 0.40 & 94.00 $\pm$ 0.30 & 94.10 $\pm$ 0.10 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+Table~\ref{tab:selection-strategies} shows the main selection result. Among the selected-and-labeled training sets, Active learning (Ditto) is the best strategy on all five benchmarks. It improves over the official training set on \textsc{Abt-Buy} and \textsc{Walmart-Amazon}, is close to the official training set on \textsc{DBLP-ACM} and \textsc{WDC}, and remains below the official training set on \textsc{DBLP-Scholar}. The result supports the practical claim that manual benchmark labels can often be replaced by automatically selected and LLM-labeled pairs, but it also shows that the replacement is not automatic. The pair-selection policy determines whether the labeling budget produces a useful training distribution.
+
+This result also clarifies the scope of the claim. The strongest claim is not that any LLM-labeled set works. The strongest claim is that a targeted active-learning workflow can produce competitive training data with no manual pair labels for the new task.
+
+\begin{table*}[t]
+  \centering
+  \caption{Quality-improvement variants for Active learning (Ditto). Each cell reports F1 $\pm$ standard deviation over three runs. The variants start from the Active learning (Ditto) selected-and-labeled set and then either relabel uncertain examples, drop examples implicated by closure checks, or combine both filters.}
+  %TODO: Table outdated 
+  \label{tab:ditto-refinements}
+  \setlength{\tabcolsep}{3.5pt}
+  \begin{tabular}{lrrrrrrr}
+    \toprule
+    Benchmark & Official & AL(Ditto) & +Relabel  & +Relabel drop & +Closure drop & & +Closure and relabel drop   \\
+    \midrule
+    \textsc{Abt-Buy} & 88.30 $\pm$ 1.50 & 90.10 $\pm$ 0.20 & \textbf{92.10 $\pm$ 0.40} & 89.60 $\pm$ 0.90 & 92.10 $\pm$ 0.60 & 89.60 $\pm$ 0.90 & 90.60 $\pm$ 0.50 \\
+    \textsc{DBLP-ACM} & \textbf{98.40 $\pm$ 0.30} & 98.10 $\pm$ 0.30 & 97.70 $\pm$ 0.20 & 98.20 $\pm$ 0.40 & 98.20 $\pm$ 0.40 & 98.10 $\pm$ 0.10 & 97.90 $\pm$ 0.20 \\
+    \textsc{DBLP-Scholar} & \textbf{95.60 $\pm$ 0.30} & 94.10 $\pm$ 0.10 & 93.70 $\pm$ 0.80 & 92.90 $\pm$ 0.60 & 93.40 $\pm$ 0.60 & 94.00 $\pm$ 0.30 & 93.90 $\pm$ 0.70 \\
+    \textsc{Walmart-Amazon} & 85.70 $\pm$ 1.00 & 86.90 $\pm$ 0.40 & 87.20 $\pm$ 0.60 & \textbf{88.50 $\pm$ 0.90} & 88.00 $\pm$ 1.20 & 87.40 $\pm$ 0.50 & 88.50 $\pm$ 0.20 \\
+    \textsc{WDC} & 71.90 $\pm$ 1.00 & 71.70 $\pm$ 0.90 & \textbf{73.10 $\pm$ 0.90} & 69.70 $\pm$ 2.50 & 70.40 $\pm$ 0.70 & 71.30 $\pm$ 1.20 & 72.20 $\pm$ 0.50 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+Table~\ref{tab:ditto-refinements} shows that improving the label quality of the Active learning (Ditto) set can yield additional gains, but the best refinement depends on the benchmark. Relabeling gives the strongest result on \textsc{Abt-Buy} and \textsc{WDC}. Closure-based dropping is strongest on \textsc{Walmart-Amazon}. The bibliographic benchmarks show less benefit from these refinements, suggesting that their official training sets may already cover the relevant decision boundary more effectively than the selected-and-labeled variants. We therefore treat these refinements as optional quality-control steps rather than as separate construction methods.
+
+\subsection{RQ2: Effect of Example Selection}
+
+The second result compares selected-and-labeled sets that use the same LLM labeler but different selection strategies. This separates the value of the selection component from the value of the LLM component. If two selected-and-labeled sets are labeled by the same LLM but produce different downstream performance, the explanation should lie in which examples were selected.
+
+For \textsc{Abt-Buy}, the current repository already supports this analysis by comparing a seed-only similarity expansion against the richer Active learning (Ditto) strategy. This comparison is especially useful because both strategies target the same benchmark and can be inspected at the pair level.
+
+\subsection{RQ3: Cost of Training-Set Construction}
+
+Table~\ref{tab:labeling-costs} compares the LLM labeling cost of the three selected-and-labeled construction strategies. The table uses the token and cost metadata stored with the runs. Where the run stored token usage but not the final dollar cost, we compute the cost using the same \texttt{gpt-5.2} pricing assumptions recorded in the other manifests. The table reports API labeling cost only; it does not include local retrieval, embedding computation, or the additional Ditto training cost used inside Active learning (Ditto).
+
+
+The cost results reinforce the main selection result. Active learning (Ditto) is not only the strongest selection strategy in Table~\ref{tab:selection-strategies}; for the benchmarks with complete cost metadata, it also uses less LLM labeling budget than the similarity-search baseline. The reason is that similarity search is much less targeted. It retrieves many plausible near neighbors, but many of these pairs are easy or repetitive negatives. Finding additional positives therefore requires labeling many more pairs overall, which raises the total cost while still failing to recover as many positive examples as the active-learning strategy. Active learning (Ditto), in contrast, uses model disagreement and decision-boundary signals to spend the LLM budget on pairs that are more likely to improve the final training set, including positives and hard negatives. The missing \textsc{WDC} cost should be recovered from the original run logs before the final submission.
+
+\subsection{RQ4: Robustness Across LLM Labelers}
+
+The current method search uses one strong LLM labeler for the main results. This is deliberate: the selection-strategy comparison in Table~\ref{tab:selection-strategies} should not mix changes in example selection with changes in the labeling function. A compact robustness section then tests whether the workflow depends on this one model.
+
+The planned experiment has two parts. First, we run the strongest selected-pair sets through additional labelers and report label agreement with the main LLM labels. This includes at least one open-weight model. Second, we train the downstream matcher on one or two relabeled sets and compare F1 against the main LLM-labeled result. If the label flips are rare and downstream F1 remains close, the paper can claim that the workflow transfers across sufficiently capable labelers. If the open-weight model performs similarly, the practical implication is stronger: proprietary source data can be labeled with a local model and then used to train a cheaper downstream matcher.
+
+This robustness experiment is scoped narrowly. The paper does not need a large model leaderboard. The purpose is to show that the selection-and-labeling workflow is not an artifact of one hosted model.
+
+\subsection{RQ5: Training-Set Composition}
+
+To understand why two selected-and-labeled training sets can lead to different downstream behavior, we inspect their contents rather than only their final F1 scores. We use \textsc{Abt-Buy} as a detailed case study because it is a product-matching benchmark with many plausible near misses: same-brand model variants, accessories, kits, compatible components, and category-level substitutes. We compare the training data selected by Active learning (Ditto) with a simpler seed-only expansion based on similarity search. Both data sets are labeled with the same LLM setup, so differences in downstream performance should not be attributed to a better labeling function. Instead, they should be explained by which examples each strategy selects.
+
+For the main comparison we use the \texttt{all\_plus20random} profile. The seed-only profile contains 6{,}000 unique pairs, while the Active learning (Ditto) profile contains 5{,}759 consistent unique pairs after excluding two ambiguous duplicate keys. The two sets share 2{,}604 pairs. Thus, 3{,}396 pairs are exclusive to the seed-only set and 3{,}155 consistent pairs are exclusive to the Active learning (Ditto) set. The positive class already shows a strong asymmetry: 795 seed positives are also positive in the Active learning (Ditto) set, corresponding to 97.55\% of the seed positives, but the Active learning (Ditto) set contains many additional positives not present in the seed-only set.
+
+We then classify the exclusive examples by their \emph{informational value}. First, we use an LLM as a qualitative classifier. The classifier receives the existing pair label and is instructed not to relabel the pair; instead, it assigns the pair to a difficulty or relation class such as easy negative, hard same-family negative, accessory-vs-main-product negative, same-ecosystem component negative, straightforward positive, or boundary positive. Second, to validate that this LLM-based characterization is not merely an artifact of the classifier prompt, we run a traditional token-overlap baseline. This baseline computes an extended Jaccard score over title, description, and price fields. For negative examples, higher overlap indicates greater difficulty; for positive examples, lower overlap indicates greater difficulty. Thresholds are tuned separately for positives and negatives using tertiles.
+
+
+Table~\ref{tab:abtbuy-training-composition} shows that the difference is mainly a selection effect. The similarity-search expansion mostly adds negative coverage: 3{,}395 of its 3{,}396 exclusive examples are negative, and 27.47\% of its exclusive examples are easy negatives according to the LLM classifier. In contrast, Active learning (Ditto) adds 309 positive examples that are not present in the similarity-search set. This is the strongest distributional difference between the two training sets. The LLM classifier further shows that Active learning (Ditto) examples are slightly more concentrated in hard or domain-specific negative classes, including accessory-vs-main-product, same-ecosystem component, and narrow-category high-similarity cases.
+
+The Jaccard baseline supports the same interpretation. Among negative exclusive examples, the similarity-search set contains a much larger low-difficulty region: 40.38\% of similarity-search negatives are low difficulty under the Jaccard metric, compared with only 25.40\% for Active learning (Ditto). Conversely, Active learning (Ditto) has more medium- and high-difficulty negatives: 37.53\% and 37.07\%, compared with 29.90\% and 29.72\% for similarity search. This traditional similarity-based analysis agrees with the LLM-based result: the active-learning procedure spends less of its budget on easy negatives and more on boundary-relevant examples.
+
+\subsection{Explaining Downstream Performance}
+
+The \textsc{Abt-Buy} analysis suggests that Active learning (Ditto) does not merely produce a larger or differently labeled training set. It changes the training distribution. It preserves most of the seed positive signal while adding many additional positives and a higher share of boundary-relevant product confusions. The similarity-search strategy, by contrast, provides broad negative coverage but spends a larger fraction of its exclusive budget on easy negatives.
+
+This provides a plausible data-centric explanation for why a selected-and-labeled training set can match or outperform an official training set: the selected-and-labeled set may contain a more useful mix of positives and hard negatives for the downstream model. The next analysis step is to connect this explanation directly to the main F1 table by checking whether benchmarks with better selected-training performance also exhibit better difficulty balance, positive coverage, or entity coverage.

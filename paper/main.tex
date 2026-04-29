@@ -1,0 +1,82 @@
+\documentclass[sigconf]{acmart}
+
+\settopmatter{printacmref=false, printccs=false, printfolios=true}
+\setcopyright{none}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+
+\AtBeginDocument{%
+  \providecommand\BibTeX{{Bib\TeX}}}
+
+\acmConference[EDBT 2026 Draft]{Draft for the 29th International Conference on Extending Database Technology}{March 24--27, 2026}{Tampere, Finland}
+\acmYear{2026}
+\copyrightyear{2026}
+
+\title{[Experiments \& Analysis]\\Labeling Training Data for Entity Matching Using Large Language Models}
+
+\author{Aaron Steiner}
+\affiliation{%
+  \institution{Data and Web Science Group\\University of Mannheim}
+  \city{Mannheim}
+  \country{Germany}}
+\email{aaron.steiner@uni-mannheim.de}
+
+\author{Christian Bizer}
+\affiliation{%
+  \institution{Data and Web Science Group\\University of Mannheim}
+  \city{Mannheim}
+  \country{Germany}}
+\email{christian.bizer@uni-mannheim.de}
+
+\renewcommand{\shortauthors}{Steiner and Bizer}
+
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10002951.10003260.10003261.10003282</concept_id>
+       <concept_desc>Information systems~Data cleaning</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10002951.10003260.10003277</concept_id>
+       <concept_desc>Information systems~Data quality</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10002951.10003260.10003282</concept_id>
+       <concept_desc>Information systems~Information integration</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+ </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Information systems~Data cleaning}
+\ccsdesc[500]{Information systems~Data quality}
+\ccsdesc[500]{Information systems~Information integration}
+
+\keywords{entity matching, training-set construction, large language models, data labeling, data quality}
+
+\begin{abstract}
+Supervised entity matching systems depend on labeled record pairs, but manually creating such training data remains a costly step in data integration projects. Recent large language models can label individual entity pairs in zero-shot settings, raising a practical question: can the manual labeling step for training-data construction be automated? This paper studies an LLM-based training-set construction workflow that selects candidate pairs from two source tables, labels the selected pairs with an LLM, and uses the resulting data to train downstream entity matching models. We evaluate the workflow by replacing the training splits of widely-used EM benchmarks with LLM-labled training sets while keeping the downstream matcher and test spli, fixed. Our results show that active-learning-based selection with LLM labels matches or outperforms the training sets of several product matching benchmarks and remains close on most bibliographic benchmarks. The results also show that selection matters (Chris: This finding is trivial and should not be mentioned in the abstract, remove): the best active-learning strategy is consistently stronger than simpler similarity-based selection and can reduce labeling cost by spending the LLM budget on relevant pairs. We analyze the generated training sets at the pair, entity, label, and difficulty levels and find that the strongest sets are not merely noisy reconstructions of the benchmark splits; they change the training distribution in ways that explain downstream gains (Chris: Too strong claim, remove). These findings position LLM-based selection and labeling as a practical method for constructing EM training data, while also showing that performance claims need to be paired with an audit of what the constructed training sets contain.
+\end{abstract}
+
+% TODO not generated but auto-labeled 
+
+\begin{document}
+
+\maketitle
+
+\input{sections/01_introduction}
+\input{sections/02_background}
+\input{sections/03_system}
+\input{sections/04_audit}
+\input{sections/05_experiments}
+\input{sections/06_results}
+\input{sections/07_discussion}
+\input{sections/08_related_work}
+\input{sections/09_conclusion}
+\input{sections/10_artifacts}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}

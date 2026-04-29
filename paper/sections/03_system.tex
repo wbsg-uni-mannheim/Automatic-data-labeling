@@ -1,0 +1,38 @@
+\section{Method}
+
+Figure~\ref{fig:pipeline} summarizes the system studied in this paper. The system receives two source tables and constructs a training set for a downstream EM model. It has two main components: an example-selection component and an LLM labeling component. The selection component decides which pairs are worth labeling; the labeling component assigns match/non-match decisions to those pairs.
+
+\begin{figure}[t]
+  \centering
+  \fbox{\begin{minipage}{0.93\linewidth}
+  \small
+  Source records $\rightarrow$ candidate pool $\rightarrow$ example selection $\rightarrow$ LLM labeling $\rightarrow$ selected-and-labeled training set $\rightarrow$ downstream EM training and training-set analysis.
+  \end{minipage}}
+  \caption{Training-set construction system. The central design choice is the combination of example selection and LLM labeling.}
+  \Description{A linear workflow from source records to candidate pool construction, example selection, LLM labeling, selected-and-labeled training data, downstream training, and training-set analysis.}
+  \label{fig:pipeline}
+\end{figure}
+
+\subsection{Pair selection}
+
+The system first constructs a pool of possible record pairs. For benchmarks where the full Cartesian product is too large, the pool is built using retrieval and similarity search. The current implementation uses embedding-based nearest-neighbor search to obtain likely positives and informative negatives, and it can add random pairs to preserve broader coverage. The resulting pool is larger than the final training set, so the next step must decide which examples should consume the labeling budget.
+
+\subsection{Example Selection}
+
+The selection component is the part that turns auto-labeling from simple pair classification into training-set construction. It chooses the final examples that will be labeled and exported as a training set. The repository currently supports profiles with different budgets, such as small, medium, large, and all-size profiles, as well as variants that add random examples.
+
+We compare three selection styles. A similarity-search strategy selects nearest-neighbor candidates and therefore tests how far simple retrieval plus LLM labeling can go. A generic active-learning strategy iteratively selects examples using model uncertainty and disagreement signals. A Ditto-based active-learning strategy uses the downstream matcher inside the selection loop and therefore targets the decision boundary of the model that will later be trained on the generated data. This lets us separate two effects: whether the LLM can label pairs accurately, and whether the system selects a useful training distribution.
+
+\subsection{Labeling}
+
+Each selected pair is serialized into a prompt that presents the relevant record attributes and asks for a binary match decision. The system stores the final label together with run metadata such as prompt usage, model configuration, batch identifiers, and parse status. The main experiments use one strong LLM labeler to search for the best construction method. This keeps the comparison between selection strategies controlled: if two selected-and-labeled training sets differ in downstream performance while using the same labeler, the difference is likely caused by the selected examples rather than by a better labeling function.
+
+After identifying the strongest construction method, we use additional LLM labelers as a robustness check. This includes an open-weight model for the labeling step. The purpose is not to run an exhaustive model leaderboard, but to test whether the workflow depends on a single hosted API model. In practical deployments, a large model can be used for offline labeling, while the trained downstream matcher can remain a cheaper BERT- or Ditto-style model for production inference.
+
+\subsection{Post processing}
+
+After labeling, the system materializes the selected-and-labeled dataset in formats usable by downstream matchers, including Ditto-compatible training files. The selected-and-labeled set is treated as a replacement candidate for the official training split: the downstream model is trained either on the official training data or on the selected-and-labeled training data, and both are evaluated on the same official test split. This replacement design is the cleanest test of the practical question: can automatically constructed training data remove or reduce the need for manual labels?
+
+\subsection{Analysis Layer}
+
+The system also records enough provenance to inspect the selected-and-labeled training data itself. We compare selected-and-labeled and official training sets by exact pair overlap, entity coverage, positive rate, similarity distributions, and difficulty classes. This analysis is not secondary bookkeeping; it is necessary for explaining why a selected-and-labeled set can match or beat the official set.
