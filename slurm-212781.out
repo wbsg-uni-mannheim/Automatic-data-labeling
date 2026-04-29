@@ -1,0 +1,18 @@
+Label run root: output/three_phase_labeling_ditto_only_v2_relabel_batch_gpt-5-mini_agent_precision
+Benchmarks:     wdc abt-buy amazon-google dblp-acm dblp-scholar walmart-amazon
+Profile filter: __all__
+Train config:   configs/ditto/benchmarks_training.yaml
+Ditto output:   output/training_from_generated_labels/three_phase_labeling_ditto_only_v2_relabel_batch_gpt-5-mini_agent_precision
+Run prefix:     generated_ditto
+Partition:      gpu-vram-48gb
+CPUs/task:      4
+Mem:            32G
+Time:           6:00:00
+GPUs:           1
+
+Submitted wdc: job 212782 (RUN_GLOB=benchmark_wdc_*)
+Submitted abt-buy: job 212783 (RUN_GLOB=benchmark_abt-buy_*)
+Submitted amazon-google: job 212784 (RUN_GLOB=benchmark_amazon-google_*)
+Submitted dblp-acm: job 212785 (RUN_GLOB=benchmark_dblp-acm_*)
+Submitted dblp-scholar: job 212786 (RUN_GLOB=benchmark_dblp-scholar_*)
+Submitted walmart-amazon: job 212787 (RUN_GLOB=benchmark_walmart-amazon_*)

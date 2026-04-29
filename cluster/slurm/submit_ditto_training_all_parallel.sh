@@ -3,6 +3,7 @@
 set -euo pipefail
 
 # Submit Ditto training jobs in parallel, optionally for multiple labeling methods.
+# Submit Ditto training jobs in parallel, optionally for multiple labeling methods.
 #
 # Run from repo root:
 #   bash cluster/slurm/submit_ditto_training_all_parallel.sh
@@ -10,6 +11,7 @@ set -euo pipefail
 # Optional overrides before launch:
 #   export CONDA_ENV_NAME=ditto-modern
 #   export LABEL_RUN_ROOT=output/three_phase_labeling_ditto_only_v2
+#   export LABEL_RUN_ROOT=output
 #   export LABEL_RUN_ROOT=output
 #   export BENCHMARKS="wdc abt-buy amazon-google dblp-acm dblp-scholar walmart-amazon"
 #   export PROFILE_FILTER="small,medium,small_plus20random,medium_plus20random,all,all_plus20random"
@@ -36,8 +38,12 @@ TRAIN_CONFIG="${TRAIN_CONFIG:-configs/ditto/benchmarks_training.yaml}"
 DITTO_OUTPUT_ROOT_DEFAULT="output/training_from_generated_labels"
 DITTO_OUTPUT_ROOT_IS_EXPLICIT="${DITTO_OUTPUT_ROOT+set}"
 DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-${DITTO_OUTPUT_ROOT_DEFAULT}}"
+DITTO_OUTPUT_ROOT_DEFAULT="output/training_from_generated_labels"
+DITTO_OUTPUT_ROOT_IS_EXPLICIT="${DITTO_OUTPUT_ROOT+set}"
+DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-${DITTO_OUTPUT_ROOT_DEFAULT}}"
 RUN_NAME_PREFIX="${RUN_NAME_PREFIX:-generated_ditto}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-ditto-modern}"
+DITTO_SEEDS="${DITTO_SEEDS:-42 52 62}"
 DITTO_SEEDS="${DITTO_SEEDS:-42 52 62}"
 
 PARTITION="${PARTITION:-gpu-vram-48gb}"
