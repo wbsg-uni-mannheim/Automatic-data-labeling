@@ -221,3 +221,10 @@ voice_generation/
 
 export_*/
 old/
+# Generated result artifacts (regeneratable via scripts/, not part of source)
+results/
+unsloth_compiled_cache/
+.claude/
+
+# Run-time CSVs and metrics regenerated from the (excluded) output/ tree
+output/results_summary/

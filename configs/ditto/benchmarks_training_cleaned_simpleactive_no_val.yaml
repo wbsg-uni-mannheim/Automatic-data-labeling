@@ -1,0 +1,57 @@
+defaults:
+  output_root: output/ditto_cleaned_simpleactive_no_val_runs
+  active_profiles: [all]
+  model_name: roberta-base
+  batch_size: 64
+  max_len: 256
+  epochs: 50
+  lr: 5.0e-5
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  grad_accum_steps: 1
+  early_stopping_patience: 10
+  seed: 42
+  num_workers: 2
+  fp16: true
+  da: del
+  alpha_aug: 0.8
+  summarize: false
+  dk: null
+  spacy_model: en_core_web_sm
+  max_field_len: 350
+  exclude_valid_from_train: true
+
+benchmarks:
+  abt-buy:
+    train: output/labeling_cleaned_no_val/simple_active/abt-buy/profiles/large/active_labels_latest_abt-buy_large_train.json.gz
+    valid: data/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: data/abt-buy/abt-buy-train.json
+    test: data/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+
+  dblp-acm:
+    train: output/labeling_cleaned_no_val/simple_active/dblp-acm/profiles/all/active_labels_latest_dblp-acm_all_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+
+  dblp-scholar:
+    train: output/labeling_cleaned_no_val/simple_active/dblp-scholar/profiles/all/active_labels_latest_dblp-scholar_all_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+
+  walmart-amazon:
+    train: output/labeling_cleaned_no_val/simple_active/walmart-amazon/profiles/all/active_labels_latest_walmart-amazon_all_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+
+  wdc:
+    train: output/labeling_cleaned_no_val/simple_active/wdc/profiles/large/active_labels_latest_wdc_large_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
