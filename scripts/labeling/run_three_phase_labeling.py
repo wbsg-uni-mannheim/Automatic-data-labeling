@@ -6,6 +6,7 @@ import importlib.util
 import json
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Sequence, Tuple
@@ -57,6 +58,7 @@ _load_df = base._load_df
 _load_json = base._load_json
 _load_resume_labels = base._load_resume_labels
 _load_seed_for_summary = base._load_seed_for_summary
+_make_openai_client = base._make_openai_client
 _materialize_output_ids = base._materialize_output_ids
 _parse_field_list_arg = base._parse_field_list_arg
 _parse_schema_map_arg = base._parse_schema_map_arg
@@ -643,6 +645,7 @@ def _run_phase3_active_learning(
     ditto_max_field_len: int,
     ditto_inference_batch_size: int,
     classic_top_matchers: int,
+    llm_concurrency: int = 1,
 ) -> Tuple[pd.DataFrame, Dict[str, object]]:
     training_set = labeled[["id1", "id2", "label", "similarity"]].copy()
     training_set["id1"] = training_set["id1"].astype(str)
@@ -803,32 +806,69 @@ def _run_phase3_active_learning(
         labeled_pairs = set(zip(training_set["id1"].astype(str), training_set["id2"].astype(str)))
         new_rows: List[Dict[str, object]] = []
         label_t0 = time.perf_counter()
+
+        # Build the work list (skip already-labeled pairs) and dispatch concurrently.
+        work_items: List[Dict[str, object]] = []
         for _, row in select.iterrows():
             id1 = str(row["id1"])
             id2 = str(row["id2"])
             if (id1, id2) in labeled_pairs:
                 continue
-            label, usage = _label_pair(client, model, left_map[id1], right_map[id2])
-            usage_stats["prompt_tokens"] += int(usage.get("prompt_tokens", 0) or 0)
-            usage_stats["completion_tokens"] += int(usage.get("completion_tokens", 0) or 0)
-            usage_stats["total_tokens"] += int(usage.get("total_tokens", 0) or 0)
-            usage_stats["active_prompt_tokens"] += int(usage.get("prompt_tokens", 0) or 0)
-            usage_stats["active_completion_tokens"] += int(usage.get("completion_tokens", 0) or 0)
-            usage_stats["active_total_tokens"] += int(usage.get("total_tokens", 0) or 0)
-            new_rows.append(
+            if id1 not in left_map or id2 not in right_map:
+                continue
+            work_items.append(
                 {
                     "id1": id1,
                     "id2": id2,
-                    "label": label,
                     "similarity": float(row.get("similarity", 0.0) or 0.0),
-                    "al_source": f"phase3_{ensemble_mode}_probability_disagreement",
-                    "iteration": int(iteration),
                     "phase3_conflict_count": int(row.get("conflict_count", 0) or 0),
                     "phase3_votes_pos": int(row.get("votes_pos", 0) or 0),
                     "phase3_votes_neg": int(row.get("votes_neg", 0) or 0),
                 }
             )
             labeled_pairs.add((id1, id2))
+
+        max_workers = max(1, int(llm_concurrency))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_item = {
+                executor.submit(_label_pair, client, model, left_map[w["id1"]], right_map[w["id2"]]): w
+                for w in work_items
+            }
+            done = 0
+            for future in as_completed(future_to_item):
+                w = future_to_item[future]
+                try:
+                    label, usage = future.result()
+                except Exception as exc:
+                    print(
+                        f"Phase 3 iter {iteration}: label call failed for "
+                        f"({w['id1']}, {w['id2']}): {exc!r}",
+                        flush=True,
+                    )
+                    continue
+                for k in ("prompt_tokens", "completion_tokens", "total_tokens"):
+                    usage_stats[k] += int(usage.get(k, 0) or 0)
+                    usage_stats[f"active_{k}"] += int(usage.get(k, 0) or 0)
+                new_rows.append(
+                    {
+                        "id1": w["id1"],
+                        "id2": w["id2"],
+                        "label": label,
+                        "similarity": w["similarity"],
+                        "al_source": f"phase3_{ensemble_mode}_probability_disagreement",
+                        "iteration": int(iteration),
+                        "phase3_conflict_count": w["phase3_conflict_count"],
+                        "phase3_votes_pos": w["phase3_votes_pos"],
+                        "phase3_votes_neg": w["phase3_votes_neg"],
+                    }
+                )
+                done += 1
+                if done % 50 == 0 or done == len(work_items):
+                    print(
+                        f"Phase 3 iter {iteration}: labeled {done}/{len(work_items)} "
+                        f"(workers={max_workers}, tokens={usage_stats['total_tokens']})",
+                        flush=True,
+                    )
 
         if not new_rows:
             rounds.append(
@@ -911,6 +951,16 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--left-emb", default="wdc_left_embeddings.npy")
     parser.add_argument("--right-emb", default="wdc_right_embeddings.npy")
     parser.add_argument("--model", default="gpt-5.2")
+    parser.add_argument(
+        "--api-base-url",
+        default="",
+        help="Override the OpenAI-compatible base URL (e.g. https://openrouter.ai/api/v1). Empty uses the default OpenAI endpoint.",
+    )
+    parser.add_argument(
+        "--api-key-env-var",
+        default="",
+        help="Env var name to read the API key from when --api-base-url is set. Defaults to OPENAI_API_KEY.",
+    )
     parser.add_argument("--faiss-k", type=int, default=20)
     parser.add_argument("--faiss-random-state", type=int, default=42)
     parser.add_argument("--candidate-cap", type=int, default=0)
@@ -953,6 +1003,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Optional explicit negative target for phase 2. Default derives from the final class ratio.",
     )
 
+    parser.add_argument(
+        "--llm-concurrency",
+        type=int,
+        default=1,
+        help="Number of concurrent LLM label calls during Phase 3. 1 = sequential. Recommended: 8-16 for OpenRouter.",
+    )
     parser.add_argument("--phase3-batch-size", type=int, default=500)
     parser.add_argument("--phase3-candidates", type=int, default=5000)
     parser.add_argument("--phase3-max-iterations", type=int, default=30)
@@ -1114,7 +1170,7 @@ def main() -> None:
         print(f"Preview mode: saved {preview_path}")
         return
 
-    client = OpenAI()
+    client = _make_openai_client(args.api_base_url, args.api_key_env_var)
     resumed_labeled: pd.DataFrame | None = None
     resumed_from: str | None = None
     if args.resume:
@@ -1294,6 +1350,7 @@ def main() -> None:
             ditto_max_field_len=ditto_max_field_len,
             ditto_inference_batch_size=int(args.phase3_ditto_inference_batch_size),
             classic_top_matchers=int(args.phase3_classic_top_matchers),
+            llm_concurrency=int(args.llm_concurrency),
         )
 
     final_df = labeled.copy()

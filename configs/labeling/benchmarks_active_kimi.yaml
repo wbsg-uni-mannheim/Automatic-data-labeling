@@ -4,12 +4,12 @@ defaults:
   runner_script: scripts/labeling/run_three_phase_labeling.py
   random_profile_enabled: true
   random_profile_fraction: 0.20
-  random_profile_model: qwen/qwen3.6-plus
+  random_profile_model: moonshotai/kimi-k2.6
   random_profile_seed: 42
   random_profile_api_base_url: https://openrouter.ai/api/v1
   random_profile_api_key_env_var: OPEN_ROUTER_API_KEY
   labeling_args:
-    model: qwen/qwen3.6-plus
+    model: moonshotai/kimi-k2.6
     api_base_url: https://openrouter.ai/api/v1
     api_key_env_var: OPEN_ROUTER_API_KEY
     faiss_k: 20
@@ -75,10 +75,10 @@ benchmarks:
       phase2_target_size: 1000
       phase3_batch_size: 500
       phase3_ensemble_mode: ditto_only
-      model: qwen/qwen3.6-plus
+      model: moonshotai/kimi-k2.6
       api_base_url: https://openrouter.ai/api/v1
       api_key_env_var: OPEN_ROUTER_API_KEY
-    random_profile_model: qwen/qwen3.6-plus
+    random_profile_model: moonshotai/kimi-k2.6
     random_profile_api_base_url: https://openrouter.ai/api/v1
     random_profile_api_key_env_var: OPEN_ROUTER_API_KEY
     profiles:

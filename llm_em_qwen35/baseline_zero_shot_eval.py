@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-# Import unsloth first to apply its transformers/trl patches before any other
-# imports touch those modules (see train_unsloth_lora.py for the full story).
-from unsloth import FastLanguageModel
-
 import argparse
 import json
 import re
@@ -15,6 +11,7 @@ import pandas as pd
 import torch
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from tqdm import tqdm
+from unsloth import FastLanguageModel
 from transformers import AutoTokenizer
 
 
@@ -62,38 +59,40 @@ def parse_yes_no(text: str) -> int | None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Evaluate a Qwen3.5 EM LoRA adapter on SFT JSONL.")
+    parser = argparse.ArgumentParser(description="Zero-shot baseline eval for Qwen3.5 on an EM SFT JSONL split.")
     parser.add_argument("--data-path", required=True)
-    parser.add_argument("--model-path", required=True, help="Adapter dir produced by train_unsloth_lora.py")
-    parser.add_argument("--base-model-name", default="Qwen/Qwen3.5-9B", help="Base model for loading a plain text tokenizer")
+    parser.add_argument("--model-name", default="Qwen/Qwen3.5-9B")
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--max-seq-length", type=int, default=2048)
     parser.add_argument("--max-new-tokens", type=int, default=16)
     parser.add_argument("--temperature", type=float, default=0.0)
+    parser.add_argument("--limit", type=int, default=0, help="Evaluate only first N rows (0 = all)")
     args = parser.parse_args()
 
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     rows = load_jsonl(Path(args.data_path))
+    if args.limit > 0:
+        rows = rows[: args.limit]
 
-    model, _processor = FastLanguageModel.from_pretrained(
-        model_name=args.model_path,
+    model, processor = FastLanguageModel.from_pretrained(
+        model_name=args.model_name,
         max_seq_length=args.max_seq_length,
         load_in_4bit=False,
         load_in_16bit=True,
     )
     FastLanguageModel.for_inference(model)
 
-    # Use the plain text tokenizer from the base model (the LoRA adapter dir
-    # typically saves the text tokenizer, but the base has it for sure).
-    tokenizer = AutoTokenizer.from_pretrained(args.base_model_name)
+    # Qwen3.5-9B loads a multimodal Qwen3VLProcessor whose __call__ treats the
+    # first positional arg as images. Use the plain text tokenizer for prompting.
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
     records: List[Dict[str, Any]] = []
     y_true: List[int] = []
     y_pred: List[int] = []
     parse_failures = 0
 
-    for row in tqdm(rows, desc="evaluate"):
+    for row in tqdm(rows, desc="zero-shot eval"):
         prompt_messages = strip_gold_answer(row["messages"])
         prompt = apply_chat_template(tokenizer, prompt_messages, add_generation_prompt=True)
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
@@ -126,6 +125,8 @@ def main() -> None:
         )
 
     metrics = {
+        "model_name": args.model_name,
+        "data_path": str(args.data_path),
         "rows": len(rows),
         "parse_failures": parse_failures,
         "accuracy": accuracy_score(y_true, y_pred),

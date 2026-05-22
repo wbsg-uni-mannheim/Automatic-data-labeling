@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import re
 import time
 from datetime import datetime
@@ -15,6 +16,23 @@ import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
 from openai import OpenAI
+
+
+def _make_openai_client(api_base_url: str | None, api_key_env_var: str | None) -> OpenAI:
+    base_url = (api_base_url or "").strip() or None
+    env_var = (api_key_env_var or "").strip() or None
+    if base_url is None and env_var is None:
+        return OpenAI()
+    if env_var is None:
+        env_var = "OPENAI_API_KEY"
+    api_key = os.getenv(env_var)
+    if not api_key:
+        raise RuntimeError(f"Missing {env_var} in environment or .env")
+    kwargs: Dict[str, Any] = {"api_key": api_key}
+    if base_url:
+        kwargs["base_url"] = base_url
+        kwargs["default_headers"] = {"X-Title": "automatic-data-labeling"}
+    return OpenAI(**kwargs)
 from sklearn.ensemble import ExtraTreesClassifier, HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
@@ -426,18 +444,35 @@ def _label_pair(
         {"role": "user", "content": user_prompt},
     ]
 
-    for attempt in range(2):
-        resp = client.chat.completions.create(model=model, messages=messages)
+    max_attempts = 4
+    for attempt in range(max_attempts):
+        try:
+            resp = client.chat.completions.create(model=model, messages=messages)
+        except Exception as exc:  # transient API errors (timeouts, 5xx, rate limits)
+            if attempt < max_attempts - 1:
+                time.sleep(min(2 ** attempt, 8))
+                continue
+            raise
+
         usage = getattr(resp, "usage", None)
         usage_payload["prompt_tokens"] += int(getattr(usage, "prompt_tokens", 0) or 0)
         usage_payload["completion_tokens"] += int(getattr(usage, "completion_tokens", 0) or 0)
         usage_payload["total_tokens"] += int(getattr(usage, "total_tokens", 0) or 0)
 
-        text = (resp.choices[0].message.content or "")
+        choices = getattr(resp, "choices", None) or []
+        if not choices:
+            # Provider sometimes returns no choices (e.g. upstream filter, transient error).
+            if attempt < max_attempts - 1:
+                time.sleep(min(2 ** attempt, 8))
+                continue
+            raise ValueError(f"Model response has no choices: {resp!r}")
+
+        message = getattr(choices[0], "message", None)
+        text = (getattr(message, "content", None) or "") if message is not None else ""
         try:
             return _parse_label(text), usage_payload
         except ValueError:
-            if attempt == 0:
+            if attempt < max_attempts - 1:
                 messages = [
                     {"role": "system", "content": system_prompt},
                     {
@@ -1640,6 +1675,16 @@ def main() -> None:
     parser.add_argument("--left-emb", default="wdc_left_embeddings.npy")
     parser.add_argument("--right-emb", default="wdc_right_embeddings.npy")
     parser.add_argument("--model", default="gpt-5.2")
+    parser.add_argument(
+        "--api-base-url",
+        default="",
+        help="Override the OpenAI-compatible base URL (e.g. https://openrouter.ai/api/v1). Empty uses the default OpenAI endpoint.",
+    )
+    parser.add_argument(
+        "--api-key-env-var",
+        default="",
+        help="Env var name to read the API key from when --api-base-url is set. Defaults to OPENAI_API_KEY.",
+    )
     parser.add_argument("--faiss-k", type=int, default=20)
     parser.add_argument("--faiss-random-state", type=int, default=42)
     parser.add_argument("--candidate-cap", type=int, default=0, help="0 means no cap (query all left entities)")
@@ -1859,7 +1904,7 @@ def main() -> None:
         print(f"Saved preview: {preview_path}")
         return
 
-    client = OpenAI()
+    client = _make_openai_client(args.api_base_url, args.api_key_env_var)
     resumed_labeled: pd.DataFrame | None = None
     resumed_from: str | None = None
     if args.resume:

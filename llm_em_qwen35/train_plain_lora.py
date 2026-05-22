@@ -1,125 +1,111 @@
 #!/usr/bin/env python3
-from __future__ import annotations
+"""Plain transformers + peft LoRA SFT training.
 
-# Unsloth MUST be imported before trl/transformers/peft. It patches trl.SFTConfig
-# and trl.SFTTrainer at import time. Otherwise SFTTrainer hits an isinstance
-# mismatch, calls TrainingArguments.to_dict() (which in transformers 5.x redacts
-# any *_token field to the literal sentinel "<EOS_TOKEN>"), rebuilds SFTConfig
-# with the sentinel baked in, then fails vocab lookup at validation time.
-from unsloth import FastLanguageModel
+Use this for models unsloth 2026.4.6 doesn't properly support, e.g. the MoE
+openai/gpt-oss-20b (unsloth_zoo has only a `temporary_patches/gpt_oss.py`
+WIP patch). For unsloth-supported models, prefer train_unsloth_lora.py (~2x
+faster).
+"""
+from __future__ import annotations
 
 import argparse
 import json
 from pathlib import Path
 
+import torch
 from datasets import load_dataset
+from peft import LoraConfig, get_peft_model
+from transformers import AutoModelForCausalLM, AutoTokenizer, EarlyStoppingCallback
 from trl import SFTConfig, SFTTrainer
-from transformers import AutoTokenizer, EarlyStoppingCallback
 
 
-def build_text_formatter(tokenizer):
+def build_text_formatter(tokenizer, *, reasoning_effort: str = "low"):
     def apply_chat_template(messages, *, add_generation_prompt: bool) -> str:
-        kwargs = {
-            "tokenize": False,
-            "add_generation_prompt": add_generation_prompt,
-            "enable_thinking": False,
-        }
+        kwargs = {"tokenize": False, "add_generation_prompt": add_generation_prompt}
+        # gpt-oss harmony templates accept reasoning_effort; other templates
+        # will raise TypeError, in which case fall back to the default call.
         try:
-            return tokenizer.apply_chat_template(messages, **kwargs)
+            return tokenizer.apply_chat_template(messages, reasoning_effort=reasoning_effort, **kwargs)
         except TypeError:
-            kwargs.pop("enable_thinking", None)
             return tokenizer.apply_chat_template(messages, **kwargs)
 
     def formatter(example):
-        # Unsloth's patched SFTTrainer requires formatting_func to return a
-        # list[str]. It invokes the func both per-example (test call in
-        # _prepare_dataset) and per-batch. Handle both by inspecting the
-        # shape of example["messages"].
         messages = example["messages"]
+        # trl calls this per-example and per-batch; detect the shape and
+        # always return list[str].
         if messages and isinstance(messages[0], dict):
-            # Single example: messages is a list of chat turns.
             return [apply_chat_template(messages, add_generation_prompt=False)]
-        # Batched: messages is a list of message-lists.
         return [apply_chat_template(m, add_generation_prompt=False) for m in messages]
 
     return formatter
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Fine-tune Qwen3.5-9B for entity matching with bf16 LoRA.")
-    parser.add_argument("--data-dir", required=True, help="Directory containing train.jsonl and valid.jsonl")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--data-dir", required=True)
     parser.add_argument("--output-dir", required=True)
-    parser.add_argument("--model-name", default="Qwen/Qwen3.5-9B")
+    parser.add_argument("--model-name", default="openai/gpt-oss-20b")
     parser.add_argument("--max-seq-length", type=int, default=2048)
-    parser.add_argument("--per-device-train-batch-size", type=int, default=2)
-    parser.add_argument("--gradient-accumulation-steps", type=int, default=8)
+    parser.add_argument("--per-device-train-batch-size", type=int, default=1)
+    parser.add_argument("--gradient-accumulation-steps", type=int, default=16)
     parser.add_argument("--num-train-epochs", type=float, default=3.0)
-    parser.add_argument("--learning-rate", type=float, default=2e-4)
+    parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--warmup-ratio", type=float, default=0.05)
     parser.add_argument("--lora-r", type=int, default=16)
     parser.add_argument("--lora-alpha", type=int, default=None)
     parser.add_argument(
         "--lora-target-modules",
-        default="q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj",
-        help="Comma-separated list. Default covers attention + MLP. For MoE "
-        "models like gpt-oss whose MLP is expert-routed, pass only attention "
-        "modules (e.g. q_proj,k_proj,v_proj,o_proj).",
+        default="q_proj,k_proj,v_proj,o_proj",
+        help="MoE models: stay attention-only (skip experts / grouped_mm)",
     )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--logging-steps", type=int, default=10)
-    parser.add_argument("--eval-steps", type=int, default=100)
-    parser.add_argument("--save-steps", type=int, default=100)
-    parser.add_argument("--save-total-limit", type=int, default=2)
+    parser.add_argument("--eval-steps", type=int, default=50)
+    parser.add_argument("--save-steps", type=int, default=50)
+    parser.add_argument("--save-total-limit", type=int, default=3)
+    parser.add_argument("--early-stopping-patience", type=int, default=0)
+    parser.add_argument("--early-stopping-threshold", type=float, default=0.0)
+    parser.add_argument("--load-best-model-at-end", action="store_true")
     parser.add_argument("--dataset-num-proc", type=int, default=1)
-    parser.add_argument(
-        "--early-stopping-patience",
-        type=int,
-        default=0,
-        help="Number of eval_steps with no eval_loss improvement before stopping. 0 disables.",
-    )
-    parser.add_argument(
-        "--early-stopping-threshold",
-        type=float,
-        default=0.0,
-        help="Minimum eval_loss improvement to count as non-stagnant.",
-    )
-    parser.add_argument(
-        "--load-best-model-at-end",
-        action="store_true",
-        help="Restore the best-eval checkpoint before saving the final adapter.",
-    )
-    parser.add_argument("--report-to", default="none", help="Set to wandb if desired")
+    parser.add_argument("--reasoning-effort", default="low")
+    parser.add_argument("--report-to", default="none")
     args = parser.parse_args()
 
     data_dir = Path(args.data_dir)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    model, processor = FastLanguageModel.from_pretrained(
-        model_name=args.model_name,
-        max_seq_length=args.max_seq_length,
-        load_in_4bit=False,
-        load_in_16bit=True,
-        full_finetuning=False,
-    )
-
-    # Qwen3.5-9B loads as a multimodal Qwen3VLProcessor; we want text-only SFT,
-    # so pass a plain AutoTokenizer to TRL instead of the VL processor.
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
 
-    lora_alpha = args.lora_alpha if args.lora_alpha is not None else args.lora_r
-    target_modules = [x.strip() for x in args.lora_target_modules.split(",") if x.strip()]
-    model = FastLanguageModel.get_peft_model(
-        model,
-        r=args.lora_r,
-        target_modules=target_modules,
-        lora_alpha=lora_alpha,
-        lora_dropout=0,
-        bias="none",
-        use_gradient_checkpointing="unsloth",
-        random_state=args.seed,
-        max_seq_length=args.max_seq_length,
+    print(f"loading model {args.model_name}")
+    model = AutoModelForCausalLM.from_pretrained(
+        args.model_name,
+        dtype=torch.bfloat16,
+        device_map="auto",
     )
+    model.config.use_cache = False
+
+    target_modules = [x.strip() for x in args.lora_target_modules.split(",") if x.strip()]
+    lora_alpha = args.lora_alpha if args.lora_alpha is not None else args.lora_r
+    peft_cfg = LoraConfig(
+        r=args.lora_r,
+        lora_alpha=lora_alpha,
+        target_modules=target_modules,
+        lora_dropout=0.0,
+        bias="none",
+        task_type="CAUSAL_LM",
+    )
+    model = get_peft_model(model, peft_cfg)
+    model.print_trainable_parameters()
+
+    # Gradient checkpointing for memory. use_reentrant=False plays nicer with
+    # PEFT adapters.
+    model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+    # enable_input_require_grads is needed with gradient checkpointing + PEFT
+    if hasattr(model, "enable_input_require_grads"):
+        model.enable_input_require_grads()
 
     dataset = load_dataset(
         "json",
@@ -129,8 +115,6 @@ def main() -> None:
         },
     )
 
-    # For early-stopping + best-model reload, save_steps must equal eval_steps
-    # so that every eval has a matching checkpoint to possibly restore.
     use_early_stopping = args.early_stopping_patience > 0
     effective_save_steps = (
         args.eval_steps if (use_early_stopping or args.load_best_model_at_end) else args.save_steps
@@ -153,13 +137,15 @@ def main() -> None:
         load_best_model_at_end=load_best,
         metric_for_best_model="eval_loss",
         greater_is_better=False,
-        optim="adamw_8bit",
+        optim="adamw_torch",
         bf16=True,
         fp16=False,
         packing=False,
         seed=args.seed,
         dataset_num_proc=args.dataset_num_proc,
         report_to=[] if args.report_to == "none" else [args.report_to],
+        gradient_checkpointing=True,
+        max_grad_norm=1.0,
     )
 
     callbacks = []
@@ -176,7 +162,7 @@ def main() -> None:
         processing_class=tokenizer,
         train_dataset=dataset["train"],
         eval_dataset=dataset["validation"],
-        formatting_func=build_text_formatter(tokenizer),
+        formatting_func=build_text_formatter(tokenizer, reasoning_effort=args.reasoning_effort),
         args=training_args,
         callbacks=callbacks,
     )

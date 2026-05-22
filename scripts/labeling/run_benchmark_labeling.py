@@ -6,6 +6,7 @@ import importlib.util
 import json
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -15,7 +16,6 @@ import numpy as np
 import pandas as pd
 import yaml
 from dotenv import load_dotenv
-from openai import OpenAI
 
 POSITIVE_LABELS = {"TRUE", "1", "YES", "Y", "T"}
 NEGATIVE_LABELS = {"FALSE", "0", "NO", "N", "F"}
@@ -41,6 +41,7 @@ _count_labels = base._count_labels
 _estimate_usage_costs = base._estimate_usage_costs
 _label_pair = base._label_pair
 _load_df = base._load_df
+_make_openai_client = base._make_openai_client
 _materialize_output_ids = base._materialize_output_ids
 
 
@@ -448,11 +449,27 @@ def _resolve_random_profile_settings(defaults: Dict[str, Any], benchmark_cfg: Di
             defaults.get("random_profile_model", benchmark_cfg.get("model", defaults.get("model", "gpt-5.2"))),
         )
     ).strip() or "gpt-5.2"
+    api_base_url = str(
+        benchmark_cfg.get(
+            "random_profile_api_base_url",
+            defaults.get("random_profile_api_base_url", ""),
+        )
+        or ""
+    ).strip()
+    api_key_env_var = str(
+        benchmark_cfg.get(
+            "random_profile_api_key_env_var",
+            defaults.get("random_profile_api_key_env_var", ""),
+        )
+        or ""
+    ).strip()
     return {
         "enabled": bool(enabled and fraction > 0.0),
         "fraction": float(max(0.0, fraction)),
         "seed": int(seed),
         "model": model,
+        "api_base_url": api_base_url,
+        "api_key_env_var": api_key_env_var,
     }
 
 
@@ -504,6 +521,9 @@ def _build_random_profile_labels(
     sample_n: int,
     model: str,
     seed: int,
+    api_base_url: str = "",
+    api_key_env_var: str = "",
+    llm_concurrency: int = 1,
 ) -> tuple[pd.DataFrame, Dict[str, int], Dict[str, Any]]:
     candidates_path = run_dir / "random_profile_candidates.csv"
     labels_path = run_dir / "random_profile_labels.csv"
@@ -575,35 +595,55 @@ def _build_random_profile_labels(
             right_canonical=right_canonical,
         )
     load_dotenv()
-    client = OpenAI()
+    client = _make_openai_client(api_base_url, api_key_env_var)
     new_rows: List[Dict[str, object]] = []
-    for idx, row in remaining.iterrows():
-        rid1 = str(row["id1"])
-        rid2 = str(row["id2"])
-        label, usage = _label_pair(client, model, left_map[rid1], right_map[rid2])
-        usage_stats["prompt_tokens"] += int(usage.get("prompt_tokens", 0) or 0)
-        usage_stats["completion_tokens"] += int(usage.get("completion_tokens", 0) or 0)
-        usage_stats["total_tokens"] += int(usage.get("total_tokens", 0) or 0)
-        new_rows.append(
-            {
-                "id1": rid1,
-                "id2": rid2,
+    work_items: List[Dict[str, object]] = []
+    for _, row in remaining.iterrows():
+        work_items.append({
+            "id1": str(row["id1"]),
+            "id2": str(row["id2"]),
+            "similarity": float(row.get("similarity", 0.0) or 0.0),
+        })
+
+    max_workers = max(1, int(llm_concurrency))
+    completed = 0
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_item = {
+            executor.submit(_label_pair, client, model, left_map[w["id1"]], right_map[w["id2"]]): w
+            for w in work_items
+        }
+        for future in as_completed(future_to_item):
+            w = future_to_item[future]
+            try:
+                label, usage = future.result()
+            except Exception as exc:
+                print(
+                    f"Random profile labeling: call failed for "
+                    f"({w['id1']}, {w['id2']}): {exc!r}",
+                    flush=True,
+                )
+                continue
+            for k in ("prompt_tokens", "completion_tokens", "total_tokens"):
+                usage_stats[k] += int(usage.get(k, 0) or 0)
+            new_rows.append({
+                "id1": w["id1"],
+                "id2": w["id2"],
                 "label": label,
-                "similarity": float(row.get("similarity", 0.0) or 0.0),
-            }
-        )
-        if (idx + 1) % 10 == 0 or (idx + 1) == len(remaining):
-            new_checkpoint_rows = pd.DataFrame(new_rows)
-            if not new_checkpoint_rows.empty:
-                new_checkpoint_rows = _materialize_output_ids(new_checkpoint_rows, left_rid_to_id, right_rid_to_id)
-            checkpoint = pd.concat([labeled_random, new_checkpoint_rows], ignore_index=True)
-            checkpoint.to_csv(labels_path, index=False)
-            _write_json(usage_path, usage_stats)
-            print(
-                f"Random profile labeling: labeled {len(checkpoint)}/{len(sampled)} "
-                f"(tokens={usage_stats['total_tokens']})",
-                flush=True,
-            )
+                "similarity": w["similarity"],
+            })
+            completed += 1
+            if completed % 50 == 0 or completed == len(work_items):
+                new_checkpoint_rows = pd.DataFrame(new_rows)
+                if not new_checkpoint_rows.empty:
+                    new_checkpoint_rows = _materialize_output_ids(new_checkpoint_rows, left_rid_to_id, right_rid_to_id)
+                checkpoint = pd.concat([labeled_random, new_checkpoint_rows], ignore_index=True)
+                checkpoint.to_csv(labels_path, index=False)
+                _write_json(usage_path, usage_stats)
+                print(
+                    f"Random profile labeling: labeled {len(checkpoint)}/{len(sampled)} "
+                    f"(workers={max_workers}, tokens={usage_stats['total_tokens']})",
+                    flush=True,
+                )
 
     labeled_random = pd.read_csv(labels_path).reset_index(drop=True)
     return labeled_random, usage_stats, {
@@ -807,6 +847,9 @@ def main() -> None:
                 sample_n=max_random_additions,
                 model=str(random_profile_settings["model"]),
                 seed=int(random_profile_settings["seed"]),
+                api_base_url=str(random_profile_settings.get("api_base_url", "") or ""),
+                api_key_env_var=str(random_profile_settings.get("api_key_env_var", "") or ""),
+                llm_concurrency=int(labeling_args.get("llm_concurrency", 1) or 1),
             )
             manifest["random_profile_usage"] = random_usage
             manifest["random_profile_cost"] = _estimate_usage_costs(str(random_profile_settings["model"]), random_usage)
