@@ -59,7 +59,10 @@ _load_json = base._load_json
 _load_resume_labels = base._load_resume_labels
 _load_seed_for_summary = base._load_seed_for_summary
 _make_openai_client = base._make_openai_client
+_made_target_progress = base._made_target_progress
 _materialize_output_ids = base._materialize_output_ids
+_ensure_label_metadata = base._ensure_label_metadata
+_pair_label_columns = base._pair_label_columns
 _parse_field_list_arg = base._parse_field_list_arg
 _parse_schema_map_arg = base._parse_schema_map_arg
 _plan_adaptive_round = base._plan_adaptive_round
@@ -539,7 +542,7 @@ def _rank_probability_disagreements(
             vote_entropy = float(-(p * np.log2(p) + (1.0 - p) * np.log2(1.0 - p)))
         mean_score = float(np.mean(scores))
         score_variance = float(np.var(scores))
-        if score_variance <= 0.0 and vote_entropy <= 0.0:
+        if score_variance <= 1e-12 and vote_entropy <= 1e-12:
             continue
         rows.append(
             {
@@ -575,6 +578,88 @@ def _rank_probability_disagreements(
     return pd.DataFrame(rows).sort_values(
         ["score_variance", "vote_entropy", "mean_margin", "conflict_count"],
         ascending=[False, False, True, False],
+    ).reset_index(drop=True)
+
+
+def _rank_probability_uncertainty(
+    correspondences_list: List[Dict[str, object]],
+) -> pd.DataFrame:
+    valid = [
+        result
+        for result in correspondences_list
+        if isinstance(result.get("correspondences"), pd.DataFrame) and not result["correspondences"].empty
+    ]
+    if not valid:
+        return pd.DataFrame(
+            columns=[
+                "id1",
+                "id2",
+                "model_count",
+                "votes_pos",
+                "votes_neg",
+                "conflict_count",
+                "score_variance",
+                "mean_score",
+                "mean_margin",
+            ]
+        )
+
+    pair_payloads: Dict[Tuple[str, str], Dict[str, List[float]]] = {}
+    for result in valid:
+        corr = result["correspondences"].copy()
+        corr["score"] = pd.to_numeric(corr["score"], errors="coerce")
+        threshold = float(result.get("threshold", 0.5) or 0.5)
+        for _, row in corr.iterrows():
+            score = row["score"]
+            if pd.isna(score):
+                continue
+            key = (str(row["id1"]), str(row["id2"]))
+            payload = pair_payloads.setdefault(key, {"scores": [], "votes": []})
+            s = float(score)
+            payload["scores"].append(s)
+            payload["votes"].append(1.0 if s >= threshold else 0.0)
+
+    rows: List[Dict[str, object]] = []
+    for (id1, id2), payload in pair_payloads.items():
+        scores = payload["scores"]
+        votes = payload["votes"]
+        if not scores:
+            continue
+        votes_pos = int(sum(votes))
+        votes_neg = int(len(votes) - votes_pos)
+        mean_score = float(np.mean(scores))
+        rows.append(
+            {
+                "id1": id1,
+                "id2": id2,
+                "model_count": int(len(scores)),
+                "votes_pos": votes_pos,
+                "votes_neg": votes_neg,
+                "conflict_count": int(min(votes_pos, votes_neg)),
+                "score_variance": float(np.var(scores)),
+                "mean_score": mean_score,
+                "mean_margin": float(abs(mean_score - 0.5)),
+            }
+        )
+
+    if not rows:
+        return pd.DataFrame(
+            columns=[
+                "id1",
+                "id2",
+                "model_count",
+                "votes_pos",
+                "votes_neg",
+                "conflict_count",
+                "score_variance",
+                "mean_score",
+                "mean_margin",
+            ]
+        )
+
+    return pd.DataFrame(rows).sort_values(
+        ["mean_margin", "score_variance"],
+        ascending=[True, False],
     ).reset_index(drop=True)
 
 
@@ -647,7 +732,8 @@ def _run_phase3_active_learning(
     classic_top_matchers: int,
     llm_concurrency: int = 1,
 ) -> Tuple[pd.DataFrame, Dict[str, object]]:
-    training_set = labeled[["id1", "id2", "label", "similarity"]].copy()
+    training_set = labeled[_pair_label_columns(labeled)].copy()
+    training_set = _ensure_label_metadata(training_set, default_stage="seed", default_iteration=0)
     training_set["id1"] = training_set["id1"].astype(str)
     training_set["id2"] = training_set["id2"].astype(str)
     training_set["label"] = training_set["label"].astype(str).str.upper().str.strip()
@@ -774,22 +860,29 @@ def _run_phase3_active_learning(
                 classic_matchers_used = [str(x.get("matcher", "")) for x in top_classic]
 
         disagreements = _rank_probability_disagreements(correspondences_list)
+        selection_strategy = "probability_disagreement"
         if disagreements.empty:
+            selection = _rank_probability_uncertainty(correspondences_list)
+            selection_strategy = "probability_uncertainty"
+        else:
+            selection = disagreements
+
+        if selection.empty:
             rounds.append(
                 {
                     "iteration": int(iteration),
                     "status": "stopped",
-                    "reason": "no_probability_disagreements",
+                    "reason": "no_probability_selection_candidates",
                     "ensemble_mode": ensemble_mode,
                 }
             )
             break
 
-        select = disagreements.merge(pool[["id1", "id2", "similarity"]], on=["id1", "id2"], how="left")
+        select = selection.merge(pool[["id1", "id2", "similarity"]], on=["id1", "id2"], how="left")
         select = select.head(quota).reset_index(drop=True)
         print(
             f"Phase 3 iter {iteration}: selected {len(select)} pairs "
-            f"from {len(disagreements)} probability disagreements using mode={ensemble_mode}",
+            f"from {len(selection)} {selection_strategy} candidates using mode={ensemble_mode}",
             flush=True,
         )
         if select.empty:
@@ -799,6 +892,7 @@ def _run_phase3_active_learning(
                     "status": "stopped",
                     "reason": "no_pairs_selected",
                     "ensemble_mode": ensemble_mode,
+                    "selection_strategy": selection_strategy,
                 }
             )
             break
@@ -824,6 +918,7 @@ def _run_phase3_active_learning(
                     "phase3_conflict_count": int(row.get("conflict_count", 0) or 0),
                     "phase3_votes_pos": int(row.get("votes_pos", 0) or 0),
                     "phase3_votes_neg": int(row.get("votes_neg", 0) or 0),
+                    "phase3_selection_strategy": selection_strategy,
                 }
             )
             labeled_pairs.add((id1, id2))
@@ -855,11 +950,14 @@ def _run_phase3_active_learning(
                         "id2": w["id2"],
                         "label": label,
                         "similarity": w["similarity"],
-                        "al_source": f"phase3_{ensemble_mode}_probability_disagreement",
+                        "al_source": f"phase3_{ensemble_mode}_{w['phase3_selection_strategy']}",
                         "iteration": int(iteration),
                         "phase3_conflict_count": w["phase3_conflict_count"],
                         "phase3_votes_pos": w["phase3_votes_pos"],
                         "phase3_votes_neg": w["phase3_votes_neg"],
+                        "phase3_selection_strategy": w["phase3_selection_strategy"],
+                        "label_iteration": int(iteration),
+                        "label_stage": "phase3_active_learning",
                     }
                 )
                 done += 1
@@ -884,7 +982,16 @@ def _run_phase3_active_learning(
         add_df = pd.DataFrame(new_rows)
         training_set = pd.concat([training_set, add_df], ignore_index=True)
         training_set = training_set.drop_duplicates(subset=["id1", "id2"], keep="last").reset_index(drop=True)
+        prev_pos, prev_neg = cur_pos, cur_neg
         cur_pos, cur_neg = _count_labels(training_set)
+        target_progress = _made_target_progress(
+            prev_pos=prev_pos,
+            prev_neg=prev_neg,
+            cur_pos=cur_pos,
+            cur_neg=cur_neg,
+            target_pos=target_pos,
+            target_neg=target_neg,
+        )
         print(
             f"Phase 3 iter {iteration}: added {len(add_df)} labels "
             f"in {time.perf_counter() - label_t0:.1f}s; totals pos={cur_pos}, neg={cur_neg}",
@@ -895,10 +1002,13 @@ def _run_phase3_active_learning(
                 "iteration": int(iteration),
                 "status": "ok",
                 "ensemble_mode": ensemble_mode,
+                "selection_strategy": selection_strategy,
                 "pool_size": int(len(pool)),
                 "disagreements_found": int(len(disagreements)),
+                "selection_candidates": int(len(selection)),
                 "selected_pairs": int(len(select)),
                 "new_labels": int(len(add_df)),
+                "target_progress": bool(target_progress),
                 "total_size": int(len(training_set)),
                 "total_pos": int(cur_pos),
                 "total_neg": int(cur_neg),
@@ -924,6 +1034,9 @@ def _run_phase3_active_learning(
                 "token_usage": usage_stats,
             },
         )
+        if not target_progress and cur_pos < target_pos:
+            print("Phase 3: no positive-target progress in this round, stopping early.", flush=True)
+            break
 
     final_pos, final_neg = _count_labels(training_set)
     return training_set, {
@@ -976,8 +1089,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
     parser.add_argument("--target-size", type=int, default=2500)
     parser.add_argument("--target-positives", type=int, default=500)
-    parser.add_argument("--labels-per-iteration", type=int, default=100)
-    parser.add_argument("--active-candidates", type=int, default=5000)
+    parser.add_argument("--labels-per-iteration", type=int, default=500)
+    parser.add_argument("--active-candidates", type=int, default=20000)
     parser.add_argument("--active-top-matchers", type=int, default=5)
     parser.add_argument("--max-iterations", type=int, default=30)
     parser.add_argument("--adaptive-round-size", type=int, default=0)
@@ -1010,7 +1123,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Number of concurrent LLM label calls during Phase 3. 1 = sequential. Recommended: 8-16 for OpenRouter.",
     )
     parser.add_argument("--phase3-batch-size", type=int, default=500)
-    parser.add_argument("--phase3-candidates", type=int, default=5000)
+    parser.add_argument("--phase3-candidates", type=int, default=20000)
     parser.add_argument("--phase3-max-iterations", type=int, default=30)
     parser.add_argument(
         "--phase3-ensemble-mode",
@@ -1286,6 +1399,8 @@ def main() -> None:
                 active_candidates=args.active_candidates,
                 active_top_matchers=args.active_top_matchers,
                 max_iterations=args.max_iterations,
+                llm_concurrency=int(args.llm_concurrency),
+                label_stage="phase2_active_learning",
                 max_total_labels_override=budget,
                 usage_stats=usage_stats,
             )
@@ -1306,8 +1421,15 @@ def main() -> None:
             _materialize_output_ids(labeled, left_rid_to_id, right_rid_to_id).to_csv(
                 run_dir / "active_labels_latest.csv", index=False
             )
-            if pos <= prev_pos and neg <= prev_neg:
-                print("Phase 2: no class progress in this round, stopping early.", flush=True)
+            if not _made_target_progress(
+                prev_pos=prev_pos,
+                prev_neg=prev_neg,
+                cur_pos=pos,
+                cur_neg=neg,
+                target_pos=round_target_pos,
+                target_neg=round_target_neg,
+            ) and pos < round_target_pos:
+                print("Phase 2: no positive-target progress in this round, stopping early.", flush=True)
                 break
 
     ditto_cfg, ditto_max_field_len = _build_phase3_ditto_config(args)

@@ -103,6 +103,96 @@ def test_rank_probability_disagreements_prioritizes_score_variance() -> None:
     assert ((ranked["id1"] == "e") & (ranked["id2"] == "f")).any()
 
 
+def test_rank_probability_uncertainty_handles_no_disagreements() -> None:
+    module = _load_module()
+
+    correspondences = [
+        {
+            "matcher": "m1",
+            "threshold": 0.5,
+            "correspondences": pd.DataFrame(
+                [
+                    {"id1": "a", "id2": "b", "score": 0.51},
+                    {"id1": "c", "id2": "d", "score": 0.80},
+                    {"id1": "e", "id2": "f", "score": 0.62},
+                ]
+            ),
+        },
+        {
+            "matcher": "m2",
+            "threshold": 0.5,
+            "correspondences": pd.DataFrame(
+                [
+                    {"id1": "a", "id2": "b", "score": 0.51},
+                    {"id1": "c", "id2": "d", "score": 0.80},
+                    {"id1": "e", "id2": "f", "score": 0.62},
+                ]
+            ),
+        },
+        {
+            "matcher": "m3",
+            "threshold": 0.5,
+            "correspondences": pd.DataFrame(
+                [
+                    {"id1": "a", "id2": "b", "score": 0.51},
+                    {"id1": "c", "id2": "d", "score": 0.80},
+                    {"id1": "e", "id2": "f", "score": 0.62},
+                ]
+            ),
+        },
+    ]
+
+    disagreements = module._rank_probability_disagreements(correspondences)
+    ranked = module._rank_probability_uncertainty(correspondences)
+
+    assert disagreements.empty
+    assert ranked[["id1", "id2"]].iloc[0].to_dict() == {"id1": "a", "id2": "b"}
+    assert ranked.iloc[0]["mean_margin"] < ranked.iloc[1]["mean_margin"]
+
+
+def test_made_target_progress_ignores_already_satisfied_class_overshoot() -> None:
+    module = _load_module()
+
+    assert module._made_target_progress(
+        prev_pos=10,
+        prev_neg=20,
+        cur_pos=10,
+        cur_neg=30,
+        target_pos=12,
+        target_neg=20,
+    ) is False
+    assert module._made_target_progress(
+        prev_pos=12,
+        prev_neg=20,
+        cur_pos=12,
+        cur_neg=30,
+        target_pos=12,
+        target_neg=35,
+    ) is True
+
+
+def test_label_metadata_fills_seed_and_active_iterations() -> None:
+    module = _load_module()
+    df = pd.DataFrame(
+        [
+            {"id1": "a", "id2": "b", "label": "TRUE", "similarity": 0.9},
+            {
+                "id1": "c",
+                "id2": "d",
+                "label": "FALSE",
+                "similarity": 0.2,
+                "iteration": 3,
+                "al_source": "uncertainty_mean_score",
+            },
+        ]
+    )
+
+    out = module._ensure_label_metadata(df, default_stage="seed", default_iteration=0)
+
+    assert out["label_iteration"].tolist() == [0, 3]
+    assert out["label_stage"].tolist() == ["seed", "active_learning"]
+
+
 def test_remaining_class_budget_uses_class_deficits_not_total_size() -> None:
     module = _load_module()
 

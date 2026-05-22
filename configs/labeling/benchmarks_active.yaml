@@ -22,8 +22,8 @@ defaults:
     seed_batch_size: 5
     seed_bottom_k: 2
     seed_query_order: random
-    labels_per_iteration: 100
-    active_candidates: 5000
+    labels_per_iteration: 500
+    active_candidates: 20000
     max_iterations: 3_00
     adaptive_round_size: 0
     adaptive_neg_min_share: 0.30

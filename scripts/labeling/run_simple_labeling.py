@@ -7,8 +7,9 @@ import math
 import os
 import re
 import time
-from datetime import datetime
 from contextlib import nullcontext
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
@@ -65,6 +66,7 @@ MODEL_PRICING_USD_PER_MILLION: Dict[str, Dict[str, float]] = {
     "gpt-5.2-chat-latest": {"input": 1.75, "output": 14.00},
 }
 PRICING_SOURCE_URL = "https://platform.openai.com/docs/models/gpt-5.2/"
+LABEL_METADATA_COLUMNS = ["label_stage", "label_iteration", "iteration", "al_source"]
 
 
 def _parse_field_list_arg(raw: str | None) -> List[str]:
@@ -142,6 +144,44 @@ def _load_json(path: Path) -> Dict:
         return payload if isinstance(payload, dict) else {}
     except Exception:
         return {}
+
+
+def _pair_label_columns(df: pd.DataFrame) -> List[str]:
+    cols = ["id1", "id2", "label", "similarity"]
+    cols.extend([c for c in LABEL_METADATA_COLUMNS if c in df.columns and c not in cols])
+    return cols
+
+
+def _ensure_label_metadata(
+    df: pd.DataFrame,
+    *,
+    default_stage: str,
+    default_iteration: int,
+) -> pd.DataFrame:
+    out = df.copy()
+    if "label_iteration" not in out.columns:
+        if "iteration" in out.columns:
+            out["label_iteration"] = pd.to_numeric(out["iteration"], errors="coerce")
+        else:
+            out["label_iteration"] = np.nan
+    out["label_iteration"] = (
+        pd.to_numeric(out["label_iteration"], errors="coerce")
+        .fillna(int(default_iteration))
+        .astype(int)
+    )
+
+    if "label_stage" not in out.columns:
+        out["label_stage"] = default_stage
+        if default_stage == "seed":
+            active_mask = out["label_iteration"].astype(int) != int(default_iteration)
+            if "al_source" in out.columns:
+                al_source = out["al_source"].fillna("").astype(str).str.strip()
+                active_mask = active_mask | (al_source != "")
+            out.loc[active_mask, "label_stage"] = "active_learning"
+    else:
+        out["label_stage"] = out["label_stage"].fillna("").astype(str)
+        out.loc[out["label_stage"].str.strip() == "", "label_stage"] = default_stage
+    return out
 
 
 def _parse_schema_map_arg(raw: str | None, side: str) -> Dict[str, str]:
@@ -591,6 +631,20 @@ def _estimate_usage_costs(model: str, usage_stats: Dict[str, int]) -> Dict[str, 
     return out
 
 
+def _made_target_progress(
+    *,
+    prev_pos: int,
+    prev_neg: int,
+    cur_pos: int,
+    cur_neg: int,
+    target_pos: int,
+    target_neg: int,
+) -> bool:
+    before = min(int(prev_pos), int(target_pos)) + min(int(prev_neg), int(target_neg))
+    after = min(int(cur_pos), int(target_pos)) + min(int(cur_neg), int(target_neg))
+    return after > before
+
+
 def _run_active_learning_same_prompt(
     *,
     client: OpenAI,
@@ -610,10 +664,17 @@ def _run_active_learning_same_prompt(
     active_candidates: int,
     active_top_matchers: int,
     max_iterations: int,
+    llm_concurrency: int = 1,
+    label_stage: str = "active_learning",
     max_total_labels_override: int | None = None,
     usage_stats: Dict[str, int] | None = None,
 ) -> Tuple[pd.DataFrame, Dict[str, object]]:
-    training_set = labeled[["id1", "id2", "label", "similarity"]].copy()
+    training_set = labeled[_pair_label_columns(labeled)].copy()
+    training_set = _ensure_label_metadata(
+        training_set,
+        default_stage="seed",
+        default_iteration=0,
+    )
     training_set["id1"] = training_set["id1"].astype(str)
     training_set["id2"] = training_set["id2"].astype(str)
     training_set["label"] = training_set["label"].astype(str).str.upper().str.strip()
@@ -814,8 +875,7 @@ def _run_active_learning_same_prompt(
                 )
                 break
 
-            new_rows: List[Dict[str, object]] = []
-            label_t0 = time.perf_counter()
+            work_items: List[Dict[str, object]] = []
             for _, row in select.iterrows():
                 id1 = str(row["id1"])
                 id2 = str(row["id2"])
@@ -823,29 +883,70 @@ def _run_active_learning_same_prompt(
                     continue
                 if id1 not in left_map or id2 not in right_map:
                     continue
-                label, usage = _label_pair(client, model, left_map[id1], right_map[id2])
-                active_usage["prompt_tokens"] += int(usage.get("prompt_tokens", 0) or 0)
-                active_usage["completion_tokens"] += int(usage.get("completion_tokens", 0) or 0)
-                active_usage["total_tokens"] += int(usage.get("total_tokens", 0) or 0)
-                new_rows.append(
+                work_items.append(
                     {
                         "id1": id1,
                         "id2": id2,
-                        "label": label,
                         "similarity": float(row.get("similarity", 0.0) or 0.0),
-                        "al_source": select_mode,
-                        "iteration": int(iteration),
                     }
                 )
                 labeled_pairs.add((id1, id2))
-                if len(new_rows) % 10 == 0 or len(new_rows) == len(select):
-                    print(
-                        f"AL iter {iteration}: labeled {len(new_rows)}/{len(select)} "
-                        f"(tokens={active_usage['total_tokens']})",
-                        flush=True,
-                    )
-                if len(new_rows) >= quota:
+                if len(work_items) >= quota:
                     break
+
+            if not work_items:
+                rounds.append(
+                    {
+                        "iteration": int(iteration),
+                        "status": "stopped",
+                        "reason": "no_new_labels",
+                        "selected_mode": select_mode,
+                    }
+                )
+                break
+
+            new_rows: List[Dict[str, object]] = []
+            label_t0 = time.perf_counter()
+            max_workers = max(1, int(llm_concurrency))
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                future_to_item = {
+                    executor.submit(_label_pair, client, model, left_map[w["id1"]], right_map[w["id2"]]): w
+                    for w in work_items
+                }
+                done = 0
+                for future in as_completed(future_to_item):
+                    w = future_to_item[future]
+                    try:
+                        label, usage = future.result()
+                    except Exception as exc:
+                        print(
+                            f"AL iter {iteration}: label call failed for "
+                            f"({w['id1']}, {w['id2']}): {exc!r}",
+                            flush=True,
+                        )
+                        continue
+                    active_usage["prompt_tokens"] += int(usage.get("prompt_tokens", 0) or 0)
+                    active_usage["completion_tokens"] += int(usage.get("completion_tokens", 0) or 0)
+                    active_usage["total_tokens"] += int(usage.get("total_tokens", 0) or 0)
+                    new_rows.append(
+                        {
+                            "id1": w["id1"],
+                            "id2": w["id2"],
+                            "label": label,
+                            "similarity": w["similarity"],
+                            "al_source": select_mode,
+                            "iteration": int(iteration),
+                            "label_iteration": int(iteration),
+                            "label_stage": label_stage,
+                        }
+                    )
+                    done += 1
+                    if done % 50 == 0 or done == len(work_items):
+                        print(
+                            f"AL iter {iteration}: labeled {done}/{len(work_items)} "
+                            f"(workers={max_workers}, tokens={active_usage['total_tokens']})",
+                            flush=True,
+                        )
 
             if not new_rows:
                 rounds.append(
@@ -922,6 +1023,7 @@ def _run_active_learning_same_prompt(
         "active_candidates": int(active_candidates),
         "active_top_matchers": int(max(2, int(active_top_matchers))),
         "max_iterations": int(max_iterations),
+        "llm_concurrency": int(max(1, int(llm_concurrency))),
         "rounds": rounds,
         "final_total": int(len(out)),
         "final_pos": int(final_pos),
@@ -1052,6 +1154,8 @@ def _label_batch_seed(
                 "id2": id2,
                 "label": label,
                 "similarity": float(row["similarity"]),
+                "label_iteration": 0,
+                "label_stage": "seed",
             }
         )
     return pd.DataFrame(rows), exhausted
@@ -1608,8 +1712,9 @@ def _load_resume_labels(run_dir: Path) -> Tuple[pd.DataFrame | None, str | None]
         if "similarity" not in work.columns:
             work["similarity"] = 0.0
         keep_cols = ["id1", "id2", "label", "similarity"]
-        extra_cols = [c for c in ["iteration", "al_source"] if c in work.columns]
+        extra_cols = [c for c in LABEL_METADATA_COLUMNS if c in work.columns and c not in keep_cols]
         out = work[keep_cols + extra_cols].copy()
+        out = _ensure_label_metadata(out, default_stage="seed", default_iteration=0)
         out["id1"] = out["id1"].astype(str)
         out["id2"] = out["id2"].astype(str)
         out["label"] = out["label"].astype(str).str.upper()
@@ -1636,14 +1741,17 @@ def _load_seed_for_summary(run_dir: Path) -> pd.DataFrame:
         if {"id1", "id2", "label"}.issubset(work.columns):
             if "similarity" not in work.columns:
                 work["similarity"] = 0.0
-            out = work[["id1", "id2", "label", "similarity"]].copy()
+            keep_cols = ["id1", "id2", "label", "similarity"]
+            extra_cols = [c for c in LABEL_METADATA_COLUMNS if c in work.columns and c not in keep_cols]
+            out = work[keep_cols + extra_cols].copy()
+            out = _ensure_label_metadata(out, default_stage="seed", default_iteration=0)
             out["id1"] = out["id1"].astype(str)
             out["id2"] = out["id2"].astype(str)
             out["label"] = out["label"].astype(str).str.upper()
             out["similarity"] = pd.to_numeric(out["similarity"], errors="coerce").fillna(0.0).astype(float)
             out = out.drop_duplicates(subset=["id1", "id2"], keep="last").reset_index(drop=True)
             return out
-    return pd.DataFrame(columns=["id1", "id2", "label", "similarity"])
+    return pd.DataFrame(columns=["id1", "id2", "label", "similarity", "label_iteration", "label_stage"])
 
 
 def main() -> None:
@@ -1706,10 +1814,16 @@ def main() -> None:
 
     parser.add_argument("--target-size", type=int, default=2500)
     parser.add_argument("--target-positives", type=int, default=500)
-    parser.add_argument("--labels-per-iteration", type=int, default=100)
-    parser.add_argument("--active-candidates", type=int, default=5000)
+    parser.add_argument("--labels-per-iteration", type=int, default=500)
+    parser.add_argument("--active-candidates", type=int, default=20000)
     parser.add_argument("--active-top-matchers", type=int, default=5)
     parser.add_argument("--max-iterations", type=int, default=30)
+    parser.add_argument(
+        "--llm-concurrency",
+        type=int,
+        default=1,
+        help="Number of concurrent LLM label calls during active learning. 1 = sequential.",
+    )
     parser.add_argument("--adaptive-round-size", type=int, default=0, help="0 uses --labels-per-iteration")
     parser.add_argument("--adaptive-neg-min-share", type=float, default=0.60)
     parser.add_argument("--adaptive-neg-max-share", type=float, default=0.90)
@@ -2014,6 +2128,7 @@ def main() -> None:
                 active_candidates=args.active_candidates,
                 active_top_matchers=args.active_top_matchers,
                 max_iterations=args.max_iterations,
+                llm_concurrency=int(args.llm_concurrency),
                 max_total_labels_override=budget,
                 usage_stats=usage_stats,
             )
@@ -2032,8 +2147,15 @@ def main() -> None:
                     "active_summary": active_summary,
                 }
             )
-            if pos <= prev_pos and neg <= prev_neg:
-                print("AL: no class progress in this round, stopping early.", flush=True)
+            if not _made_target_progress(
+                prev_pos=prev_pos,
+                prev_neg=prev_neg,
+                cur_pos=pos,
+                cur_neg=neg,
+                target_pos=round_target_pos,
+                target_neg=round_target_neg,
+            ) and pos < round_target_pos:
+                print("AL: no positive-target progress in this round, stopping early.", flush=True)
                 break
 
         legacy_summary = {"rounds": active_rounds}

@@ -28,6 +28,20 @@ def test_build_random_profile_name_uses_percentage_suffix() -> None:
     assert module._build_random_profile_name("small", 0.2) == "small_plus20random"
 
 
+def test_select_random_augmented_profiles_only_large() -> None:
+    module = _load_module()
+    profiles = [
+        module.ProfileSpec(name="small", all_examples=False, target_size=1000, target_pos=200, target_neg=800),
+        module.ProfileSpec(name="medium", all_examples=False, target_size=3000, target_pos=600, target_neg=2400),
+        module.ProfileSpec(name="large", all_examples=False, target_size=5000, target_pos=800, target_neg=4200),
+        module.ProfileSpec(name="all", all_examples=True, target_size=0, target_pos=0, target_neg=0),
+    ]
+
+    selected = module._select_random_augmented_profiles(profiles)
+
+    assert [spec.name for spec in selected] == ["large"]
+
+
 def test_merge_base_with_random_labels_appends_requested_count() -> None:
     module = _load_module()
     base_subset = pd.DataFrame(

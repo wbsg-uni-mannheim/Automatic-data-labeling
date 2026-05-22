@@ -367,6 +367,10 @@ def _build_random_profile_name(base_name: str, fraction: float) -> str:
     return f"{base_name}_plus{pct}random"
 
 
+def _select_random_augmented_profiles(profiles: Sequence[ProfileSpec]) -> List[ProfileSpec]:
+    return [spec for spec in profiles if not spec.all_examples and spec.name == "large"]
+
+
 def _merge_base_with_random_labels(
     base_subset: pd.DataFrame,
     random_labels: pd.DataFrame,
@@ -630,6 +634,8 @@ def _build_random_profile_labels(
                 "id2": w["id2"],
                 "label": label,
                 "similarity": w["similarity"],
+                "label_iteration": -1,
+                "label_stage": "random_profile",
             })
             completed += 1
             if completed % 50 == 0 or completed == len(work_items):
@@ -829,10 +835,11 @@ def main() -> None:
     random_labels_df = pd.DataFrame()
     random_usage: Dict[str, int] = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
     random_meta: Dict[str, Any] = {"candidate_count": 0, "labeled_count": 0}
-    if random_profile_settings["enabled"] and numeric_profiles:
+    random_augmented_profiles = _select_random_augmented_profiles(numeric_profiles)
+    if random_profile_settings["enabled"] and random_augmented_profiles:
         random_profile_counts = {
             spec.name: max(1, int(round(spec.target_size * float(random_profile_settings["fraction"]))))
-            for spec in numeric_profiles
+            for spec in random_augmented_profiles
         }
         max_random_additions = max(random_profile_counts.values()) if random_profile_counts else 0
         if max_random_additions > 0:
@@ -907,8 +914,10 @@ def main() -> None:
             f"pos={profile_meta['actual_pos']} neg={profile_meta['actual_neg']}"
         )
 
-        if not spec.all_examples and random_profile_settings["enabled"]:
+        if not spec.all_examples and random_profile_settings["enabled"] and spec.name in random_profile_counts:
             extra_n = min(int(random_profile_counts.get(spec.name, 0)), int(len(random_labels_df)))
+            if extra_n <= 0:
+                continue
             augmented_name = _build_random_profile_name(spec.name, float(random_profile_settings["fraction"]))
             augmented_dir = profiles_root / augmented_name
             augmented_subset = _merge_base_with_random_labels(subset, random_labels_df, extra_n=extra_n)
@@ -940,47 +949,6 @@ def main() -> None:
                 f"Profile {augmented_name}: total={augmented_meta['actual_total']} "
                 f"pos={augmented_meta['actual_pos']} neg={augmented_meta['actual_neg']} "
                 f"(base={spec.name}, random_additions={extra_n})"
-            )
-
-    if random_profile_settings["enabled"] and not random_labels_df.empty:
-        all_augmented_name = _build_random_profile_name("all", float(random_profile_settings["fraction"]))
-        all_base_path = active_master_path if active_master_path.exists() else master_path
-        if all_base_path.exists():
-            all_base_subset = pd.read_csv(all_base_path).reset_index(drop=True)
-            all_base_subset["label"] = all_base_subset["label"].apply(_normalize_label)
-            all_augmented_subset = _merge_base_with_random_labels(
-                all_base_subset,
-                random_labels_df,
-                extra_n=int(len(random_labels_df)),
-            )
-            all_augmented_dir = profiles_root / all_augmented_name
-            all_augmented_output_meta = _write_profile_outputs(
-                benchmark=args.benchmark,
-                profile_name=all_augmented_name,
-                subset=all_augmented_subset,
-                profile_dir=all_augmented_dir,
-                left_canonical=left_canonical,
-                right_canonical=right_canonical,
-                train_fields=train_fields,
-                export_ditto=export_ditto,
-            )
-            all_augmented_meta: Dict[str, Any] = {
-                "all_examples": True,
-                "base_profile": "all",
-                "random_fraction": float(random_profile_settings["fraction"]),
-                "random_additions": int(len(random_labels_df)),
-                "target_total": int(len(all_augmented_subset)),
-                "target_pos": int(all_augmented_output_meta["actual_pos"]),
-                "target_neg": int(all_augmented_output_meta["actual_neg"]),
-                "shared_random_pool": True,
-                "shared_random_model": str(random_profile_settings["model"]),
-            }
-            all_augmented_meta.update(all_augmented_output_meta)
-            manifest["profiles"][all_augmented_name] = all_augmented_meta
-            print(
-                f"Profile {all_augmented_name}: total={all_augmented_meta['actual_total']} "
-                f"pos={all_augmented_meta['actual_pos']} neg={all_augmented_meta['actual_neg']} "
-                f"(base=all, random_additions={len(random_labels_df)})"
             )
 
     if manifest.get("labeling_cost") and manifest.get("random_profile_cost", {}).get("available"):
