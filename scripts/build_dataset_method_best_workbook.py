@@ -41,16 +41,32 @@ PROFILE_ORDER = {
 METHOD_ORDER = {
     "Baseline": 0,
     "Active Learning v1": 1,
-    "Simple Active Learning": 2,
-    "Three-Phase Active Learning v2": 3,
-    "Three-Phase Ditto-only v2": 4,
-    "Three-Phase v2 + Batch Relabel": 5,
+    "Seed Round Only": 2,
+    "Simple Active Learning": 3,
+    "Three-Phase Active Learning v2": 4,
+    "Three-Phase Ditto-only v2": 5,
+    "Three-Phase v2 + Batch Relabel": 6,
+    "Three-Phase v2 + Drop Changed": 7,
+    "Three-Phase v2 + Closure Bridge Drop": 8,
+    "Three-Phase v2 + Closure Bridge + Relabel-Changed Drop": 9,
+    "Three-Phase v2 + Closure Bridge OR Relabel-Changed Drop": 10,
 }
 FAMILY_TO_METHOD = {
     "active_learning_v1": "Active Learning v1",
+    "seed_round_only_profiles": "Seed Round Only",
     "simple_active_learning_labeling": "Simple Active Learning",
     "three_phase_active_learning_v2": "Three-Phase Active Learning v2",
     "three_phase_labeling_ditto_only_v2": "Three-Phase Ditto-only v2",
+    "three_phase_labeling_ditto_only_v2_drop_changed": "Three-Phase v2 + Drop Changed",
+    "three_phase_labeling_ditto_only_v2_closure_bridge_drop": (
+        "Three-Phase v2 + Closure Bridge Drop"
+    ),
+    "three_phase_labeling_ditto_only_v2_closure_bridge_relabel_changed_drop": (
+        "Three-Phase v2 + Closure Bridge + Relabel-Changed Drop"
+    ),
+    "three_phase_labeling_ditto_only_v2_closure_bridge_or_relabel_changed_drop": (
+        "Three-Phase v2 + Closure Bridge OR Relabel-Changed Drop"
+    ),
     "three_phase_labeling_ditto_only_v2_relabel_batch_gpt-5-mini_agent_precision": (
         "Three-Phase v2 + Batch Relabel"
     ),

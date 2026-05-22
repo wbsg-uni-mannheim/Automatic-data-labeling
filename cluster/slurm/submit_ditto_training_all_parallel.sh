@@ -3,6 +3,7 @@
 set -euo pipefail
 
 # Submit Ditto training jobs in parallel, optionally for multiple labeling methods.
+# Submit Ditto training jobs in parallel, optionally for multiple labeling methods.
 #
 # Run from repo root:
 #   bash cluster/slurm/submit_ditto_training_all_parallel.sh
@@ -10,6 +11,7 @@ set -euo pipefail
 # Optional overrides before launch:
 #   export CONDA_ENV_NAME=ditto-modern
 #   export LABEL_RUN_ROOT=output/three_phase_labeling_ditto_only_v2
+#   export LABEL_RUN_ROOT=output
 #   export LABEL_RUN_ROOT=output
 #   export BENCHMARKS="wdc abt-buy amazon-google dblp-acm dblp-scholar walmart-amazon"
 #   export PROFILE_FILTER="small,medium,small_plus20random,medium_plus20random,all,all_plus20random"
@@ -36,8 +38,12 @@ TRAIN_CONFIG="${TRAIN_CONFIG:-configs/ditto/benchmarks_training.yaml}"
 DITTO_OUTPUT_ROOT_DEFAULT="output/training_from_generated_labels"
 DITTO_OUTPUT_ROOT_IS_EXPLICIT="${DITTO_OUTPUT_ROOT+set}"
 DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-${DITTO_OUTPUT_ROOT_DEFAULT}}"
+DITTO_OUTPUT_ROOT_DEFAULT="output/training_from_generated_labels"
+DITTO_OUTPUT_ROOT_IS_EXPLICIT="${DITTO_OUTPUT_ROOT+set}"
+DITTO_OUTPUT_ROOT="${DITTO_OUTPUT_ROOT:-${DITTO_OUTPUT_ROOT_DEFAULT}}"
 RUN_NAME_PREFIX="${RUN_NAME_PREFIX:-generated_ditto}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-ditto-modern}"
+DITTO_SEEDS="${DITTO_SEEDS:-42 52 62}"
 DITTO_SEEDS="${DITTO_SEEDS:-42 52 62}"
 
 PARTITION="${PARTITION:-gpu-vram-48gb}"
@@ -62,16 +68,16 @@ if [ "${#BENCHMARK_LIST[@]}" -eq 0 ]; then
 fi
 
 METHOD_DIRS=()
-if compgen -G "${LABEL_RUN_ROOT}/benchmark_*" >/dev/null; then
+while IFS= read -r METHOD_DIR; do
+  METHOD_DIRS+=( "${METHOD_DIR}" )
+done < <(find "${LABEL_RUN_ROOT}" -mindepth 1 -maxdepth 1 -type d | sort | while read -r CANDIDATE; do
+  if compgen -G "${CANDIDATE}/benchmark_*" >/dev/null; then
+    echo "${CANDIDATE}"
+  fi
+done)
+
+if [ "${#METHOD_DIRS[@]}" -eq 0 ] && compgen -G "${LABEL_RUN_ROOT}/benchmark_*" >/dev/null; then
   METHOD_DIRS+=( "${LABEL_RUN_ROOT}" )
-else
-  while IFS= read -r METHOD_DIR; do
-    METHOD_DIRS+=( "${METHOD_DIR}" )
-  done < <(find "${LABEL_RUN_ROOT}" -mindepth 1 -maxdepth 1 -type d | sort | while read -r CANDIDATE; do
-    if compgen -G "${CANDIDATE}/benchmark_*" >/dev/null; then
-      echo "${CANDIDATE}"
-    fi
-  done)
 fi
 
 if [ "${#METHOD_DIRS[@]}" -eq 0 ]; then

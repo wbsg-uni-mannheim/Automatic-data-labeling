@@ -228,3 +228,8 @@ unsloth_compiled_cache/
 
 # Run-time CSVs and metrics regenerated from the (excluded) output/ tree
 output/results_summary/
+
+analysis/
+training_data/
+cluster/
+export/

@@ -76,6 +76,8 @@ def _slugify(value: str) -> str:
 
 
 def _dataset_dirs(input_root: Path) -> List[Path]:
+    if (input_root / "profile_manifest.json").exists():
+        return [input_root]
     return sorted(path for path in input_root.iterdir() if path.is_dir() and (path / "profile_manifest.json").exists())
 
 
@@ -84,13 +86,17 @@ def _dataset_key(path: Path) -> str:
 
 
 def _source_profile_dir(dataset_dir: Path, profile_name: str) -> Path:
+    profiles_root = dataset_dir / "profiles"
+    if profiles_root.exists():
+        return profiles_root / profile_name
     return dataset_dir / profile_name
 
 
 def _master_train_path(dataset_dir: Path) -> Path:
-    matches = sorted((dataset_dir / "all_plus20random").glob("*train.json.gz"))
+    master_dir = _source_profile_dir(dataset_dir, "all_plus20random")
+    matches = sorted(master_dir.glob("*train.json.gz"))
     if len(matches) != 1:
-        raise FileNotFoundError(f"Expected one train json.gz in {dataset_dir / 'all_plus20random'}")
+        raise FileNotFoundError(f"Expected one train json.gz in {master_dir}")
     return matches[0]
 
 
@@ -214,8 +220,9 @@ def prepare_run(
     for dataset_dir in _dataset_dirs(input_root):
         source_manifest = _load_json(dataset_dir / "profile_manifest.json")
         prompt_fields = list(source_manifest.get("ditto_fields") or ["title", "description", "price"])
-        master_active_path = dataset_dir / "all_plus20random" / "active_labels_latest.csv"
-        master_final_path = dataset_dir / "all_plus20random" / "labels_final.csv"
+        master_dir = _source_profile_dir(dataset_dir, "all_plus20random")
+        master_active_path = master_dir / "active_labels_latest.csv"
+        master_final_path = master_dir / "labels_final.csv"
         master_train_path = _master_train_path(dataset_dir)
 
         active_df = pd.read_csv(master_active_path)
@@ -224,7 +231,7 @@ def prepare_run(
         if len(active_df) != len(final_df) or len(active_df) != len(train_rows):
             raise ValueError(f"Row count mismatch in {dataset_dir}")
 
-        dataset_key = _dataset_key(dataset_dir)
+        dataset_key = str(source_manifest.get("benchmark") or _dataset_key(dataset_dir))
         dataset_out_dir = output_root / dataset_key
         dataset_out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -584,7 +591,7 @@ def _materialize_dataset(dataset_dir: Path) -> Dict[str, Any]:
 
     profile_summaries: Dict[str, Any] = {}
     for profile_name in updated_manifest.get("profiles", {}):
-        source_profile_dir = source_dataset_dir / profile_name
+        source_profile_dir = _source_profile_dir(source_dataset_dir, profile_name)
         source_active = pd.read_csv(source_profile_dir / "active_labels_latest.csv")
         source_final = pd.read_csv(source_profile_dir / "labels_final.csv")
         source_train_path = next(source_profile_dir.glob("*train.json.gz"))
