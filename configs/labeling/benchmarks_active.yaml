@@ -4,14 +4,14 @@ defaults:
   runner_script: scripts/labeling/run_three_phase_labeling.py
   random_profile_enabled: true
   random_profile_fraction: 0.20
-  random_profile_model: qwen/qwen3.6-plus
+  # Flip these three together when switching labeller. GPT-5.2 talks to OpenAI directly
+  # (no api_base_url / api_key_env_var needed -> OPENAI_API_KEY by default).
+  # For Qwen 3.6+: model = qwen/qwen3.6-plus, api_base_url = https://openrouter.ai/api/v1,
+  # api_key_env_var = OPEN_ROUTER_API_KEY (random_profile_* the same).
+  random_profile_model: gpt-5.2
   random_profile_seed: 42
-  random_profile_api_base_url: https://openrouter.ai/api/v1
-  random_profile_api_key_env_var: OPEN_ROUTER_API_KEY
   labeling_args:
-    model: qwen/qwen3.6-plus
-    api_base_url: https://openrouter.ai/api/v1
-    api_key_env_var: OPEN_ROUTER_API_KEY
+    model: gpt-5.2
     faiss_k: 20
     faiss_random_state: 42
     seed_size: 100
@@ -75,12 +75,6 @@ benchmarks:
       phase2_target_size: 1000
       phase3_batch_size: 500
       phase3_ensemble_mode: ditto_only
-      model: qwen/qwen3.6-plus
-      api_base_url: https://openrouter.ai/api/v1
-      api_key_env_var: OPEN_ROUTER_API_KEY
-    random_profile_model: qwen/qwen3.6-plus
-    random_profile_api_base_url: https://openrouter.ai/api/v1
-    random_profile_api_key_env_var: OPEN_ROUTER_API_KEY
     profiles:
       small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
       medium: {target_total: 3000, target_pos: 600, target_neg: 2400, label_budget: 4500}
@@ -146,7 +140,9 @@ benchmarks:
     profiles:
       small:  {target_total: 2500, target_pos: 500, target_neg: 2000, label_budget: 4000}
       medium: {target_total: 10000, target_pos: 2000, target_neg: 8000, label_budget: 15000}
-      large:  {target_total: 20000, target_pos: 4000, target_neg: 16000, label_budget: 30000}
+      # large bumped to match the dblp-scholar benchmark train size after stripping
+      # the 5,742 validation pairs (22,965 -> 17,223).
+      large:  {target_total: 17200, target_pos: 3440, target_neg: 13760, label_budget: 25800}
       all:    {all_examples: true}
 
   walmart-amazon:

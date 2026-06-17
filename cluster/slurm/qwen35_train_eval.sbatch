@@ -31,6 +31,7 @@ SFT_DIR="${SFT_DIR:-output/qwen35_em/${RUN_NAME}/sft_data}"
 OUTPUT_DIR="${OUTPUT_DIR:-output/qwen35_em/${RUN_NAME}/qwen35_9b_lora}"
 EVAL_DIR="${EVAL_DIR:-output/qwen35_em/${RUN_NAME}/eval_on_test}"
 MODEL_NAME="${MODEL_NAME:-Qwen/Qwen3.5-9B}"
+SEED="${SEED:-42}"
 
 # Training knobs (README-recommended + early-stopping on eval_loss).
 MAX_SEQ_LENGTH="${MAX_SEQ_LENGTH:-2048}"
@@ -86,6 +87,7 @@ python llm_em_qwen35/train_unsloth_lora.py \
   --save-total-limit "${SAVE_TOTAL_LIMIT}" \
   --early-stopping-patience "${EARLY_STOPPING_PATIENCE}" \
   --early-stopping-threshold "${EARLY_STOPPING_THRESHOLD}" \
+  --seed "${SEED}" \
   --load-best-model-at-end
 
 echo "=== evaluate on test ==="
