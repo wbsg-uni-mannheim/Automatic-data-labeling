@@ -12,6 +12,6 @@ This prompt asks the teacher model to decide whether a record pair denotes the s
 
 The relabeling step reviews each labeled pair with a precision-oriented prompt:
 
-- `scripts/archive/review_workflows/experiments/evidence_first_abstain/prompts/agent_precision_system_prompt.txt`
+- [`entity_matching_relabel_prompt.md`](entity_matching_relabel_prompt.md)
 
-The same directory holds the other review prompts (recall, balanced, skeptic, and abstain variants) that we tried during development.
+`scripts/archive/review_workflows/experiments/evidence_first_abstain/prompts/` holds the other review prompts (recall, balanced, skeptic, and abstain variants) that we tried during development.
