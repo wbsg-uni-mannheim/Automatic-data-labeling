@@ -103,7 +103,7 @@ else
 fi
 
 CMD=(
-  python scripts/labeling/run_benchmark_labeling.py
+  python scripts/archive/labeling_helpers/run_benchmark_labeling.py
   --config "${CONFIG}"
   --benchmark "${BENCH}"
   --output-root "${OUTPUT_ROOT}"

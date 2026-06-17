@@ -26,149 +26,149 @@ benchmarks:
   # ===== abt-buy =====
   abt-buy_v_relabel:
     train: output/postfilter_variants/abt-buy/v_relabel/train.json.gz
-    valid: data/abt-buy/abt-buy-valid.csv
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
     valid_pair_id_only: true
-    valid_lookup_train: data/abt-buy/abt-buy-train.json
-    test:  data/abt-buy/abt-buy-gs.json.gz
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test:  benchmarks/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
     field_aliases: {title: [name]}
   abt-buy_v_relabel_drop:
     train: output/postfilter_variants/abt-buy/v_relabel_drop/train.json.gz
-    valid: data/abt-buy/abt-buy-valid.csv
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
     valid_pair_id_only: true
-    valid_lookup_train: data/abt-buy/abt-buy-train.json
-    test:  data/abt-buy/abt-buy-gs.json.gz
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test:  benchmarks/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
     field_aliases: {title: [name]}
   abt-buy_v_closure_drop:
     train: output/postfilter_variants/abt-buy/v_closure_drop/train.json.gz
-    valid: data/abt-buy/abt-buy-valid.csv
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
     valid_pair_id_only: true
-    valid_lookup_train: data/abt-buy/abt-buy-train.json
-    test:  data/abt-buy/abt-buy-gs.json.gz
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test:  benchmarks/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
     field_aliases: {title: [name]}
   abt-buy_v_closure_and_relabel:
     train: output/postfilter_variants/abt-buy/v_closure_and_relabel/train.json.gz
-    valid: data/abt-buy/abt-buy-valid.csv
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
     valid_pair_id_only: true
-    valid_lookup_train: data/abt-buy/abt-buy-train.json
-    test:  data/abt-buy/abt-buy-gs.json.gz
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test:  benchmarks/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
     field_aliases: {title: [name]}
   abt-buy_v_closure_or_relabel:
     train: output/postfilter_variants/abt-buy/v_closure_or_relabel/train.json.gz
-    valid: data/abt-buy/abt-buy-valid.csv
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
     valid_pair_id_only: true
-    valid_lookup_train: data/abt-buy/abt-buy-train.json
-    test:  data/abt-buy/abt-buy-gs.json.gz
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test:  benchmarks/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
     field_aliases: {title: [name]}
 
   # ===== walmart-amazon =====
   walmart-amazon_v_relabel:
     train: output/postfilter_variants/walmart-amazon/v_relabel/train.json.gz
-    valid: data/walmart-amazon/walmart-amazon-valid.csv
-    test:  data/walmart-amazon/walmart-amazon-gs.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test:  benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
   walmart-amazon_v_relabel_drop:
     train: output/postfilter_variants/walmart-amazon/v_relabel_drop/train.json.gz
-    valid: data/walmart-amazon/walmart-amazon-valid.csv
-    test:  data/walmart-amazon/walmart-amazon-gs.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test:  benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
   walmart-amazon_v_closure_drop:
     train: output/postfilter_variants/walmart-amazon/v_closure_drop/train.json.gz
-    valid: data/walmart-amazon/walmart-amazon-valid.csv
-    test:  data/walmart-amazon/walmart-amazon-gs.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test:  benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
   walmart-amazon_v_closure_and_relabel:
     train: output/postfilter_variants/walmart-amazon/v_closure_and_relabel/train.json.gz
-    valid: data/walmart-amazon/walmart-amazon-valid.csv
-    test:  data/walmart-amazon/walmart-amazon-gs.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test:  benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
   walmart-amazon_v_closure_or_relabel:
     train: output/postfilter_variants/walmart-amazon/v_closure_or_relabel/train.json.gz
-    valid: data/walmart-amazon/walmart-amazon-valid.csv
-    test:  data/walmart-amazon/walmart-amazon-gs.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test:  benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
 
   # ===== dblp-acm =====
   dblp-acm_v_relabel:
     train: output/postfilter_variants/dblp-acm/v_relabel/train.json.gz
-    valid: data/dblp-acm/dblp-acm-valid.csv
-    test:  data/dblp-acm/dblp-acm-gs.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test:  benchmarks/dblp-acm/dblp-acm-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-acm_v_relabel_drop:
     train: output/postfilter_variants/dblp-acm/v_relabel_drop/train.json.gz
-    valid: data/dblp-acm/dblp-acm-valid.csv
-    test:  data/dblp-acm/dblp-acm-gs.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test:  benchmarks/dblp-acm/dblp-acm-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-acm_v_closure_drop:
     train: output/postfilter_variants/dblp-acm/v_closure_drop/train.json.gz
-    valid: data/dblp-acm/dblp-acm-valid.csv
-    test:  data/dblp-acm/dblp-acm-gs.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test:  benchmarks/dblp-acm/dblp-acm-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-acm_v_closure_and_relabel:
     train: output/postfilter_variants/dblp-acm/v_closure_and_relabel/train.json.gz
-    valid: data/dblp-acm/dblp-acm-valid.csv
-    test:  data/dblp-acm/dblp-acm-gs.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test:  benchmarks/dblp-acm/dblp-acm-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-acm_v_closure_or_relabel:
     train: output/postfilter_variants/dblp-acm/v_closure_or_relabel/train.json.gz
-    valid: data/dblp-acm/dblp-acm-valid.csv
-    test:  data/dblp-acm/dblp-acm-gs.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test:  benchmarks/dblp-acm/dblp-acm-gs.json.gz
     fields: [title, authors, venue, year]
 
   # ===== dblp-scholar =====
   dblp-scholar_v_relabel:
     train: output/postfilter_variants/dblp-scholar/v_relabel/train.json.gz
-    valid: data/dblp-scholar/dblp-scholar-valid.csv
-    test:  data/dblp-scholar/dblp-scholar-gs.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test:  benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-scholar_v_relabel_drop:
     train: output/postfilter_variants/dblp-scholar/v_relabel_drop/train.json.gz
-    valid: data/dblp-scholar/dblp-scholar-valid.csv
-    test:  data/dblp-scholar/dblp-scholar-gs.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test:  benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-scholar_v_closure_drop:
     train: output/postfilter_variants/dblp-scholar/v_closure_drop/train.json.gz
-    valid: data/dblp-scholar/dblp-scholar-valid.csv
-    test:  data/dblp-scholar/dblp-scholar-gs.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test:  benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-scholar_v_closure_and_relabel:
     train: output/postfilter_variants/dblp-scholar/v_closure_and_relabel/train.json.gz
-    valid: data/dblp-scholar/dblp-scholar-valid.csv
-    test:  data/dblp-scholar/dblp-scholar-gs.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test:  benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-scholar_v_closure_or_relabel:
     train: output/postfilter_variants/dblp-scholar/v_closure_or_relabel/train.json.gz
-    valid: data/dblp-scholar/dblp-scholar-valid.csv
-    test:  data/dblp-scholar/dblp-scholar-gs.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test:  benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     fields: [title, authors, venue, year]
 
   # ===== wdc =====
   wdc_v_relabel:
     train: output/postfilter_variants/wdc/v_relabel/train.json.gz
-    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
-    test:  data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test:  benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]
   wdc_v_relabel_drop:
     train: output/postfilter_variants/wdc/v_relabel_drop/train.json.gz
-    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
-    test:  data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test:  benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]
   wdc_v_closure_drop:
     train: output/postfilter_variants/wdc/v_closure_drop/train.json.gz
-    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
-    test:  data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test:  benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]
   wdc_v_closure_and_relabel:
     train: output/postfilter_variants/wdc/v_closure_and_relabel/train.json.gz
-    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
-    test:  data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test:  benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]
   wdc_v_closure_or_relabel:
     train: output/postfilter_variants/wdc/v_closure_or_relabel/train.json.gz
-    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
-    test:  data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test:  benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]

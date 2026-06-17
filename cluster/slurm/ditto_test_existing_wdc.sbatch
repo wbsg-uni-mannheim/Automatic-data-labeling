@@ -18,9 +18,9 @@ set -euo pipefail
 #
 # Optional overrides before sbatch:
 #   export SPLIT_SIZE=small|medium|large
-#   export TRAIN_JSON_GZ=data/wdc/...
-#   export VAL_JSON_GZ=data/wdc/...
-#   export TEST_JSON_GZ=data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+#   export TRAIN_JSON_GZ=benchmarks/wdc/...
+#   export VAL_JSON_GZ=benchmarks/wdc/...
+#   export TEST_JSON_GZ=benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
 #   export OUTPUT_DIR=output/ditto_runs
 #   export CONFIG=configs/ditto/default_train.yaml
 #   export MODEL_NAME=roberta-base
@@ -42,4 +42,4 @@ if [ -n "${SLURM_SUBMIT_DIR:-}" ]; then
   cd "${SLURM_SUBMIT_DIR}"
 fi
 
-bash scripts/ditto/run_existing_wdc.sh
+bash scripts/archive/ditto_internal/run_existing_wdc.sh

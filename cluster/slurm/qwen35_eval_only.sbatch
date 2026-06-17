@@ -35,9 +35,9 @@ fi
 export HF_TOKEN="${HF_TOKEN:-${HUGGINGFACE_TOKEN:-}}"
 
 # shellcheck disable=SC1090
-source "${REPO_ROOT}/llm_em_qwen35/.venv/bin/activate"
+source "${REPO_ROOT}/scripts/archive/qwen_internal/.venv/bin/activate"
 
-python llm_em_qwen35/evaluate_lora.py \
+python scripts/archive/qwen_internal/evaluate_lora.py \
   --data-path "${DATA_PATH}" \
   --model-path "${ADAPTER_PATH}" \
   --base-model-name "${MODEL_NAME}" \

@@ -2,7 +2,7 @@
 set -euo pipefail
 cd /work/aasteine/Automatic-data-labeling
 set -a; source .env; set +a
-source llm_em_qwen35/.venv/bin/activate
+source scripts/archive/qwen_internal/.venv/bin/activate
 export HF_HOME=/work/shared_data/hf_cache
 export HF_HUB_ENABLE_HF_TRANSFER=1
 python - <<'PY'

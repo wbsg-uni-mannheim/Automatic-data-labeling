@@ -31,4 +31,4 @@ fi
 
 mkdir -p logs
 
-bash scripts/ditto/run_single_gpu.sh
+bash scripts/archive/ditto_internal/run_single_gpu.sh

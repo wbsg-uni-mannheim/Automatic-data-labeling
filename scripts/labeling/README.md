@@ -1,23 +1,19 @@
-# Labeling Scripts
+# Labeling Workflows
 
-This directory contains the entry points for the initial automatic labeling workflow.
+This directory contains the public entry points for constructing machine-labeled entity-matching training sets.
 
-## Main scripts
+## Entry Points
 
-- `run_simple_labeling.py`: single-run active labeling pipeline
-- `run_three_phase_labeling.py`: seed phase, classic active-learning phase, then Ditto-ensemble phase
-- `run_benchmark_labeling.py`: benchmark-aware wrapper that materializes profiles and exports training artifacts
+- `similarity_search.py`: constructs training pairs from nearest-neighbour similarity search and labels the selected pairs with the teacher model.
+- `active_learning_ml.py`: runs feature-based active learning with traditional machine-learning matchers and labels selected pairs with the teacher model.
+- `active_learning_ditto.py`: runs seed labeling, feature-based active learning, and a Ditto-based active-learning phase.
 
 ## Examples
 
 ```bash
-python scripts/labeling/run_benchmark_labeling.py \
-  --config configs/labeling/benchmarks_active.yaml \
-  --benchmark abt-buy \
-  --profiles large \
-  --dry-run
+python scripts/labeling/similarity_search.py --help
+python scripts/labeling/active_learning_ml.py --help
+python scripts/labeling/active_learning_ditto.py --help
 ```
 
-For full Abt-Buy commands for similarity search, feature-based active learning, and Ditto-based active learning, see `paper_artifacts/USAGE.md`.
-
-These scripts are intentionally separate from later-stage analysis, relabeling, or label-cleanup utilities.
+Post-processing and materialization utilities are kept in `scripts/post_processing/`.

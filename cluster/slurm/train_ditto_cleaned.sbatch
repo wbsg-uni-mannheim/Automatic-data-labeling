@@ -78,7 +78,7 @@ PY
 
   RUN_NAME="cleaned_${LABELLER}_${BENCHMARK}_r${REPEAT}_seed${SEED}_${TS}"
   echo "=== run ${REPEAT}/${#SEED_LIST[@]} | labeller=${LABELLER} benchmark=${BENCHMARK} seed=${SEED} ==="
-  python scripts/ditto/run_benchmark_training.py \
+  python scripts/training/train_ditto.py \
     --config "${SEEDED_CFG}" \
     --benchmarks "${BENCHMARK}" \
     --output-root "${OUTPUT_ROOT}" \

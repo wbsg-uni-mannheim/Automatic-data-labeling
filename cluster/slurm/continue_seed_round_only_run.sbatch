@@ -44,7 +44,7 @@ NO_EXPORT_DITTO="${NO_EXPORT_DITTO:-0}"
 SKIP_RANDOM_PROFILES="${SKIP_RANDOM_PROFILES:-0}"
 
 CMD=(
-  python3 scripts/labeling/continue_seed_round_only_run.py
+  python3 scripts/archive/labeling_helpers/continue_seed_round_only_run.py
   "${RUN_DIR}"
   --config "${CONFIG}"
   --profiles "${PROFILES}"

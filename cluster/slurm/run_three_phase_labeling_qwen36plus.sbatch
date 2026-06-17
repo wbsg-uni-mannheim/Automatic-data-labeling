@@ -76,7 +76,7 @@ if [ -z "${RUN_NAME:-}" ]; then
 fi
 
 CMD=(
-  python scripts/labeling/run_benchmark_labeling.py
+  python scripts/archive/labeling_helpers/run_benchmark_labeling.py
   --config "${CONFIG}"
   --benchmark "${BENCHMARK}"
   --profiles "${PROFILES}"

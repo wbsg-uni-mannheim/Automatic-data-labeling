@@ -29,4 +29,4 @@ fi
 
 mkdir -p logs
 
-bash scripts/ditto/run_eval.sh
+bash scripts/archive/ditto_internal/run_eval.sh

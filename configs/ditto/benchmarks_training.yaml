@@ -23,17 +23,17 @@ defaults:
 
 benchmarks:
   wdc:
-    train: data/wdc/wdcproducts80cc20rnd000un_train_medium.json.gz
-    valid: data/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
-    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    train: benchmarks/wdc/wdcproducts80cc20rnd000un_train_medium.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]
     profiles: [small, medium, large, all]
 
   abt-buy:
-    train: data/abt-buy/abt-buy-train.json
-    valid: data/abt-buy/abt-buy-valid.csv
+    train: benchmarks/abt-buy/abt-buy-train.json
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
     valid_pair_id_only: true
-    test: data/abt-buy/abt-buy-gs.json.gz
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
     profiles: [small, medium, large, all]
     field_aliases:
@@ -47,22 +47,22 @@ benchmarks:
     profiles: [small, medium, large, all]
 
   dblp-acm:
-    train: data/dblp-acm/dblp-acm-train.json.gz
-    valid: data/dblp-acm/dblp-acm-valid.csv
-    test: data/dblp-acm/dblp-acm-gs.json.gz
+    train: benchmarks/dblp-acm/dblp-acm-train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
     fields: [title, authors, venue, year]
     profiles: [small, medium, large, all]
 
   dblp-scholar:
-    train: data/dblp-scholar/dblp-scholar-train.json.gz
-    valid: data/dblp-scholar/dblp-scholar-valid.csv
-    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    train: benchmarks/dblp-scholar/dblp-scholar-train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     fields: [title, authors, venue, year]
     profiles: [small, medium, large, all]
 
   walmart-amazon:
-    train: data/walmart-amazon/walmart-amazon-train.json.gz
-    valid: data/walmart-amazon/walmart-amazon-valid.csv
-    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    train: benchmarks/walmart-amazon/walmart-amazon-train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
     profiles: [small, medium, large, all]

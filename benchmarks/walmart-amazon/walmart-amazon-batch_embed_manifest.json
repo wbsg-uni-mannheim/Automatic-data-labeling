@@ -1,0 +1,57 @@
+{
+  "dataset": "walmart-amazon",
+  "source_train": "data/walmart-amazon/walmart-amazon-train.json.gz",
+  "rows_train": 8193,
+  "left_unique_rows": 1579,
+  "right_unique_rows": 4533,
+  "embed_fields": [
+    "title",
+    "category",
+    "brand",
+    "modelno",
+    "price"
+  ],
+  "left_csv": "data/walmart-amazon/walmart-amazon-train-left.csv",
+  "right_csv": "data/walmart-amazon/walmart-amazon-train-right.csv",
+  "left_batch_jsonl": "data/walmart-amazon/walmart-amazon-batch_embed_left.jsonl",
+  "right_batch_jsonl": "data/walmart-amazon/walmart-amazon-batch_embed_right.jsonl",
+  "left_map_csv": "data/walmart-amazon/walmart-amazon-batch_embed_left_map.csv",
+  "right_map_csv": "data/walmart-amazon/walmart-amazon-batch_embed_right_map.csv",
+  "submitted_batches": {
+    "left": {
+      "jsonl_path": "data/walmart-amazon/walmart-amazon-batch_embed_left.jsonl",
+      "input_file_id": "file-7Aci19KPD6rQZhzWX1R3kR",
+      "batch_id": "batch_699e239f33e88190ac469e039f4f5a60",
+      "status": "validating"
+    },
+    "right": {
+      "jsonl_path": "data/walmart-amazon/walmart-amazon-batch_embed_right.jsonl",
+      "input_file_id": "file-9XH7tYZmTsKXGoA7ZovcWZ",
+      "batch_id": "batch_699e23a0def88190a6f863523ea50d16",
+      "status": "validating"
+    }
+  },
+  "submit_error": null,
+  "pulled_embeddings": {
+    "left": {
+      "batch_id": "batch_699e239f33e88190ac469e039f4f5a60",
+      "status": "completed",
+      "output_file_id": "file-2R7RXNcwghGvKDoYBC6W6r",
+      "saved_file": "data/walmart-amazon/embeddings/walmart-amazon_left_embeddings.npy",
+      "rows": 1579,
+      "dim": 256,
+      "bad_rows_ignored": 0,
+      "pulled_at_utc": "2026-02-24T22:51:41.440519+00:00"
+    },
+    "right": {
+      "batch_id": "batch_699e23a0def88190a6f863523ea50d16",
+      "status": "completed",
+      "output_file_id": "file-B5CtuXsh4pk3As1JMZmJL5",
+      "saved_file": "data/walmart-amazon/embeddings/walmart-amazon_right_embeddings.npy",
+      "rows": 4533,
+      "dim": 256,
+      "bad_rows_ignored": 0,
+      "pulled_at_utc": "2026-02-24T22:51:44.482313+00:00"
+    }
+  }
+}

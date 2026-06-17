@@ -27,93 +27,93 @@ benchmarks:
   # ----- abt-buy ----- target=5,743 ±5%=[5,456–6,030]
   abt-buy_sim:
     train: output/learning_curve_abtbuy/similarity_selection/N6000/abt-buy_N6000_train.json.gz
-    valid: data/abt-buy/abt-buy-valid.csv
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
     valid_pair_id_only: true
-    valid_lookup_train: data/abt-buy/abt-buy-train.json
-    test: data/abt-buy/abt-buy-gs.json.gz
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
     field_aliases: {title: [name]}
   abt-buy_al_ml:
     train: output/learning_curve_abtbuy/simple_active_learning/N6000/abt-buy_N6000_train.json.gz
-    valid: data/abt-buy/abt-buy-valid.csv
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
     valid_pair_id_only: true
-    valid_lookup_train: data/abt-buy/abt-buy-train.json
-    test: data/abt-buy/abt-buy-gs.json.gz
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
     field_aliases: {title: [name]}
   abt-buy_al_ditto:
     train: output/learning_curve_abtbuy/ditto_active_learning/N6000/abt-buy_N6000_train.json.gz
-    valid: data/abt-buy/abt-buy-valid.csv
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
     valid_pair_id_only: true
-    valid_lookup_train: data/abt-buy/abt-buy-train.json
-    test: data/abt-buy/abt-buy-gs.json.gz
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
     field_aliases: {title: [name]}
 
   # ----- walmart-amazon ----- target=6,144 ±5%=[5,836–6,451]
   walmart-amazon_sim:
     train: output/benchmark_size_runs/sim/walmart-amazon/walmart-amazon_train.json.gz
-    valid: data/walmart-amazon/walmart-amazon-valid.csv
-    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
   walmart-amazon_al_ml:
     train: output/simple_active_learning_labeling/benchmark_walmart-amazon_20260302_113733/profiles/large/active_labels_latest_walmart-amazon_large_train.json.gz
-    valid: data/walmart-amazon/walmart-amazon-valid.csv
-    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
   walmart-amazon_al_ditto:
     train: output/three_phase_labeling_ditto_only_v2/benchmark_walmart-amazon_20260323_202820/profiles/all/active_labels_latest_walmart-amazon_all_train.json.gz
-    valid: data/walmart-amazon/walmart-amazon-valid.csv
-    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
 
   # ----- dblp-acm ----- target=7,417 ±5%=[7,046–7,788]
   dblp-acm_sim:
     train: output/benchmark_size_runs/sim/dblp-acm/dblp-acm_train.json.gz
-    valid: data/dblp-acm/dblp-acm-valid.csv
-    test: data/dblp-acm/dblp-acm-gs.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-acm_al_ml:
     train: output/benchmark_size_runs/al_ml/dblp-acm/dblp-acm_train.json.gz
-    valid: data/dblp-acm/dblp-acm-valid.csv
-    test: data/dblp-acm/dblp-acm-gs.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-acm_al_ditto:
     train: output/three_phase_labeling_ditto_only_v2/benchmark_dblp-acm_20260323_202820/profiles/all_plus20random/active_labels_latest_dblp-acm_all_plus20random_train.json.gz
-    valid: data/dblp-acm/dblp-acm-valid.csv
-    test: data/dblp-acm/dblp-acm-gs.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
     fields: [title, authors, venue, year]
 
   # ----- dblp-scholar ----- target=17,223 ±5%=[16,361–18,084]
   dblp-scholar_sim:
     train: output/benchmark_size_runs/sim/dblp-scholar/dblp-scholar_train.json.gz
-    valid: data/dblp-scholar/dblp-scholar-valid.csv
-    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-scholar_al_ml:
     train: output/benchmark_size_runs/al_ml/dblp-scholar/dblp-scholar_train.json.gz
-    valid: data/dblp-scholar/dblp-scholar-valid.csv
-    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     fields: [title, authors, venue, year]
   dblp-scholar_al_ditto:
     train: output/three_phase_labeling_ditto_only_v2/benchmark_dblp-scholar_20260323_202820/profiles/large/active_labels_latest_dblp-scholar_large_train.json.gz
-    valid: data/dblp-scholar/dblp-scholar-valid.csv
-    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     fields: [title, authors, venue, year]
 
   # ----- wdc ----- target=19,835 ±5%=[18,843–20,826]
   wdc_sim:
     train: output/seed_round_only_profiles/benchmark_wdc_20260415_190530/profiles/all/active_labels_latest_wdc_all_train.json.gz
-    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
-    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]
   wdc_al_ml:
     train: output/simple_active_learning_labeling/benchmark_wdc_20260413_152105/profiles/large/active_labels_latest_wdc_large_train.json.gz
-    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
-    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]
   wdc_al_ditto:
     train: output/benchmark_size_runs/al_ditto/wdc/wdc_train.json.gz
-    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
-    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]

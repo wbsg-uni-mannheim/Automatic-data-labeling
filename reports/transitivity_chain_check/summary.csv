@@ -1,6 +1,0 @@
-benchmark,clean_rows,clean_pos,clean_neg,transitive_fn_neg_pairs,path_len_3_4cycle_pairs,path_len_5_6cycle_pairs,path_len_7_8cycle_pairs,path_len_9plus_pairs,path_len_other_pairs,max_shortest_path_len,dropped_test,dup_agree_removed,dup_disagree_removed
-abt-buy,5371,929,4442,40,39,1,0,0,0,5,700,236,6
-dblp-acm,6419,1855,4564,21,21,0,0,0,0,3,612,120,0
-dblp-scholar,13408,4431,8977,309,283,26,0,0,0,5,1027,450,16
-walmart-amazon,3453,646,2807,2,2,0,0,0,0,3,283,48,4
-wdc,10077,5635,4442,589,357,157,64,11,0,11,0,3642,802

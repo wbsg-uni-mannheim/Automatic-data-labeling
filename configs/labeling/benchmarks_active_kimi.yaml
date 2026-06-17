@@ -1,7 +1,7 @@
 defaults:
   output_root: output/simple_labeling
   run_prefix: benchmark
-  runner_script: scripts/labeling/run_three_phase_labeling.py
+  runner_script: scripts/labeling/active_learning_ditto.py
   random_profile_enabled: true
   random_profile_fraction: 0.20
   random_profile_model: moonshotai/kimi-k2.6
@@ -36,10 +36,10 @@ defaults:
 
 benchmarks:
   wdc:
-    left_csv: data/wdc/wdc_train_large_left.csv
-    right_csv: data/wdc/wdc_train_large_right.csv
-    valid_path: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
-    test_path: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    left_csv: benchmarks/wdc/wdc_train_large_left.csv
+    right_csv: benchmarks/wdc/wdc_train_large_right.csv
+    valid_path: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test_path: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     id_col: id
     fields:
       title: title
@@ -48,7 +48,7 @@ benchmarks:
       price: price
       priceCurrency: priceCurrency
     embeddings:
-      dir: data/wdc/embeddings
+      dir: benchmarks/wdc/embeddings
       left_file: wdc_left_embeddings.npy
       right_file: wdc_right_embeddings.npy
     profiles:
@@ -58,17 +58,17 @@ benchmarks:
       all:    {all_examples: true}
 
   abt-buy:
-    left_csv: data/abt-buy/abt-buy-train-left.csv
-    right_csv: data/abt-buy/abt-buy-train-right.csv
-    valid_path: data/abt-buy/abt-buy-valid.csv
-    test_path: data/abt-buy/abt-buy-gs.json.gz
+    left_csv: benchmarks/abt-buy/abt-buy-train-left.csv
+    right_csv: benchmarks/abt-buy/abt-buy-train-right.csv
+    valid_path: benchmarks/abt-buy/abt-buy-valid.csv
+    test_path: benchmarks/abt-buy/abt-buy-gs.json.gz
     id_col: id
     fields:
       title: title
       description: description
       price: price
     embeddings:
-      dir: data/abt-buy/embeddings
+      dir: benchmarks/abt-buy/embeddings
       left_file: abt-buy_left_embeddings.npy
       right_file: abt-buy_right_embeddings.npy
     labeling_args:
@@ -108,10 +108,10 @@ benchmarks:
       all:    {all_examples: true}
 
   dblp-acm:
-    left_csv: data/dblp-acm/dblp-acm-train-left.csv
-    right_csv: data/dblp-acm/dblp-acm-train-right.csv
-    valid_path: data/dblp-acm/dblp-acm-valid.csv
-    test_path: data/dblp-acm/dblp-acm-gs.json.gz
+    left_csv: benchmarks/dblp-acm/dblp-acm-train-left.csv
+    right_csv: benchmarks/dblp-acm/dblp-acm-train-right.csv
+    valid_path: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test_path: benchmarks/dblp-acm/dblp-acm-gs.json.gz
     id_col: id
     fields:
       title: title
@@ -119,7 +119,7 @@ benchmarks:
       venue: venue
       year: year
     embeddings:
-      dir: data/dblp-acm/embeddings
+      dir: benchmarks/dblp-acm/embeddings
       left_file: dblp-acm_left_embeddings.npy
       right_file: dblp-acm_right_embeddings.npy
     profiles:
@@ -129,10 +129,10 @@ benchmarks:
       all:    {all_examples: true}
 
   dblp-scholar:
-    left_csv: data/dblp-scholar/dblp-scholar-train-left.csv
-    right_csv: data/dblp-scholar/dblp-scholar-train-right.csv
-    valid_path: data/dblp-scholar/dblp-scholar-valid.csv
-    test_path: data/dblp-scholar/dblp-scholar-gs.json.gz
+    left_csv: benchmarks/dblp-scholar/dblp-scholar-train-left.csv
+    right_csv: benchmarks/dblp-scholar/dblp-scholar-train-right.csv
+    valid_path: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test_path: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     id_col: id
     fields:
       title: title
@@ -140,7 +140,7 @@ benchmarks:
       venue: venue
       year: year
     embeddings:
-      dir: data/dblp-scholar/embeddings
+      dir: benchmarks/dblp-scholar/embeddings
       left_file: dblp-scholar_left_embeddings.npy
       right_file: dblp-scholar_right_embeddings.npy
     profiles:
@@ -150,10 +150,10 @@ benchmarks:
       all:    {all_examples: true}
 
   walmart-amazon:
-    left_csv: data/walmart-amazon/walmart-amazon-train-left.csv
-    right_csv: data/walmart-amazon/walmart-amazon-train-right.csv
-    valid_path: data/walmart-amazon/walmart-amazon-valid.csv
-    test_path: data/walmart-amazon/walmart-amazon-gs.json.gz
+    left_csv: benchmarks/walmart-amazon/walmart-amazon-train-left.csv
+    right_csv: benchmarks/walmart-amazon/walmart-amazon-train-right.csv
+    valid_path: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test_path: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     id_col: id
     fields:
       title: title
@@ -162,7 +162,7 @@ benchmarks:
       modelno: modelno
       price: price
     embeddings:
-      dir: data/walmart-amazon/embeddings
+      dir: benchmarks/walmart-amazon/embeddings
       left_file: walmart-amazon_left_embeddings.npy
       right_file: walmart-amazon_right_embeddings.npy
     labeling_args:

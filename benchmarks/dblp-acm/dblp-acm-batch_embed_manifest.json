@@ -1,0 +1,56 @@
+{
+  "dataset": "dblp-acm",
+  "source_train": "data/dblp-acm/dblp-acm-train.json.gz",
+  "rows_train": 9890,
+  "left_unique_rows": 2306,
+  "right_unique_rows": 2110,
+  "embed_fields": [
+    "title",
+    "authors",
+    "venue",
+    "year"
+  ],
+  "left_csv": "data/dblp-acm/dblp-acm-train-left.csv",
+  "right_csv": "data/dblp-acm/dblp-acm-train-right.csv",
+  "left_batch_jsonl": "data/dblp-acm/dblp-acm-batch_embed_left.jsonl",
+  "right_batch_jsonl": "data/dblp-acm/dblp-acm-batch_embed_right.jsonl",
+  "left_map_csv": "data/dblp-acm/dblp-acm-batch_embed_left_map.csv",
+  "right_map_csv": "data/dblp-acm/dblp-acm-batch_embed_right_map.csv",
+  "submitted_batches": {
+    "left": {
+      "jsonl_path": "data/dblp-acm/dblp-acm-batch_embed_left.jsonl",
+      "input_file_id": "file-EFRGFaiRG7BHhdJx4CLWzS",
+      "batch_id": "batch_699e231a3d5c8190a784417257eaaf3f",
+      "status": "validating"
+    },
+    "right": {
+      "jsonl_path": "data/dblp-acm/dblp-acm-batch_embed_right.jsonl",
+      "input_file_id": "file-JLmH5veTYxSu9nK6huQDq9",
+      "batch_id": "batch_699e231b47b081908d2f2f35389f7d1a",
+      "status": "validating"
+    }
+  },
+  "submit_error": null,
+  "pulled_embeddings": {
+    "left": {
+      "batch_id": "batch_699e231a3d5c8190a784417257eaaf3f",
+      "status": "completed",
+      "output_file_id": "file-2R2mc5rUrffPJ4tAw7UpYs",
+      "saved_file": "data/dblp-acm/embeddings/dblp-acm_left_embeddings.npy",
+      "rows": 2306,
+      "dim": 256,
+      "bad_rows_ignored": 0,
+      "pulled_at_utc": "2026-02-24T22:51:30.890628+00:00"
+    },
+    "right": {
+      "batch_id": "batch_699e231b47b081908d2f2f35389f7d1a",
+      "status": "completed",
+      "output_file_id": "file-1bM8kJnFp2RMYLUL3j8W4J",
+      "saved_file": "data/dblp-acm/embeddings/dblp-acm_right_embeddings.npy",
+      "rows": 2110,
+      "dim": 256,
+      "bad_rows_ignored": 0,
+      "pulled_at_utc": "2026-02-24T22:51:32.973584+00:00"
+    }
+  }
+}

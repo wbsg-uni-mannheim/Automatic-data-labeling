@@ -54,7 +54,7 @@ if [ ! -f "${CONFIG}" ]; then
 fi
 
 CMD=(
-  python scripts/ditto/run_benchmark_training.py
+  python scripts/training/train_ditto.py
   --config "${CONFIG}"
   --output-root "${OUTPUT_ROOT}"
   --run-name "${RUN_NAME}"

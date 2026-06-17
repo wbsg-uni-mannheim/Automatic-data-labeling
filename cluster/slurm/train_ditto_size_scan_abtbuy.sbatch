@@ -78,10 +78,10 @@ defaults:
 benchmarks:
   abt-buy:
     train: ${TRAIN_GZ}
-    valid: data/abt-buy/abt-buy-valid.csv
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
     valid_pair_id_only: true
-    valid_lookup_train: data/abt-buy/abt-buy-train.json
-    test: data/abt-buy/abt-buy-gs.json.gz
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
     fields: [title, description, price]
     field_aliases:
       title: [name]
@@ -100,7 +100,7 @@ yaml.safe_dump(cfg, open(dst, "w"), sort_keys=False)
 PY
   RUN_NAME="scan_${LABELLER}_${PROFILE}_r${REPEAT}_seed${SEED}_${TS}"
   echo "=== ${REPEAT}/${#SEED_LIST[@]} | labeller=${LABELLER} profile=${PROFILE} seed=${SEED} ==="
-  python scripts/ditto/run_benchmark_training.py \
+  python scripts/training/train_ditto.py \
     --config "${SEEDED_CFG}" \
     --benchmarks "abt-buy" \
     --output-root "${OUTPUT_ROOT}" \

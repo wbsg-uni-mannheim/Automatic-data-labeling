@@ -17,8 +17,8 @@ set -euo pipefail
 #
 # Optional overrides before sbatch:
 #   export TRAIN_JSON_GZ=output/simple_labeling/run_20260222_204534/active_labels_latest_wdc_train.json.gz
-#   export VAL_JSON_GZ=data/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
-#   export TEST_JSON_GZ=data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+#   export VAL_JSON_GZ=benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+#   export TEST_JSON_GZ=benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
 #   export OUTPUT_DIR=output/ditto_runs
 #   export DITTO_SEEDS="42 52 62"
 #   export SWEEP_NAME=my_seed_sweep_001
@@ -40,9 +40,9 @@ if [ -n "${SLURM_SUBMIT_DIR:-}" ]; then
   cd "${SLURM_SUBMIT_DIR}"
 fi
 
-TRAIN_JSON_GZ="${TRAIN_JSON_GZ:-data/wdc/wdcproducts80cc20rnd000un_train_small.json.gz}"
-VAL_JSON_GZ="${VAL_JSON_GZ:-data/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz}"
-TEST_JSON_GZ="${TEST_JSON_GZ:-data/wdc/wdcproducts80cc20rnd100un_gs.json.gz}"
+TRAIN_JSON_GZ="${TRAIN_JSON_GZ:-benchmarks/wdc/wdcproducts80cc20rnd000un_train_small.json.gz}"
+VAL_JSON_GZ="${VAL_JSON_GZ:-benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz}"
+TEST_JSON_GZ="${TEST_JSON_GZ:-benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz}"
 OUTPUT_DIR="${OUTPUT_DIR:-output/ditto_runs}"
 
 # Use dedicated var to avoid accidental collisions with unrelated env vars like SEEDS.
@@ -73,7 +73,7 @@ for SEED in "${SEED_LIST[@]}"; do
   echo "=== Ditto training seed ${SEED} ==="
   SEED_OUTPUT_DIR="${SWEEP_RUN_DIR}/seed_${SEED}"
   mkdir -p "${SEED_OUTPUT_DIR}"
-  if ! python scripts/ditto/train.py \
+  if ! python scripts/archive/ditto_internal/train.py \
     --train-json-gz "${TRAIN_JSON_GZ}" \
     --val-json-gz "${VAL_JSON_GZ}" \
     --test-json-gz "${TEST_JSON_GZ}" \

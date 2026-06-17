@@ -37,20 +37,20 @@ fi
 export HF_TOKEN="${HF_TOKEN:-${HUGGINGFACE_TOKEN:-}}"
 
 # shellcheck disable=SC1090
-source "${REPO_ROOT}/llm_em_qwen35/.venv/bin/activate"
+source "${REPO_ROOT}/scripts/archive/qwen_internal/.venv/bin/activate"
 
 # Only the test split is needed for zero-shot baseline. convert_wdc_to_sft.py
 # requires train+valid+test, so pass the test split for all three; only
 # test.jsonl is consumed downstream.
 mkdir -p "${SFT_DIR}"
-python llm_em_qwen35/convert_wdc_to_sft.py \
+python scripts/archive/qwen_internal/convert_wdc_to_sft.py \
   --train-json-gz "${TEST_JSON_GZ}" \
   --valid-json-gz "${TEST_JSON_GZ}" \
   --test-json-gz "${TEST_JSON_GZ}" \
   --fields "${FIELDS}" \
   --output-dir "${SFT_DIR}"
 
-python llm_em_qwen35/baseline_zero_shot_eval.py \
+python scripts/archive/qwen_internal/baseline_zero_shot_eval.py \
   --data-path "${SFT_DIR}/test.jsonl" \
   --model-name "${MODEL_NAME}" \
   --output-dir "${OUTPUT_DIR}"

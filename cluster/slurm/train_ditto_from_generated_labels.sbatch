@@ -119,7 +119,7 @@ for RUN_DIR in "${RUN_DIRS[@]}"; do
     TRAIN_RUN_NAME="${RUN_NAME_PREFIX}_${RUN_STEM}_${PROFILE}_r${REPEAT_IDX}_${TS}"
     echo
     echo "=== Ditto training: method=${METHOD_NAME} benchmark=${BENCHMARK} profile=${PROFILE} run=${RUN_STEM} repeat=${REPEAT_IDX}/${#SEED_LIST[@]} seed=${SEED} ==="
-    python scripts/ditto/run_benchmark_training.py \
+    python scripts/training/train_ditto.py \
       --config "${TMP_CFG}" \
       --benchmarks "${BENCHMARK}" \
       --output-root "${DITTO_OUTPUT_ROOT}" \
@@ -209,7 +209,7 @@ for profile in profiles:
             if not train_json_out.exists():
                 cmd = [
                     sys.executable,
-                    "scripts/ditto/convert_active_labels_to_wdc.py",
+                    "scripts/archive/ditto_internal/convert_active_labels_to_wdc.py",
                     "--labels-csv",
                     str(labels_csv),
                     "--left-csv",

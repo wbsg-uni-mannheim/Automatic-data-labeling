@@ -59,10 +59,10 @@ fi
 export HF_TOKEN="${HF_TOKEN:-${HUGGINGFACE_TOKEN:-}}"
 
 # shellcheck disable=SC1090
-source "${REPO_ROOT}/llm_em_qwen35/.venv/bin/activate"
+source "${REPO_ROOT}/scripts/archive/qwen_internal/.venv/bin/activate"
 
 echo "=== convert splits to SFT ==="
-python llm_em_qwen35/convert_wdc_to_sft.py \
+python scripts/archive/qwen_internal/convert_wdc_to_sft.py \
   --train-json-gz "${TRAIN_JSON_GZ}" \
   --valid-json-gz "${VALID_JSON_GZ}" \
   --test-json-gz "${TEST_JSON_GZ}" \
@@ -70,7 +70,7 @@ python llm_em_qwen35/convert_wdc_to_sft.py \
   --output-dir "${SFT_DIR}"
 
 echo "=== train ==="
-python llm_em_qwen35/train_unsloth_lora.py \
+python scripts/training/train_qwen.py \
   --data-dir "${SFT_DIR}" \
   --output-dir "${OUTPUT_DIR}" \
   --model-name "${MODEL_NAME}" \
@@ -91,7 +91,7 @@ python llm_em_qwen35/train_unsloth_lora.py \
   --load-best-model-at-end
 
 echo "=== evaluate on test ==="
-python llm_em_qwen35/evaluate_lora.py \
+python scripts/archive/qwen_internal/evaluate_lora.py \
   --data-path "${SFT_DIR}/test.jsonl" \
   --model-path "${OUTPUT_DIR}/final_adapter" \
   --base-model-name "${MODEL_NAME}" \

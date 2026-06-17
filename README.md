@@ -1,95 +1,82 @@
-# Automatic Data Labeling for Entity Matching
+# Labeling Training Data for Entity Matching Using Large Language Models
 
-This repository contains the experimental code, prompts, result tables, and artifact documentation for a study on constructing entity-matching training sets with large language model teachers. The workflow builds candidate pools, selects informative record pairs, labels them with LLMs, applies post-processing checks, and evaluates the resulting materialized training sets with downstream matchers.
+This repository is the code and data release for the paper:
 
-The artifact layer in `paper_artifacts/` contains the release materials required to inspect and reuse the study outputs. Manuscript sources are maintained outside this repository; any local manuscript directory is a convenience link and is not part of the public release.
+> **Labeling Training Data for Entity Matching Using Large Language Models**
+> Aaron Steiner and Christian Bizer, Data and Web Science Group, University of Mannheim.
 
-## Scope
+It contains the pipeline code, prompts, configuration, and the machine-labeled training sets used in the paper, so the experiments can be inspected and rerun without repeating the LLM labeling.
 
-The experiments cover five entity-matching benchmarks:
+## Abstract
 
-- Abt-Buy
-- Walmart-Amazon
-- WDC Products
-- DBLP-ACM
-- DBLP-Scholar
+Entity matching research has shown that large language models (LLMs) achieve strong zero-shot performance, allowing them to perform matching tasks without task-specific training data. However, applying them to large candidate-pair sets remains relatively slow and expensive. Smaller matchers such as traditional machine learning methods or small language models (SLMs) like BERT are faster at inference time, but require task-specific labeled training data.
 
-The main experimental dimensions are:
+This paper evaluates knowledge-distillation workflows in which an LLM teacher labels training pairs and a smaller student matcher is trained on the resulting machine-labeled set. We compare pair-selection strategies, teacher models, post-processing variants, and student models on Abt-Buy, Walmart-Amazon, WDC Products, DBLP-ACM, and DBLP-Scholar, and compare each student with the same model trained on the benchmark labels.
 
-- pair-selection strategy: similarity search, feature-based active learning, and Ditto-based active learning;
-- teacher model: GPT-5.2, Qwen 3.6 Plus, and Kimi K2.6;
-- post-processing: relabeling, relabel-drop, closure-drop, and combined closure/relabel variants;
-- downstream student model: Ditto, XGBoost, and Qwen3 fine-tuning variants;
-- audit material for teacher and benchmark label quality.
+With Ditto as the student and GPT-5.2 as the teacher, the best machine-labeled set stays within 1.78 F1 of the benchmark training set on every benchmark. On the three product benchmarks, its differences to the benchmark are +0.23 to +1.59 F1. The same conclusion holds with Qwen 3.6 Plus and the open-weight Kimi K2.6 as teachers.
 
-## Repository Map
+Beyond label quality, pair selection shapes the training sets: active learning raises the positive rate by up to 12.74 percentage points and selects more hard positives than the benchmark set on four of five benchmarks.
 
-- `configs/labeling/`: benchmark-level labeling configuration.
-- `scripts/labeling/`: candidate-pool construction, benchmark labeling, relabeling, and post-processing utilities.
-- `scripts/ditto/`: Ditto training wrappers used for downstream evaluation.
-- `llm_em_qwen35/`: Qwen fine-tuning and conversion utilities.
-- `scripts/analysis/`: audit, profiling, and result-analysis utilities.
-- `results/`: study result tables and evaluation summaries.
-- `analysis/`: audit sampling frames, review interface exports, and supporting analysis outputs.
-- `results/error_anlysis/labelers/`: human audit annotations. The directory name is preserved from the original experiment output.
-- `paper_artifacts/`: publication-facing prompts, audit references, and materialized training data.
+Under GPT-5.2 pricing, LLM labeling costs \$28.31 to \$40.88 across all five datasets, compared with an estimated 470 hours of manual labeling for the benchmark training sets. At inference time, Ditto is 41.5 to 534 times faster than direct LLM matching in our measurements.
 
-## Artifact Status
+These results indicate that current LLMs can be used as teacher models to construct training data for faster downstream entity matchers while reducing manual-labeling effort.
 
-The artifact release provides code, prompts, post-processing material, human audit decisions, and materialized machine-labeled training sets. The public artifact inventory is:
+## Artifacts
 
-- `paper_artifacts/README.md`
-- `paper_artifacts/USAGE.md`
-- `paper_artifacts/training_data/README.md`
-- `paper_artifacts/training_data/MANIFEST.csv`
-- `scripts/artifacts/verify_release_artifacts.py`
+Start in **[`artifacts/`](artifacts/)**. It is the entry point for everything released with the paper:
 
-The materialized training files are stored under `paper_artifacts/training_data/`. The manifest records the benchmark, teacher, construction method, row count, and public artifact path for each file.
+- **[`artifacts/training_data/`](artifacts/training_data/)** — all 50 machine-labeled training sets (5 benchmarks × teacher × construction method), with a [`MANIFEST.csv`](artifacts/training_data/MANIFEST.csv).
+- **[Key scripts](artifacts/README.md#scripts)** — links to the runners for the three training-set construction workflows and the student-training scripts.
+- **[`artifacts/prompts/`](artifacts/prompts/)** — the teacher-labeling and post-processing prompts.
+- **[`artifacts/USAGE.md`](artifacts/USAGE.md)** — worked Abt-Buy commands for each construction workflow.
 
-To check the materialized training data, run:
+The benchmark inputs and precomputed embeddings used by the runners are under **[`benchmarks/`](benchmarks/)**.
 
-```bash
-python scripts/artifacts/verify_release_artifacts.py
-```
+## What the experiments cover
 
-For concrete Abt-Buy commands covering similarity search, feature-based active learning, and Ditto-based active learning, see `paper_artifacts/USAGE.md`.
+Five entity-matching benchmarks: Abt-Buy, Walmart-Amazon, WDC Products, DBLP-ACM, and DBLP-Scholar. These benchmarks are publicly available, and the splits and embeddings used here are included under [`benchmarks/`](benchmarks/).
 
-## Reproduction Entry Points
+The experiments vary four dimensions:
 
-For a worked Abt-Buy example covering similarity search, feature-based active learning, and Ditto-based active learning, see `paper_artifacts/USAGE.md`.
+- **Pair selection:** similarity search, feature-based active learning, and Ditto-based active learning.
+- **Teacher model:** GPT-5.2, Qwen 3.6 Plus, and Kimi K2.6.
+- **Post-processing:** relabeling, relabel-drop, closure-drop, and combined closure/relabel variants.
+- **Student model:** Ditto, XGBoost, and Qwen3 fine-tuning.
 
-For command-line help on the main labeling runners:
+## Repository map
 
-```bash
-python scripts/labeling/run_seed_round_only_profiles.py --help
-python scripts/labeling/run_simple_labeling.py --help
-python scripts/labeling/run_three_phase_labeling.py --help
-```
+| Path | Contents |
+|---|---|
+| [`artifacts/`](artifacts/) | Release front door: training data, prompts, and usage guide. |
+| [`scripts/labeling/`](scripts/labeling/) | Three public training-set construction workflows. |
+| [`scripts/training/`](scripts/training/) | Student-model training entry points for XGBoost, Ditto, and Qwen. |
+| [`scripts/post_processing/`](scripts/post_processing/) | LLM relabeling and post-filter variant construction. |
+| [`scripts/archive/`](scripts/archive/) | Historical utilities and implementation internals retained for provenance. |
+| [`benchmarks/`](benchmarks/) | Benchmark datasets and precomputed embeddings read by the runners. |
+| `configs/labeling/` | Benchmark labeling configuration. |
 
-Relabeling and post-processing utilities:
+## Reproduction
+
+[`artifacts/USAGE.md`](artifacts/USAGE.md) walks through constructing the Abt-Buy training set with all three pair-selection workflows. For command-line help on the main runners:
 
 ```bash
-python scripts/labeling/relabel_three_phase_generated_labels_batch.py --help
-python scripts/labeling/build_drop_changed_profiles.py --help
-python scripts/labeling/build_closure_bridge_profiles.py --help
+python scripts/labeling/similarity_search.py --help   # similarity search
+python scripts/labeling/active_learning_ml.py --help    # feature-based active learning
+python scripts/labeling/active_learning_ditto.py --help # Ditto-based active learning
+python scripts/training/train_xgboost.py --help         # XGBoost student training
+python scripts/training/train_ditto.py --help           # Ditto student training
+python scripts/training/train_qwen.py --help            # Qwen student training
 ```
-
-Ditto downstream training:
-
-```bash
-python scripts/ditto/run_benchmark_training.py --help
-```
-
-Qwen training utilities:
-
-```bash
-python llm_em_qwen35/convert_wdc_to_sft.py --help
-```
-
-## Notes on Data Release
-
-The repository distinguishes between executable code, documentation artifacts, and materialized training data. The authoritative public list of training data is `paper_artifacts/training_data/MANIFEST.csv`. Run the artifact verifier before tagging or archiving a release.
 
 ## Citation
 
-Please cite the accompanying manuscript when using the code, prompts, or materialized training sets.
+If you use the code, prompts, or machine-labeled training sets, please cite the paper:
+
+```bibtex
+@inproceedings{steiner2027labeling,
+  title     = {Labeling Training Data for Entity Matching Using Large Language Models},
+  author    = {Steiner, Aaron and Bizer, Christian},
+  booktitle = {Proceedings of the 30th International Conference on Extending Database Technology (EDBT)},
+  year      = {2027}
+}
+```

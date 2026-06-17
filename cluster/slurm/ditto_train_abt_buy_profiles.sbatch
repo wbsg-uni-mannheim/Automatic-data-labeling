@@ -88,7 +88,7 @@ done
 
 if [ "${NEEDS_EXPORT}" = "1" ]; then
   PROFILE_CSV="$(IFS=,; echo "${PROFILE_LIST[*]}")"
-  python scripts/labeling/run_benchmark_labeling.py \
+  python scripts/archive/labeling_helpers/run_benchmark_labeling.py \
     --config "${LABEL_CONFIG}" \
     --benchmark "abt-buy" \
     --profiles "${PROFILE_CSV}" \
@@ -100,7 +100,7 @@ fi
 echo "Generating normalized abt-buy valid/test splits (dry-run benchmark prep)..."
 SPLIT_OUTPUT_ROOT="output/ditto_benchmark_runs"
 SPLIT_RUN_NAME="abt_buy_splits_${SLURM_JOB_ID:-$(date +%Y%m%d_%H%M%S)}"
-python scripts/ditto/run_benchmark_training.py \
+python scripts/training/train_ditto.py \
   --config configs/ditto/benchmarks_training.yaml \
   --output-root "${SPLIT_OUTPUT_ROOT}" \
   --run-name "${SPLIT_RUN_NAME}" \
@@ -160,7 +160,7 @@ for P in "${PROFILE_LIST[@]}"; do
   echo
   echo "=== Training profile ${P} ==="
   echo "Train: ${TRAIN_JSON}"
-  python scripts/ditto/train.py \
+  python scripts/archive/ditto_internal/train.py \
     --train-json-gz "${TRAIN_JSON}" \
     --val-json-gz "${VAL_JSON_GZ}" \
     --test-json-gz "${TEST_JSON_GZ}" \

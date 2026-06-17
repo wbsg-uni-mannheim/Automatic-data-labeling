@@ -3,6 +3,9 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Local operating-system metadata
+.DS_Store
+
 # C extensions
 *.so
 
@@ -233,3 +236,14 @@ analysis/
 training_data/
 cluster/
 export/
+
+# Large WDC embedding matrices (~117 MB each, over GitHub's 100 MB file limit).
+# Regenerate from benchmarks/wdc/batch_embed_*.jsonl — see benchmarks/README.md.
+benchmarks/wdc/embeddings/wdc_left_embeddings.npy
+benchmarks/wdc/embeddings/wdc_right_embeddings.npy
+
+# macOS Finder metadata
+.DS_Store
+
+# Internal authoring guide, not part of the public release
+WRITING_GUIDELINES.md

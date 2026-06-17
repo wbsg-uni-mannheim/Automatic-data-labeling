@@ -1,0 +1,55 @@
+{
+  "dataset": "abt-buy",
+  "source_train": "data/abt-buy/abt-buy-train.json",
+  "rows_train": 7659,
+  "left_unique_rows": 1025,
+  "right_unique_rows": 1009,
+  "embed_fields": [
+    "title",
+    "description",
+    "price"
+  ],
+  "left_csv": "data/abt-buy/abt-buy-train-left.csv",
+  "right_csv": "data/abt-buy/abt-buy-train-right.csv",
+  "left_batch_jsonl": "data/abt-buy/abt-buy-batch_embed_left.jsonl",
+  "right_batch_jsonl": "data/abt-buy/abt-buy-batch_embed_right.jsonl",
+  "left_map_csv": "data/abt-buy/abt-buy-batch_embed_left_map.csv",
+  "right_map_csv": "data/abt-buy/abt-buy-batch_embed_right_map.csv",
+  "submitted_batches": {
+    "left": {
+      "jsonl_path": "data/abt-buy/abt-buy-batch_embed_left.jsonl",
+      "input_file_id": "file-9FD2L2nnsbCbJDhjwdd9vB",
+      "batch_id": "batch_699e21f404d08190b821b29eec818e58",
+      "status": "validating"
+    },
+    "right": {
+      "jsonl_path": "data/abt-buy/abt-buy-batch_embed_right.jsonl",
+      "input_file_id": "file-AKCo42YfDhHiJ8EZePJa44",
+      "batch_id": "batch_699e21f536948190b1794235bf714b7a",
+      "status": "validating"
+    }
+  },
+  "submit_error": null,
+  "pulled_embeddings": {
+    "left": {
+      "batch_id": "batch_699e21f404d08190b821b29eec818e58",
+      "status": "completed",
+      "output_file_id": "file-1L5Rgknqe6yA7Tcwe1ofve",
+      "saved_file": "data/abt-buy/embeddings/abt-buy_left_embeddings.npy",
+      "rows": 1025,
+      "dim": 256,
+      "bad_rows_ignored": 0,
+      "pulled_at_utc": "2026-02-24T22:51:22.088013+00:00"
+    },
+    "right": {
+      "batch_id": "batch_699e21f536948190b1794235bf714b7a",
+      "status": "completed",
+      "output_file_id": "file-8SDS2V2WEFrctBPsrFoVWP",
+      "saved_file": "data/abt-buy/embeddings/abt-buy_right_embeddings.npy",
+      "rows": 1009,
+      "dim": 256,
+      "bad_rows_ignored": 0,
+      "pulled_at_utc": "2026-02-24T22:51:23.779159+00:00"
+    }
+  }
+}

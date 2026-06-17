@@ -92,7 +92,7 @@ if [ ! -f "${ALL_TRAIN_JSON}" ]; then
   RUN_NAME="$(basename "${RUN_DIR}")"
   OUTPUT_ROOT="$(dirname "${RUN_DIR}")"
   echo "Backfilling missing all-profile export for ${BENCHMARK} in ${RUN_DIR}"
-  python scripts/labeling/run_benchmark_labeling.py \
+  python scripts/archive/labeling_helpers/run_benchmark_labeling.py \
     --config "${LABEL_CONFIG}" \
     --benchmark "${BENCHMARK}" \
     --profiles "all" \
@@ -113,7 +113,7 @@ done
 # Build normalized valid/test splits and benchmark train config.
 SPLIT_OUTPUT_ROOT="output/ditto_benchmark_runs"
 SPLIT_RUN_NAME="walmart_amazon_splits_${SLURM_JOB_ID:-$(date +%Y%m%d_%H%M%S)}"
-python scripts/ditto/run_benchmark_training.py \
+python scripts/training/train_ditto.py \
   --config "${TRAIN_CONFIG}" \
   --output-root "${SPLIT_OUTPUT_ROOT}" \
   --run-name "${SPLIT_RUN_NAME}" \
@@ -155,7 +155,7 @@ for P in "${PROFILE_LIST[@]}"; do
   echo
   echo "=== Training ${BENCHMARK} / ${P} ==="
   echo "Train: ${TRAIN_JSON}"
-  python scripts/ditto/train.py \
+  python scripts/archive/ditto_internal/train.py \
     --train-json-gz "${TRAIN_JSON}" \
     --val-json-gz "${VAL_JSON}" \
     --test-json-gz "${TEST_JSON}" \

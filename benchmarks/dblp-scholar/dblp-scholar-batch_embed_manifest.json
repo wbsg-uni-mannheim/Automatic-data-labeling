@@ -1,0 +1,56 @@
+{
+  "dataset": "dblp-scholar",
+  "source_train": "data/dblp-scholar/dblp-scholar-train.json.gz",
+  "rows_train": 22965,
+  "left_unique_rows": 2504,
+  "right_unique_rows": 9494,
+  "embed_fields": [
+    "title",
+    "authors",
+    "venue",
+    "year"
+  ],
+  "left_csv": "data/dblp-scholar/dblp-scholar-train-left.csv",
+  "right_csv": "data/dblp-scholar/dblp-scholar-train-right.csv",
+  "left_batch_jsonl": "data/dblp-scholar/dblp-scholar-batch_embed_left.jsonl",
+  "right_batch_jsonl": "data/dblp-scholar/dblp-scholar-batch_embed_right.jsonl",
+  "left_map_csv": "data/dblp-scholar/dblp-scholar-batch_embed_left_map.csv",
+  "right_map_csv": "data/dblp-scholar/dblp-scholar-batch_embed_right_map.csv",
+  "submitted_batches": {
+    "left": {
+      "jsonl_path": "data/dblp-scholar/dblp-scholar-batch_embed_left.jsonl",
+      "input_file_id": "file-WKU4b2HWs8f5wjwS1VqiJX",
+      "batch_id": "batch_699e239b03108190a1c01849e59fe082",
+      "status": "validating"
+    },
+    "right": {
+      "jsonl_path": "data/dblp-scholar/dblp-scholar-batch_embed_right.jsonl",
+      "input_file_id": "file-DGHcgoFizdmct8DzYcUGsf",
+      "batch_id": "batch_699e239d82ac81908004c5fdc3ed03ea",
+      "status": "validating"
+    }
+  },
+  "submit_error": null,
+  "pulled_embeddings": {
+    "left": {
+      "batch_id": "batch_699e239b03108190a1c01849e59fe082",
+      "status": "completed",
+      "output_file_id": "file-M4t7knBWDZYkK4FmcTtVLY",
+      "saved_file": "data/dblp-scholar/embeddings/dblp-scholar_left_embeddings.npy",
+      "rows": 2504,
+      "dim": 256,
+      "bad_rows_ignored": 0,
+      "pulled_at_utc": "2026-02-24T22:51:35.004543+00:00"
+    },
+    "right": {
+      "batch_id": "batch_699e239d82ac81908004c5fdc3ed03ea",
+      "status": "completed",
+      "output_file_id": "file-YBR58Eox9qvP4FAwkjcJDN",
+      "saved_file": "data/dblp-scholar/embeddings/dblp-scholar_right_embeddings.npy",
+      "rows": 9494,
+      "dim": 256,
+      "bad_rows_ignored": 0,
+      "pulled_at_utc": "2026-02-24T22:51:39.528991+00:00"
+    }
+  }
+}

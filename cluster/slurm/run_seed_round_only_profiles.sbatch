@@ -41,7 +41,7 @@ SKIP_RANDOM_PROFILES="${SKIP_RANDOM_PROFILES:-0}"
 INCLUDE_RANDOM_PROFILES="${INCLUDE_RANDOM_PROFILES:-1}"
 
 CMD=(
-  python3 scripts/labeling/run_seed_round_only_profiles.py
+  python3 scripts/labeling/similarity_search.py
   --config "${CONFIG}"
   --output-root "${OUTPUT_ROOT}"
 )

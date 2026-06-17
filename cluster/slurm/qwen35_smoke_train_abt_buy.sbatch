@@ -32,10 +32,10 @@ fi
 export HF_TOKEN="${HF_TOKEN:-${HUGGINGFACE_TOKEN:-}}"
 
 # shellcheck disable=SC1090
-source "${REPO_ROOT}/llm_em_qwen35/.venv/bin/activate"
+source "${REPO_ROOT}/scripts/archive/qwen_internal/.venv/bin/activate"
 
 rm -rf "${OUTPUT_DIR}"
-python llm_em_qwen35/train_unsloth_lora.py \
+python scripts/training/train_qwen.py \
   --data-dir "${DATA_DIR}" \
   --output-dir "${OUTPUT_DIR}" \
   --model-name "${MODEL_NAME}" \

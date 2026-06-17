@@ -1,25 +1,20 @@
 # Benchmark Labeling Config
 
-This folder contains config-driven entry points for running automatic labeling across multiple benchmarks.
+`benchmarks_active.yaml` defines each benchmark for the labeling workflows: source files, schema mappings, profile targets, and output settings. `benchmarks_active_kimi.yaml` is the same setup with Kimi K2.6 as the teacher.
 
-## Main Runner
+## Use
 
-Use:
-
-```bash
-python scripts/labeling/run_benchmark_labeling.py \
-  --config configs/labeling/benchmarks.yaml \
-  --benchmark wdc
-```
-
-Dry-run (prints resolved command and profile plan without API labeling):
+The labeling entry points read this config with `--config`:
 
 ```bash
-python scripts/labeling/run_benchmark_labeling.py \
-  --config configs/labeling/benchmarks.yaml \
-  --benchmark wdc \
-  --dry-run
+python scripts/labeling/similarity_search.py \
+  --config configs/labeling/benchmarks_active.yaml \
+  --benchmarks wdc \
+  --profiles large \
+  --model gpt-5.2
 ```
+
+To label several benchmarks in one call, `scripts/archive/labeling_helpers/run_benchmark_labeling.py` reads the same config and supports `--dry-run` to print the resolved profile plan without calling the API.
 
 ## Schema Mapping
 
@@ -36,7 +31,7 @@ Missing optional fields are allowed and will be filled with empty strings.
 
 ## Nested Profiles
 
-Profiles are defined globally in `benchmarks.yaml` (or overridden per benchmark) and can include:
+Profiles are defined globally in `benchmarks_active.yaml` (or overridden per benchmark) and can include:
 
 - numeric targets (`small`, `medium`, `large`) as strict nested subsets
 - `all` with `{all_examples: true}` to export the full labeled pool

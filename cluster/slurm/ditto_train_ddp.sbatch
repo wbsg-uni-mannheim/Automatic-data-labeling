@@ -33,4 +33,4 @@ fi
 mkdir -p logs
 
 export NPROC_PER_NODE="${NPROC_PER_NODE:-2}"
-bash scripts/ditto/run_ddp.sh
+bash scripts/archive/ditto_internal/run_ddp.sh

@@ -33,9 +33,9 @@ fi
 export HF_TOKEN="${HF_TOKEN:-${HUGGINGFACE_TOKEN:-}}"
 
 # shellcheck disable=SC1090
-source "${REPO_ROOT}/llm_em_qwen35/.venv/bin/activate"
+source "${REPO_ROOT}/scripts/archive/qwen_internal/.venv/bin/activate"
 
-python llm_em_qwen35/baseline_zero_shot_eval.py \
+python scripts/archive/qwen_internal/baseline_zero_shot_eval.py \
   --data-path "${DATA_PATH}" \
   --model-name "${MODEL_NAME}" \
   --output-dir "${OUTPUT_DIR}"

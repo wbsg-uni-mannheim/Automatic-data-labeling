@@ -1,13 +1,9 @@
 defaults:
   output_root: output/simple_labeling
   run_prefix: benchmark
-  runner_script: scripts/labeling/run_three_phase_labeling.py
+  runner_script: scripts/labeling/active_learning_ditto.py
   random_profile_enabled: true
   random_profile_fraction: 0.20
-  # Flip these three together when switching labeller. GPT-5.2 talks to OpenAI directly
-  # (no api_base_url / api_key_env_var needed -> OPENAI_API_KEY by default).
-  # For Qwen 3.6+: model = qwen/qwen3.6-plus, api_base_url = https://openrouter.ai/api/v1,
-  # api_key_env_var = OPEN_ROUTER_API_KEY (random_profile_* the same).
   random_profile_model: gpt-5.2
   random_profile_seed: 42
   labeling_args:
@@ -36,10 +32,10 @@ defaults:
 
 benchmarks:
   wdc:
-    left_csv: data/wdc/wdc_train_large_left.csv
-    right_csv: data/wdc/wdc_train_large_right.csv
-    valid_path: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
-    test_path: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    left_csv: benchmarks/wdc/wdc_train_large_left.csv
+    right_csv: benchmarks/wdc/wdc_train_large_right.csv
+    valid_path: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test_path: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     id_col: id
     fields:
       title: title
@@ -48,7 +44,7 @@ benchmarks:
       price: price
       priceCurrency: priceCurrency
     embeddings:
-      dir: data/wdc/embeddings
+      dir: benchmarks/wdc/embeddings
       left_file: wdc_left_embeddings.npy
       right_file: wdc_right_embeddings.npy
     profiles:
@@ -58,17 +54,17 @@ benchmarks:
       all:    {all_examples: true}
 
   abt-buy:
-    left_csv: data/abt-buy/abt-buy-train-left.csv
-    right_csv: data/abt-buy/abt-buy-train-right.csv
-    valid_path: data/abt-buy/abt-buy-valid.csv
-    test_path: data/abt-buy/abt-buy-gs.json.gz
+    left_csv: benchmarks/abt-buy/abt-buy-train-left.csv
+    right_csv: benchmarks/abt-buy/abt-buy-train-right.csv
+    valid_path: benchmarks/abt-buy/abt-buy-valid.csv
+    test_path: benchmarks/abt-buy/abt-buy-gs.json.gz
     id_col: id
     fields:
       title: title
       description: description
       price: price
     embeddings:
-      dir: data/abt-buy/embeddings
+      dir: benchmarks/abt-buy/embeddings
       left_file: abt-buy_left_embeddings.npy
       right_file: abt-buy_right_embeddings.npy
     labeling_args:
@@ -102,10 +98,10 @@ benchmarks:
       all:    {all_examples: true}
 
   dblp-acm:
-    left_csv: data/dblp-acm/dblp-acm-train-left.csv
-    right_csv: data/dblp-acm/dblp-acm-train-right.csv
-    valid_path: data/dblp-acm/dblp-acm-valid.csv
-    test_path: data/dblp-acm/dblp-acm-gs.json.gz
+    left_csv: benchmarks/dblp-acm/dblp-acm-train-left.csv
+    right_csv: benchmarks/dblp-acm/dblp-acm-train-right.csv
+    valid_path: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test_path: benchmarks/dblp-acm/dblp-acm-gs.json.gz
     id_col: id
     fields:
       title: title
@@ -113,7 +109,7 @@ benchmarks:
       venue: venue
       year: year
     embeddings:
-      dir: data/dblp-acm/embeddings
+      dir: benchmarks/dblp-acm/embeddings
       left_file: dblp-acm_left_embeddings.npy
       right_file: dblp-acm_right_embeddings.npy
     profiles:
@@ -123,10 +119,10 @@ benchmarks:
       all:    {all_examples: true}
 
   dblp-scholar:
-    left_csv: data/dblp-scholar/dblp-scholar-train-left.csv
-    right_csv: data/dblp-scholar/dblp-scholar-train-right.csv
-    valid_path: data/dblp-scholar/dblp-scholar-valid.csv
-    test_path: data/dblp-scholar/dblp-scholar-gs.json.gz
+    left_csv: benchmarks/dblp-scholar/dblp-scholar-train-left.csv
+    right_csv: benchmarks/dblp-scholar/dblp-scholar-train-right.csv
+    valid_path: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test_path: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
     id_col: id
     fields:
       title: title
@@ -134,7 +130,7 @@ benchmarks:
       venue: venue
       year: year
     embeddings:
-      dir: data/dblp-scholar/embeddings
+      dir: benchmarks/dblp-scholar/embeddings
       left_file: dblp-scholar_left_embeddings.npy
       right_file: dblp-scholar_right_embeddings.npy
     profiles:
@@ -143,30 +139,4 @@ benchmarks:
       # large bumped to match the dblp-scholar benchmark train size after stripping
       # the 5,742 validation pairs (22,965 -> 17,223).
       large:  {target_total: 17200, target_pos: 3440, target_neg: 13760, label_budget: 25800}
-      all:    {all_examples: true}
-
-  walmart-amazon:
-    left_csv: data/walmart-amazon/walmart-amazon-train-left.csv
-    right_csv: data/walmart-amazon/walmart-amazon-train-right.csv
-    valid_path: data/walmart-amazon/walmart-amazon-valid.csv
-    test_path: data/walmart-amazon/walmart-amazon-gs.json.gz
-    id_col: id
-    fields:
-      title: title
-      brand: brand
-      category: category
-      modelno: modelno
-      price: price
-    embeddings:
-      dir: data/walmart-amazon/embeddings
-      left_file: walmart-amazon_left_embeddings.npy
-      right_file: walmart-amazon_right_embeddings.npy
-    labeling_args:
-      phase2_target_size: 1000
-      phase3_batch_size: 500
-      phase3_ensemble_mode: ditto_only
-    profiles:
-      small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
-      medium: {target_total: 3000, target_pos: 500, target_neg: 2500, label_budget: 4500}
-      large:  {target_total: 6000, target_pos: 750, target_neg: 5250, label_budget: 9000}
       all:    {all_examples: true}

@@ -53,10 +53,10 @@ fi
 export HF_TOKEN="${HF_TOKEN:-${HUGGINGFACE_TOKEN:-}}"
 
 # shellcheck disable=SC1090
-source "${REPO_ROOT}/llm_em_qwen35/.venv/bin/activate"
+source "${REPO_ROOT}/scripts/archive/qwen_internal/.venv/bin/activate"
 
 echo "=== convert splits to SFT ==="
-python llm_em_qwen35/convert_wdc_to_sft.py \
+python scripts/archive/qwen_internal/convert_wdc_to_sft.py \
   --train-json-gz "${TRAIN_JSON_GZ}" \
   --valid-json-gz "${VALID_JSON_GZ}" \
   --test-json-gz "${TEST_JSON_GZ}" \
@@ -64,7 +64,7 @@ python llm_em_qwen35/convert_wdc_to_sft.py \
   --output-dir "${SFT_DIR}"
 
 echo "=== train (plain transformers + peft) ==="
-python llm_em_qwen35/train_plain_lora.py \
+python scripts/archive/qwen_internal/train_plain_lora.py \
   --data-dir "${SFT_DIR}" \
   --output-dir "${OUTPUT_DIR}" \
   --model-name "${MODEL_NAME}" \
@@ -84,7 +84,7 @@ python llm_em_qwen35/train_plain_lora.py \
   --load-best-model-at-end
 
 echo "=== evaluate on test (plain transformers) ==="
-python llm_em_qwen35/baseline_zero_shot_eval_plain.py \
+python scripts/archive/qwen_internal/baseline_zero_shot_eval_plain.py \
   --data-path "${SFT_DIR}/test.jsonl" \
   --model-name "${OUTPUT_DIR}/final_adapter" \
   --output-dir "${EVAL_DIR}"

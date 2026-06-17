@@ -1,9 +1,0 @@
-[Ditto] Training with:
-  TRAIN_JSON_GZ=data/wdc/wdcproducts80cc20rnd000un_train_medium.json.gz
-  VAL_JSON_GZ=data/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
-  TEST_JSON_GZ=data/wdc/wdcproducts80cc20rnd050un_gs.json.gz
-  OUTPUT_DIR=output/ditto_runs
-  CONFIG=configs/ditto/default_train.yaml
-  MODEL_NAME=roberta-base
-Run directory: output/ditto_runs/run_20260220_235713
-{'best_epoch': 5, 'best_val_f1': 0.7704130643611912, 'best_threshold': 0.26, 'test': {'precision': 0.6384742951907131, 'recall': 0.77, 'f1': 0.6980961015412511, 'accuracy': 0.926, 'tp': 385, 'fp': 218, 'fn': 115, 'tn': 3782, 'loss': 0.2314366553976304, 'threshold': 0.26}}
