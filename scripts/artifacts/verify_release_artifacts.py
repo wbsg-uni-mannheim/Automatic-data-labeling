@@ -11,32 +11,20 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_MANIFEST = ROOT / "paper_artifacts" / "EXPECTED_TRAINING_SETS.csv"
+DEFAULT_MANIFEST = ROOT / "paper_artifacts" / "training_data" / "MANIFEST.csv"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Verify that the paper artifact training files listed in "
-            "paper_artifacts/EXPECTED_TRAINING_SETS.csv are present and readable."
+            "Verify that the materialized paper artifact training files listed in "
+            "paper_artifacts/training_data/MANIFEST.csv are present, readable, and count-consistent."
         )
     )
     parser.add_argument(
         "--manifest",
         default=str(DEFAULT_MANIFEST),
         help="CSV manifest to verify. Default: %(default)s",
-    )
-    parser.add_argument(
-        "--tier",
-        choices=("core", "optional", "all"),
-        default="core",
-        help="Which manifest tier to verify. Default: %(default)s",
-    )
-    parser.add_argument(
-        "--layout",
-        choices=("release", "source"),
-        default="release",
-        help="Check release_path or source_path from the manifest. Default: %(default)s",
     )
     parser.add_argument(
         "--no-gzip-check",
@@ -51,43 +39,42 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def load_rows(path: Path, tier: str) -> list[dict[str, str]]:
+def load_rows(path: Path) -> list[dict[str, str]]:
     if not path.exists():
         raise FileNotFoundError(f"Manifest not found: {path}")
     with path.open("r", encoding="utf-8", newline="") as handle:
-        rows = list(csv.DictReader(handle))
-    if tier == "all":
-        return rows
-    return [row for row in rows if row.get("tier") == tier]
+        return list(csv.DictReader(handle))
 
 
-def validate_gzip(path: Path) -> str | None:
+def read_jsonl_gzip_count(path: Path) -> tuple[int, str | None]:
+    count = 0
     try:
-        with gzip.open(path, "rb") as handle:
-            while handle.read(1024 * 1024):
-                pass
+        with gzip.open(path, "rt", encoding="utf-8") as handle:
+            for line in handle:
+                if line.strip():
+                    count += 1
     except Exception as exc:  # noqa: BLE001 - the report should capture any gzip failure.
-        return f"{type(exc).__name__}: {exc}"
-    return None
+        return count, f"{type(exc).__name__}: {exc}"
+    return count, None
 
 
-def verify(rows: list[dict[str, str]], *, layout: str, check_gzip: bool) -> dict[str, Any]:
-    path_column = f"{layout}_path"
+def verify(rows: list[dict[str, str]], *, check_gzip: bool) -> dict[str, Any]:
     results: list[dict[str, Any]] = []
     missing = 0
     corrupt = 0
     present = 0
 
     for row in rows:
-        rel_path = row.get(path_column, "").strip()
+        rel_path = row.get("path", "").strip()
         path = ROOT / rel_path
         status = "present"
         detail = ""
         size_bytes = 0
+        observed_rows: int | None = None
 
         if not rel_path:
             status = "invalid_manifest_row"
-            detail = f"Missing {path_column}"
+            detail = "Missing path"
             corrupt += 1
         elif not path.exists():
             status = "missing"
@@ -97,20 +84,27 @@ def verify(rows: list[dict[str, str]], *, layout: str, check_gzip: bool) -> dict
             present += 1
             size_bytes = path.stat().st_size
             if check_gzip and path.suffix == ".gz":
-                error = validate_gzip(path)
+                observed_rows, error = read_jsonl_gzip_count(path)
                 if error:
                     status = "corrupt"
                     detail = error
                     corrupt += 1
+                else:
+                    expected_rows_raw = row.get("n_pairs", "").strip()
+                    if expected_rows_raw:
+                        expected_rows = int(expected_rows_raw)
+                        if observed_rows != expected_rows:
+                            status = "row_count_mismatch"
+                            detail = f"expected {expected_rows}, observed {observed_rows}"
+                            corrupt += 1
 
         results.append(
             {
-                "tier": row.get("tier", ""),
-                "scenario": row.get("scenario", ""),
-                "method": row.get("method", ""),
-                "teacher": row.get("teacher", ""),
                 "benchmark": row.get("benchmark", ""),
-                "profile": row.get("profile", ""),
+                "labeler": row.get("labeler", ""),
+                "method": row.get("method", ""),
+                "expected_rows": row.get("n_pairs", ""),
+                "observed_rows": observed_rows,
                 "path": rel_path,
                 "status": status,
                 "detail": detail,
@@ -143,7 +137,7 @@ def print_text_report(summary: dict[str, Any]) -> None:
     print("Problems:")
     for row in problems:
         print(
-            "{status}\t{scenario}\t{method}\t{teacher}\t{benchmark}\t{profile}\t{path}\t{detail}".format(
+            "{status}\t{benchmark}\t{labeler}\t{method}\t{path}\t{detail}".format(
                 **row
             )
         )
@@ -151,8 +145,8 @@ def print_text_report(summary: dict[str, Any]) -> None:
 
 def main() -> int:
     args = parse_args()
-    rows = load_rows(Path(args.manifest).expanduser().resolve(), args.tier)
-    summary = verify(rows, layout=args.layout, check_gzip=not args.no_gzip_check)
+    rows = load_rows(Path(args.manifest).expanduser().resolve())
+    summary = verify(rows, check_gzip=not args.no_gzip_check)
     if args.json:
         print(json.dumps(summary, indent=2, ensure_ascii=False))
     else:

@@ -4,18 +4,12 @@ This directory contains utilities for preparing and validating the paper artifac
 
 ## Verification
 
-Use `verify_release_artifacts.py` to check the materialized training files listed in `paper_artifacts/EXPECTED_TRAINING_SETS.csv`.
+Use `verify_release_artifacts.py` to check the materialized training files listed in `paper_artifacts/training_data/MANIFEST.csv`.
 
-Core release layout:
-
-```bash
-python scripts/artifacts/verify_release_artifacts.py --tier core --layout release
-```
-
-Original experiment-output layout:
+Run from the repository root:
 
 ```bash
-python scripts/artifacts/verify_release_artifacts.py --tier core --layout source
+python scripts/artifacts/verify_release_artifacts.py
 ```
 
-The script checks for file presence and validates gzip readability for `.gz` files. It does not create, transform, or relabel training data.
+The script checks file presence, gzip readability, and row counts. It does not create, transform, or relabel training data.

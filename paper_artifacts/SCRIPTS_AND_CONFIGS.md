@@ -27,11 +27,9 @@ This file maps the paper workflow to the repository files that implement it. The
 ## Analysis and Audit
 
 - `scripts/profile_autolabel_training_sets.py`: training-set profile analysis.
-- `scripts/build_run_registry.py`: run-registry construction.
-- `scripts/analysis/build_test_teacher_audit_ui.py`: human audit batch and UI generation.
-- `scripts/analysis/compute_test_teacher_audit_error_rates.py`: audit error-rate computation.
-- `results/autolabel_benchmark_results_summary/run_registry.csv`: final run registry for paper experiments.
+- `scripts/analysis/`: audit batch generation, review-interface generation, and audit summary utilities.
+- `paper_artifacts/training_data/MANIFEST.csv`: public manifest for materialized training data.
 
 ## Artifact Verification
 
-- `scripts/artifacts/verify_release_artifacts.py`: verifies presence and gzip readability of the materialized training-set release files listed in `paper_artifacts/EXPECTED_TRAINING_SETS.csv`.
+- `scripts/artifacts/verify_release_artifacts.py`: verifies presence, gzip readability, and row counts for files listed in `paper_artifacts/training_data/MANIFEST.csv`.
