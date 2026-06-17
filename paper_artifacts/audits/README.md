@@ -1,6 +1,6 @@
 # Human Audit Materials
 
-The human audit materials are retained in their original output locations. They document the label-quality audit described in the paper.
+The human audit materials are retained in their original output locations. They document the label-quality audit used in the study.
 
 ## Sampling Frame and Review Interface
 

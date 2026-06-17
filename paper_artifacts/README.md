@@ -1,6 +1,6 @@
-# Paper Artifact Inventory
+# Artifact Inventory
 
-This directory is the publication-facing artifact index for the paper on LLM-labeled training data for entity matching. It documents the materials promised in the paper's artifact section and provides a stable release layout.
+This directory is the publication-facing artifact index for the LLM-labeled entity-matching training data study. It documents the release materials and provides a stable layout for reuse.
 
 The directory does not generate or infer new labels. Materialized training sets are stored under `training_data/` and are verified against `training_data/MANIFEST.csv`.
 
@@ -10,9 +10,9 @@ The core artifact set consists of:
 
 - prompts for initial teacher labeling and post-processing;
 - scripts for candidate generation, pair selection, LLM labeling, relabeling, post-processing, and downstream training;
-- result tables used by the paper;
+- result tables used in the study;
 - human audit sampling frames and annotation files;
-- materialized final training sets for every scenario reported in the paper.
+- materialized final training sets for every reported scenario.
 
 The materialized training-set files are listed in `training_data/MANIFEST.csv`.
 
@@ -39,9 +39,10 @@ The checker reports missing files, corrupt gzip streams, and row-count mismatche
 ## Documentation Subsections
 
 - `training_data/README.md`: describes the materialized training-set scenarios.
+- `USAGE.md`: provides concrete commands for constructing Abt-Buy training sets with the three selection workflows.
 - `prompts/README.md`: identifies the prompt files used in the workflow.
 - `audits/README.md`: identifies the audit sampling frame and human annotation files.
-- `SCRIPTS_AND_CONFIGS.md`: maps paper workflow stages to scripts and configuration files.
+- `SCRIPTS_AND_CONFIGS.md`: maps workflow stages to scripts and configuration files.
 
 ## Non-Goals
 

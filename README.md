@@ -2,7 +2,7 @@
 
 This repository contains the experimental code, prompts, result tables, and artifact documentation for a study on constructing entity-matching training sets with large language model teachers. The workflow builds candidate pools, selects informative record pairs, labels them with LLMs, applies post-processing checks, and evaluates the resulting materialized training sets with downstream matchers.
 
-The repository is organized around the paper in `LLM-Labeled-Training-Data-for-Entity-Matching/paper`. The artifact layer in `paper_artifacts/` contains the release materials required to inspect and reuse the paper outputs.
+The artifact layer in `paper_artifacts/` contains the release materials required to inspect and reuse the study outputs. Manuscript sources are maintained outside this repository; any local manuscript directory is a convenience link and is not part of the public release.
 
 ## Scope
 
@@ -24,22 +24,22 @@ The main experimental dimensions are:
 
 ## Repository Map
 
-- `LLM-Labeled-Training-Data-for-Entity-Matching/paper/`: LaTeX paper, figures, references, and the initial entity-matching teacher prompt.
 - `configs/labeling/`: benchmark-level labeling configuration.
 - `scripts/labeling/`: candidate-pool construction, benchmark labeling, relabeling, and post-processing utilities.
 - `scripts/ditto/`: Ditto training wrappers used for downstream evaluation.
 - `llm_em_qwen35/`: Qwen fine-tuning and conversion utilities.
 - `scripts/analysis/`: audit, profiling, and result-analysis utilities.
-- `results/`: paper result tables and evaluation summaries.
+- `results/`: study result tables and evaluation summaries.
 - `analysis/`: audit sampling frames, review interface exports, and supporting analysis outputs.
 - `results/error_anlysis/labelers/`: human audit annotations. The directory name is preserved from the original experiment output.
 - `paper_artifacts/`: publication-facing prompts, audit references, and materialized training data.
 
 ## Artifact Status
 
-The paper's artifact section promises code, prompts, post-processing material, human audit decisions, and materialized machine-labeled training sets. The public artifact inventory is:
+The artifact release provides code, prompts, post-processing material, human audit decisions, and materialized machine-labeled training sets. The public artifact inventory is:
 
 - `paper_artifacts/README.md`
+- `paper_artifacts/USAGE.md`
 - `paper_artifacts/training_data/README.md`
 - `paper_artifacts/training_data/MANIFEST.csv`
 - `scripts/artifacts/verify_release_artifacts.py`
@@ -52,20 +52,18 @@ To check the materialized training data, run:
 python scripts/artifacts/verify_release_artifacts.py
 ```
 
+For concrete Abt-Buy commands covering similarity search, feature-based active learning, and Ditto-based active learning, see `paper_artifacts/USAGE.md`.
+
 ## Reproduction Entry Points
 
-Initial benchmark labeling:
+For a worked Abt-Buy example covering similarity search, feature-based active learning, and Ditto-based active learning, see `paper_artifacts/USAGE.md`.
+
+For command-line help on the main labeling runners:
 
 ```bash
-python scripts/labeling/run_benchmark_labeling.py \
-  --config configs/labeling/benchmarks.yaml \
-  --benchmark wdc
-```
-
-Three-phase active labeling:
-
-```bash
-python scripts/labeling/run_three_phase_labeling.py
+python scripts/labeling/run_seed_round_only_profiles.py --help
+python scripts/labeling/run_simple_labeling.py --help
+python scripts/labeling/run_three_phase_labeling.py --help
 ```
 
 Relabeling and post-processing utilities:
@@ -94,4 +92,4 @@ The repository distinguishes between executable code, documentation artifacts, a
 
 ## Citation
 
-Please cite the accompanying paper when using the code, prompts, or materialized training sets. The BibTeX metadata is maintained with the paper sources in `LLM-Labeled-Training-Data-for-Entity-Matching/paper/references.bib`.
+Please cite the accompanying manuscript when using the code, prompts, or materialized training sets.

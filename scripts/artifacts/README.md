@@ -1,6 +1,6 @@
 # Artifact Utilities
 
-This directory contains utilities for preparing and validating the paper artifact release.
+This directory contains utilities for preparing and validating the artifact release.
 
 ## Verification
 

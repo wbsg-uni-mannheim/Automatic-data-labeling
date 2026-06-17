@@ -17,7 +17,7 @@ DEFAULT_MANIFEST = ROOT / "paper_artifacts" / "training_data" / "MANIFEST.csv"
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Verify that the materialized paper artifact training files listed in "
+            "Verify that the materialized artifact training files listed in "
             "paper_artifacts/training_data/MANIFEST.csv are present, readable, and count-consistent."
         )
     )

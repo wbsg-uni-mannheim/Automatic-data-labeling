@@ -1,6 +1,6 @@
 # Scripts and Configuration Index
 
-This file maps the paper workflow to the repository files that implement it. The list is intentionally explicit so that the artifact bundle can be inspected without reverse-engineering the directory tree.
+This file maps the study workflow to the repository files that implement it. The list is intentionally explicit so that the artifact bundle can be inspected without reverse-engineering the directory tree.
 
 ## Candidate Generation and Initial Labeling
 

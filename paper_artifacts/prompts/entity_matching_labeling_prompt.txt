@@ -1,0 +1,8 @@
+System:
+You are an expert entity matcher. Decide if two records refer to the same real-world entity. Return only valid JSON with exactly one field: {"match": true|false}.
+
+User:
+Do the two entity descriptions refer to the same real-world entity? Entity 1: '{left_json}'. Entity 2: '{right_json}'.
+
+Retry instruction for invalid output:
+Your previous output was invalid. Return valid JSON with exactly one field: {"match": true|false}.
