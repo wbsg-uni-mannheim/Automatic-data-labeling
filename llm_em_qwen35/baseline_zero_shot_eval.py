@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import time
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -92,6 +93,16 @@ def main() -> None:
     y_pred: List[int] = []
     parse_failures = 0
 
+    # Warm-up to exclude JIT/lazy-init cost from timing
+    if rows:
+        warm_prompt = apply_chat_template(tokenizer, strip_gold_answer(rows[0]["messages"]), add_generation_prompt=True)
+        warm_in = tokenizer(warm_prompt, return_tensors="pt").to(model.device)
+        with torch.inference_mode():
+            _ = model.generate(**warm_in, max_new_tokens=4, do_sample=False, pad_token_id=tokenizer.eos_token_id)
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+    _eval_start = time.perf_counter()
+
     for row in tqdm(rows, desc="zero-shot eval"):
         prompt_messages = strip_gold_answer(row["messages"])
         prompt = apply_chat_template(tokenizer, prompt_messages, add_generation_prompt=True)
@@ -124,6 +135,10 @@ def main() -> None:
             }
         )
 
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+    _eval_elapsed = time.perf_counter() - _eval_start
+
     metrics = {
         "model_name": args.model_name,
         "data_path": str(args.data_path),
@@ -133,6 +148,9 @@ def main() -> None:
         "precision": precision_score(y_true, y_pred, zero_division=0),
         "recall": recall_score(y_true, y_pred, zero_division=0),
         "f1": f1_score(y_true, y_pred, zero_division=0),
+        "inference_time_s": float(_eval_elapsed),
+        "ms_per_pair": float(1000 * _eval_elapsed / max(len(rows), 1)),
+        "pairs_per_s": float(len(rows) / max(_eval_elapsed, 1e-9)),
     }
     pd.DataFrame(records).to_csv(out_dir / "predictions.csv", index=False)
     (out_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))

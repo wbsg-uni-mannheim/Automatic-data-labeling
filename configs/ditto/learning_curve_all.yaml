@@ -1,0 +1,777 @@
+defaults:
+  output_root: output/ditto_learning_curve_all
+  active_profiles:
+  - all
+  model_name: roberta-base
+  batch_size: 64
+  max_len: 256
+  epochs: 50
+  lr: 5.0e-05
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  grad_accum_steps: 1
+  early_stopping_patience: 10
+  seed: 42
+  num_workers: 2
+  fp16: true
+  da: del
+  alpha_aug: 0.8
+  summarize: false
+  dk: null
+  spacy_model: en_core_web_sm
+  max_field_len: 350
+  exclude_valid_from_train: false
+benchmarks:
+  walmart-amazon_sim_N1000:
+    train: output/learning_curve_walmart-amazon/similarity_selection/N1000/walmart-amazon_N1000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: &id001
+    - title
+    - category
+    - brand
+    - modelno
+    - price
+  walmart-amazon_sim_N2000:
+    train: output/learning_curve_walmart-amazon/similarity_selection/N2000/walmart-amazon_N2000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_sim_N3000:
+    train: output/learning_curve_walmart-amazon/similarity_selection/N3000/walmart-amazon_N3000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_sim_N4000:
+    train: output/learning_curve_walmart-amazon/similarity_selection/N4000/walmart-amazon_N4000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_sim_N5000:
+    train: output/learning_curve_walmart-amazon/similarity_selection/N5000/walmart-amazon_N5000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_sim_N6000:
+    train: output/learning_curve_walmart-amazon/similarity_selection/N6000/walmart-amazon_N6000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alml_N1000:
+    train: output/learning_curve_walmart-amazon/simple_active_learning/N1000/walmart-amazon_N1000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alml_N2000:
+    train: output/learning_curve_walmart-amazon/simple_active_learning/N2000/walmart-amazon_N2000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alml_N3000:
+    train: output/learning_curve_walmart-amazon/simple_active_learning/N3000/walmart-amazon_N3000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alml_N4000:
+    train: output/learning_curve_walmart-amazon/simple_active_learning/N4000/walmart-amazon_N4000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alml_N5000:
+    train: output/learning_curve_walmart-amazon/simple_active_learning/N5000/walmart-amazon_N5000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alml_N6000:
+    train: output/learning_curve_walmart-amazon/simple_active_learning/N6000/walmart-amazon_N6000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alditto_N1000:
+    train: output/learning_curve_walmart-amazon/ditto_active_learning/N1000/walmart-amazon_N1000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alditto_N2000:
+    train: output/learning_curve_walmart-amazon/ditto_active_learning/N2000/walmart-amazon_N2000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alditto_N3000:
+    train: output/learning_curve_walmart-amazon/ditto_active_learning/N3000/walmart-amazon_N3000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alditto_N4000:
+    train: output/learning_curve_walmart-amazon/ditto_active_learning/N4000/walmart-amazon_N4000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alditto_N5000:
+    train: output/learning_curve_walmart-amazon/ditto_active_learning/N5000/walmart-amazon_N5000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  walmart-amazon_alditto_N6000:
+    train: output/learning_curve_walmart-amazon/ditto_active_learning/N6000/walmart-amazon_N6000_train.json.gz
+    valid: data/walmart-amazon/walmart-amazon-valid.csv
+    test: data/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: *id001
+  dblp-acm_sim_N1000:
+    train: output/learning_curve_dblp-acm/similarity_selection/N1000/dblp-acm_N1000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: &id002
+    - title
+    - authors
+    - venue
+    - year
+  dblp-acm_sim_N2000:
+    train: output/learning_curve_dblp-acm/similarity_selection/N2000/dblp-acm_N2000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_sim_N3000:
+    train: output/learning_curve_dblp-acm/similarity_selection/N3000/dblp-acm_N3000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_sim_N4000:
+    train: output/learning_curve_dblp-acm/similarity_selection/N4000/dblp-acm_N4000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_sim_N5000:
+    train: output/learning_curve_dblp-acm/similarity_selection/N5000/dblp-acm_N5000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_sim_N6000:
+    train: output/learning_curve_dblp-acm/similarity_selection/N6000/dblp-acm_N6000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_sim_N7000:
+    train: output/learning_curve_dblp-acm/similarity_selection/N7000/dblp-acm_N7000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alml_N1000:
+    train: output/learning_curve_dblp-acm/simple_active_learning/N1000/dblp-acm_N1000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alml_N2000:
+    train: output/learning_curve_dblp-acm/simple_active_learning/N2000/dblp-acm_N2000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alml_N3000:
+    train: output/learning_curve_dblp-acm/simple_active_learning/N3000/dblp-acm_N3000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alml_N4000:
+    train: output/learning_curve_dblp-acm/simple_active_learning/N4000/dblp-acm_N4000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alml_N5000:
+    train: output/learning_curve_dblp-acm/simple_active_learning/N5000/dblp-acm_N5000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alml_N6000:
+    train: output/learning_curve_dblp-acm/simple_active_learning/N6000/dblp-acm_N6000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alml_N7000:
+    train: output/learning_curve_dblp-acm/simple_active_learning/N7000/dblp-acm_N7000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alditto_N1000:
+    train: output/learning_curve_dblp-acm/ditto_active_learning/N1000/dblp-acm_N1000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alditto_N2000:
+    train: output/learning_curve_dblp-acm/ditto_active_learning/N2000/dblp-acm_N2000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alditto_N3000:
+    train: output/learning_curve_dblp-acm/ditto_active_learning/N3000/dblp-acm_N3000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alditto_N4000:
+    train: output/learning_curve_dblp-acm/ditto_active_learning/N4000/dblp-acm_N4000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alditto_N5000:
+    train: output/learning_curve_dblp-acm/ditto_active_learning/N5000/dblp-acm_N5000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alditto_N6000:
+    train: output/learning_curve_dblp-acm/ditto_active_learning/N6000/dblp-acm_N6000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-acm_alditto_N7000:
+    train: output/learning_curve_dblp-acm/ditto_active_learning/N7000/dblp-acm_N7000_train.json.gz
+    valid: data/dblp-acm/dblp-acm-valid.csv
+    test: data/dblp-acm/dblp-acm-gs.json.gz
+    fields: *id002
+  dblp-scholar_sim_N1000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N1000/dblp-scholar_N1000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: &id003
+    - title
+    - authors
+    - venue
+    - year
+  dblp-scholar_sim_N2000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N2000/dblp-scholar_N2000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N3000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N3000/dblp-scholar_N3000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N4000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N4000/dblp-scholar_N4000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N5000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N5000/dblp-scholar_N5000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N6000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N6000/dblp-scholar_N6000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N7000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N7000/dblp-scholar_N7000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N8000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N8000/dblp-scholar_N8000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N9000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N9000/dblp-scholar_N9000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N10000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N10000/dblp-scholar_N10000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N11000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N11000/dblp-scholar_N11000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N12000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N12000/dblp-scholar_N12000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N13000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N13000/dblp-scholar_N13000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N14000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N14000/dblp-scholar_N14000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N15000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N15000/dblp-scholar_N15000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N16000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N16000/dblp-scholar_N16000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_sim_N17000:
+    train: output/learning_curve_dblp-scholar/similarity_selection/N17000/dblp-scholar_N17000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N1000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N1000/dblp-scholar_N1000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N2000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N2000/dblp-scholar_N2000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N3000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N3000/dblp-scholar_N3000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N4000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N4000/dblp-scholar_N4000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N5000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N5000/dblp-scholar_N5000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N6000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N6000/dblp-scholar_N6000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N7000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N7000/dblp-scholar_N7000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N8000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N8000/dblp-scholar_N8000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N9000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N9000/dblp-scholar_N9000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N10000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N10000/dblp-scholar_N10000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N11000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N11000/dblp-scholar_N11000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N12000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N12000/dblp-scholar_N12000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N13000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N13000/dblp-scholar_N13000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N14000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N14000/dblp-scholar_N14000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N15000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N15000/dblp-scholar_N15000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N16000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N16000/dblp-scholar_N16000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alml_N17000:
+    train: output/learning_curve_dblp-scholar/simple_active_learning/N17000/dblp-scholar_N17000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N1000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N1000/dblp-scholar_N1000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N2000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N2000/dblp-scholar_N2000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N3000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N3000/dblp-scholar_N3000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N4000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N4000/dblp-scholar_N4000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N5000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N5000/dblp-scholar_N5000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N6000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N6000/dblp-scholar_N6000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N7000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N7000/dblp-scholar_N7000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N8000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N8000/dblp-scholar_N8000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N9000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N9000/dblp-scholar_N9000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N10000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N10000/dblp-scholar_N10000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N11000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N11000/dblp-scholar_N11000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N12000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N12000/dblp-scholar_N12000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N13000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N13000/dblp-scholar_N13000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N14000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N14000/dblp-scholar_N14000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N15000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N15000/dblp-scholar_N15000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N16000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N16000/dblp-scholar_N16000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  dblp-scholar_alditto_N17000:
+    train: output/learning_curve_dblp-scholar/ditto_active_learning/N17000/dblp-scholar_N17000_train.json.gz
+    valid: data/dblp-scholar/dblp-scholar-valid.csv
+    test: data/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: *id003
+  wdc_sim_N1000:
+    train: output/learning_curve_wdc/similarity_selection/N1000/wdc_N1000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: &id004
+    - title
+    - brand
+    - description
+    - price
+    - priceCurrency
+  wdc_sim_N2000:
+    train: output/learning_curve_wdc/similarity_selection/N2000/wdc_N2000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N3000:
+    train: output/learning_curve_wdc/similarity_selection/N3000/wdc_N3000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N4000:
+    train: output/learning_curve_wdc/similarity_selection/N4000/wdc_N4000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N5000:
+    train: output/learning_curve_wdc/similarity_selection/N5000/wdc_N5000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N6000:
+    train: output/learning_curve_wdc/similarity_selection/N6000/wdc_N6000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N7000:
+    train: output/learning_curve_wdc/similarity_selection/N7000/wdc_N7000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N8000:
+    train: output/learning_curve_wdc/similarity_selection/N8000/wdc_N8000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N9000:
+    train: output/learning_curve_wdc/similarity_selection/N9000/wdc_N9000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N10000:
+    train: output/learning_curve_wdc/similarity_selection/N10000/wdc_N10000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N11000:
+    train: output/learning_curve_wdc/similarity_selection/N11000/wdc_N11000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N12000:
+    train: output/learning_curve_wdc/similarity_selection/N12000/wdc_N12000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N13000:
+    train: output/learning_curve_wdc/similarity_selection/N13000/wdc_N13000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N14000:
+    train: output/learning_curve_wdc/similarity_selection/N14000/wdc_N14000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N15000:
+    train: output/learning_curve_wdc/similarity_selection/N15000/wdc_N15000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N16000:
+    train: output/learning_curve_wdc/similarity_selection/N16000/wdc_N16000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N17000:
+    train: output/learning_curve_wdc/similarity_selection/N17000/wdc_N17000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N18000:
+    train: output/learning_curve_wdc/similarity_selection/N18000/wdc_N18000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_sim_N19000:
+    train: output/learning_curve_wdc/similarity_selection/N19000/wdc_N19000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N1000:
+    train: output/learning_curve_wdc/simple_active_learning/N1000/wdc_N1000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N2000:
+    train: output/learning_curve_wdc/simple_active_learning/N2000/wdc_N2000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N3000:
+    train: output/learning_curve_wdc/simple_active_learning/N3000/wdc_N3000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N4000:
+    train: output/learning_curve_wdc/simple_active_learning/N4000/wdc_N4000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N5000:
+    train: output/learning_curve_wdc/simple_active_learning/N5000/wdc_N5000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N6000:
+    train: output/learning_curve_wdc/simple_active_learning/N6000/wdc_N6000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N7000:
+    train: output/learning_curve_wdc/simple_active_learning/N7000/wdc_N7000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N8000:
+    train: output/learning_curve_wdc/simple_active_learning/N8000/wdc_N8000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N9000:
+    train: output/learning_curve_wdc/simple_active_learning/N9000/wdc_N9000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N10000:
+    train: output/learning_curve_wdc/simple_active_learning/N10000/wdc_N10000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N11000:
+    train: output/learning_curve_wdc/simple_active_learning/N11000/wdc_N11000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N12000:
+    train: output/learning_curve_wdc/simple_active_learning/N12000/wdc_N12000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N13000:
+    train: output/learning_curve_wdc/simple_active_learning/N13000/wdc_N13000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N14000:
+    train: output/learning_curve_wdc/simple_active_learning/N14000/wdc_N14000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N15000:
+    train: output/learning_curve_wdc/simple_active_learning/N15000/wdc_N15000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N16000:
+    train: output/learning_curve_wdc/simple_active_learning/N16000/wdc_N16000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N17000:
+    train: output/learning_curve_wdc/simple_active_learning/N17000/wdc_N17000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N18000:
+    train: output/learning_curve_wdc/simple_active_learning/N18000/wdc_N18000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alml_N19000:
+    train: output/learning_curve_wdc/simple_active_learning/N19000/wdc_N19000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N1000:
+    train: output/learning_curve_wdc/ditto_active_learning/N1000/wdc_N1000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N2000:
+    train: output/learning_curve_wdc/ditto_active_learning/N2000/wdc_N2000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N3000:
+    train: output/learning_curve_wdc/ditto_active_learning/N3000/wdc_N3000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N4000:
+    train: output/learning_curve_wdc/ditto_active_learning/N4000/wdc_N4000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N5000:
+    train: output/learning_curve_wdc/ditto_active_learning/N5000/wdc_N5000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N6000:
+    train: output/learning_curve_wdc/ditto_active_learning/N6000/wdc_N6000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N7000:
+    train: output/learning_curve_wdc/ditto_active_learning/N7000/wdc_N7000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N8000:
+    train: output/learning_curve_wdc/ditto_active_learning/N8000/wdc_N8000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N9000:
+    train: output/learning_curve_wdc/ditto_active_learning/N9000/wdc_N9000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N10000:
+    train: output/learning_curve_wdc/ditto_active_learning/N10000/wdc_N10000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N11000:
+    train: output/learning_curve_wdc/ditto_active_learning/N11000/wdc_N11000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N12000:
+    train: output/learning_curve_wdc/ditto_active_learning/N12000/wdc_N12000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N13000:
+    train: output/learning_curve_wdc/ditto_active_learning/N13000/wdc_N13000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N14000:
+    train: output/learning_curve_wdc/ditto_active_learning/N14000/wdc_N14000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N15000:
+    train: output/learning_curve_wdc/ditto_active_learning/N15000/wdc_N15000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N16000:
+    train: output/learning_curve_wdc/ditto_active_learning/N16000/wdc_N16000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N17000:
+    train: output/learning_curve_wdc/ditto_active_learning/N17000/wdc_N17000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N18000:
+    train: output/learning_curve_wdc/ditto_active_learning/N18000/wdc_N18000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
+  wdc_alditto_N19000:
+    train: output/learning_curve_wdc/ditto_active_learning/N19000/wdc_N19000_train.json.gz
+    valid: data/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test: data/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: *id004
