@@ -1,12 +1,12 @@
-# Script Organization
+# Scripts
 
-The script tree exposes a small public workflow surface.
+The public workflow, plus an archive of everything else.
 
 | Directory | Purpose |
 |---|---|
-| `labeling/` | Three workflows for constructing machine-labeled training sets. |
-| `training/` | Student-model training entry points for XGBoost, Ditto, and Qwen. |
-| `post_processing/` | LLM relabeling and post-filter variant construction. |
-| `archive/` | Historical scripts, one-off utilities, and implementation internals kept for provenance. |
+| `labeling/` | The three workflows that build machine-labeled training sets. |
+| `training/` | Student-model training: XGBoost, Ditto, Qwen. |
+| `post_processing/` | Relabeling and post-filter variants. |
+| `archive/` | Earlier scripts and internals, kept for reference. |
 
-New users should start with `labeling/`, then use `training/`, and consult `post_processing/` only for relabeling and post-filter variants.
+Start with `labeling/`, then `training/`. Reach for `post_processing/` only to build the relabel and filter variants.

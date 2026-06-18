@@ -1,11 +1,11 @@
 # Training Entry Points
 
-This directory contains the public student-model training entry points.
+Train a student model on the machine-labeled sets.
 
-| Script | Purpose |
+| Script | What it does |
 |---|---|
-| `train_xgboost.py` | Trains and evaluates traditional feature-based student models, including XGBoost. |
-| `train_ditto.py` | Runs Ditto training from generated entity-matching labels. |
-| `train_qwen.py` | Fine-tunes a Qwen student model with LoRA. |
+| `train_xgboost.py` | Trains and evaluates the feature-based student (XGBoost). |
+| `train_ditto.py` | Trains and evaluates Ditto on generated labels. |
+| `train_qwen.py` | Fine-tunes a Qwen student with LoRA. |
 
-Implementation-specific helper code is retained in `scripts/archive/ditto_internal/` and `scripts/archive/qwen_internal/`.
+Helper code for the Ditto and Qwen students sits in `../archive/ditto_internal/` and `../archive/qwen_internal/`.

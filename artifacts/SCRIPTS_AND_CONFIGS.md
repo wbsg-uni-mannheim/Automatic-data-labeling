@@ -21,6 +21,3 @@ This maps each stage of the workflow to the file that implements it.
 - `scripts/training/train_ditto.py`: Ditto student training and evaluation.
 - `scripts/training/train_qwen.py`: Qwen student fine-tuning.
 
-## Materialized Training Data
-
-- `artifacts/training_data/MANIFEST.csv`: manifest for the materialized training data.

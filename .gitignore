@@ -234,6 +234,8 @@ output/results_summary/
 
 analysis/
 training_data/
+# but the released training sets under artifacts/ are part of the repo
+!artifacts/training_data/
 cluster/
 export/
 

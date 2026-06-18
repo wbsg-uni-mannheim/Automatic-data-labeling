@@ -8,7 +8,7 @@ The five entity-matching benchmarks used in the paper, one directory each:
 - `dblp-acm/`
 - `dblp-scholar/`
 
-The benchmark datasets are publicly available. The splits and precomputed embeddings the runners read are included here for convenience.
+The datasets are publicly available. Their splits and precomputed embeddings, in the form the runners read, are included here.
 
 ## Layout
 

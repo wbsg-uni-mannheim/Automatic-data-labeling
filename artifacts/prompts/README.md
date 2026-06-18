@@ -1,17 +1,13 @@
-# Prompt Materials
+# Prompts
 
-The workflow uses prompts for two stages: initial teacher labeling and post-processing review.
+The workflow uses two prompts: one to label pairs with the teacher, one to relabel them in post-processing.
 
-## Initial Teacher Labeling
+## Teacher labeling
 
-- `artifacts/prompts/entity_matching_labeling_prompt.txt`
+[`entity_matching_labeling_prompt.txt`](entity_matching_labeling_prompt.txt) asks the teacher whether a record pair refers to the same real-world entity and returns a JSON decision.
 
-This prompt asks the teacher model to decide whether a record pair denotes the same real-world entity and to return a JSON decision.
+## Post-processing relabeling
 
-## Post-Processing Relabeling
+[`entity_matching_relabel_prompt.md`](entity_matching_relabel_prompt.md) reviews each labeled pair with a precision-oriented prompt. The conservative decision drives the relabel and drop variants.
 
-The relabeling step reviews each labeled pair with a precision-oriented prompt:
-
-- [`entity_matching_relabel_prompt.md`](entity_matching_relabel_prompt.md)
-
-`scripts/archive/review_workflows/experiments/evidence_first_abstain/prompts/` holds the other review prompts (recall, balanced, skeptic, and abstain variants) that we tried during development.
+`scripts/archive/review_workflows/experiments/evidence_first_abstain/prompts/` holds the recall, balanced, skeptic, and abstain variants tried during development.

@@ -1,6 +1,6 @@
-# Using the Repository
+# Usage
 
-This guide describes how to inspect the released training data and how to run the three training-set construction workflows on Abt-Buy. Commands assume that they are executed from the repository root.
+Inspect the released training data and run the three construction workflows on Abt-Buy. Run every command from the repository root.
 
 ## Environment
 
@@ -20,23 +20,23 @@ The Abt-Buy examples require the following local inputs:
 
 Generated runs are written below `output/` unless an explicit `--output-root` is provided.
 
-## Inspect Released Training Data
+## Inspect the released training data
 
-The released materialized training sets are stored under:
+The training sets live under:
 
 ```text
 artifacts/training_data/
 ```
 
-For example, the Abt-Buy GPT-5.2 similarity-search training set is:
+For example, the Abt-Buy GPT-5.2 similarity-search set is:
 
 ```text
 artifacts/training_data/abt-buy/gpt-5.2/similarity_search/abt-buy_train.json.gz
 ```
 
-## Construct Abt-Buy With Similarity Search
+## Construct Abt-Buy with similarity search
 
-The similarity-search construction is implemented by the seed-round profile runner. It builds a FAISS nearest-neighbor candidate pool from the stored embeddings, labels selected high-similarity candidates with the teacher model, and exports profile-specific `active_labels_latest.csv`, `labels_final.csv`, and Ditto-compatible `*_train.json.gz` files.
+`similarity_search.py` builds a FAISS nearest-neighbor candidate pool from the stored embeddings, labels the top candidates with the teacher, and exports `active_labels_latest.csv`, `labels_final.csv`, and a Ditto-compatible `*_train.json.gz` per profile.
 
 Dry run:
 
@@ -69,9 +69,9 @@ output/seed_round_only_profiles/benchmark_abt-buy_<timestamp>/
 
 The `profiles/large/` subdirectory contains the exported training file for the selected profile.
 
-## Construct Abt-Buy With Feature-Based Active Learning
+## Construct Abt-Buy with feature-based active learning
 
-The feature-based active-learning workflow is implemented by `active_learning_ml.py`. It starts from a teacher-labeled seed set, trains an in-script feature-based matcher, selects uncertain or informative candidates from the FAISS pool, asks the teacher model for additional labels, and repeats until the requested budget is reached.
+`active_learning_ml.py` starts from a teacher-labeled seed set, trains a feature-based matcher, picks informative candidates from the FAISS pool, asks the teacher to label them, and repeats until it reaches the target budget.
 
 Preview the first candidate comparisons without labeling:
 
@@ -132,9 +132,9 @@ output/simple_active_learning/abt-buy_active_ml_example/
 
 The main output files include `active_labels_latest.csv`, `labels_final.csv`, and a materialized `*_train.json.gz` export.
 
-## Construct Abt-Buy With Ditto-Based Active Learning
+## Construct Abt-Buy with Ditto-based active learning
 
-The Ditto-based workflow is implemented by `active_learning_ditto.py`. It first constructs a seed set, then runs a feature-based active-learning phase, and finally uses a Ditto ensemble to select further candidates for teacher labeling. This workflow is more compute-intensive than feature-based active learning because Ditto models are trained during candidate selection.
+`active_learning_ditto.py` runs three phases: build a seed set, run a feature-based active-learning phase, then use a Ditto ensemble to select the remaining candidates for teacher labeling. It costs more compute than feature-based active learning because it trains Ditto models during candidate selection.
 
 Preview the first candidate comparisons without labeling:
 

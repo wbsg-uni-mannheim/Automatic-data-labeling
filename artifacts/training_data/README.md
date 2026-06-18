@@ -31,6 +31,3 @@ Qwen and Kimi label only the AL (Ditto) setting, for the teacher-comparison expe
 | `active_learning_ditto_closure_and_relabel` | Drops rows flagged by both the bridge check and relabeling |
 | `active_learning_ditto_closure_or_relabel` | Drops rows flagged by either signal |
 
-## Manifest
-
-[`MANIFEST.csv`](MANIFEST.csv) records the benchmark, teacher, method, row count, and path of every file. 50 files in total, about 78 MB compressed.
