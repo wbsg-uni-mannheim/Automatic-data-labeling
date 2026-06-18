@@ -19,8 +19,7 @@ defaults:
   dk: null
   spacy_model: en_core_web_sm
   max_field_len: 350
-  # No filtering at all — neither test-leak removal nor validation-pair removal.
-  # Train on the raw labelled pairs as the AL pipeline produced them.
+  # Train on the labelled pairs as the AL pipeline produced them.
   exclude_valid_from_train: false
 
 benchmarks:

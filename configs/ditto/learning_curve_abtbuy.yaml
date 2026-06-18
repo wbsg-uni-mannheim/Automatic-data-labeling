@@ -19,8 +19,7 @@ defaults:
   dk: null
   spacy_model: en_core_web_sm
   max_field_len: 350
-  # No test-leak cleaning — train data may contain test pairs (per user request).
-  # We still want to exclude validation pairs from training (avoid trivial val-on-train).
+  # Exclude validation pairs from training (avoid trivial val-on-train).
   exclude_valid_from_train: true
 
 benchmarks:
