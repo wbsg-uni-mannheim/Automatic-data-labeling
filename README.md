@@ -9,17 +9,13 @@ It contains the pipeline code, prompts, configuration, and the machine-labeled t
 
 ## Abstract
 
-Entity matching research has shown that large language models (LLMs) achieve strong zero-shot performance, allowing them to perform matching tasks without task-specific training data. However, applying them to large candidate-pair sets remains relatively slow and expensive. Smaller matchers such as traditional machine learning methods or small language models (SLMs) like BERT are faster at inference time, but require task-specific labeled training data.
+Recent large language models (LLMs) achieve strong performance on entity matching without requiring task-specific training data. However, applying these models to large sets of candidate pairs remains slow and costly. In contrast, entity matchers using traditional machine learning methods or small language models (SLMs), such as RoBERTa, offer much faster inference but require task-specific training data.
 
-This paper evaluates knowledge-distillation workflows in which an LLM teacher labels training pairs and a smaller student matcher is trained on the resulting machine-labeled set. We compare pair-selection strategies, teacher models, post-processing variants, and student models on Abt-Buy, Walmart-Amazon, WDC Products, DBLP-ACM, and DBLP-Scholar, and compare each student with the same model trained on the benchmark labels.
+Our paper investigates whether the need to provide task-specific training data can be avoided by using knowledge-distillation workflows, in which an LLM serves as a teacher model to label training pairs that are subsequently used to train a smaller student model. We investigate knowledge distillation for entity matching along the following dimensions:  pair-selection strategy, teacher model, label post-processing method, and student model. We evaluate the workflows using the Abt-Buy, Walmart-Amazon, WDC Products, DBLP-ACM, and DBLP-Scholar benchmarks, and compare the performance of student models trained with machine-labeled data to the performance of the same models trained using the benchmark training sets.
 
-With Ditto as the student and GPT-5.2 as the teacher, the best machine-labeled set stays within 1.78 F1 of the benchmark training set on every benchmark. On the three product benchmarks, its differences to the benchmark are +0.23 to +1.59 F1. The same conclusion holds with Qwen 3.6 Plus and the open-weight Kimi K2.6 as teachers.
+Our experiments show that student models trained using the machine-labeled sets perform approximately on par with models trained on the benchmark training sets, with the remaining differences in both directions staying below two F1 points. Using GPT-5.2 to label the training sets for all five benchmarks costs US$28.31 to US$40.88, whereas manually labeling the same training sets is estimated to require 470 hours of work. At inference time, Ditto is 41.5 to 534 times faster than directly using an LLM to perform the matching tasks.
 
-Beyond label quality, pair selection shapes the training sets: active learning raises the positive rate by up to 12.74 percentage points and selects more hard positives than the benchmark set on four of five benchmarks.
-
-Under GPT-5.2 pricing, LLM labeling costs \$28.31 to \$40.88 across all five datasets, compared with an estimated 470 hours of manual labeling for the benchmark training sets. At inference time, Ditto is 41.5 to 534 times faster than direct LLM matching in our measurements.
-
-These results indicate that current LLMs can be used as teacher models to construct training data for faster downstream entity matchers while reducing manual-labeling effort.
+These results indicate that current LLMs, when combined with a suitable pair-selection method, can substantially reduce or even eliminate the manual effort required to label use case-specific training data for entity matching.
 
 ## Artifacts
 
@@ -73,10 +69,10 @@ python scripts/training/train_qwen.py --help            # Qwen student training
 If you use the code, prompts, or machine-labeled training sets, please cite the paper:
 
 ```bibtex
-@inproceedings{steiner2027labeling,
+@inproceedings{steiner2026labeling,
   title     = {Labeling Training Data for Entity Matching Using Large Language Models},
   author    = {Steiner, Aaron and Bizer, Christian},
-  booktitle = {Proceedings of the 30th International Conference on Extending Database Technology (EDBT)},
-  year      = {2027}
+  booktitle = {let's see},
+  year      = {2026}
 }
 ```
