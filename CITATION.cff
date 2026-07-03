@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use the code, prompts, or machine-labeled training sets, please cite this paper."
+title: "Labeling Training Data for Entity Matching Using Large Language Models"
+authors:
+  - family-names: Steiner
+    given-names: Aaron
+  - family-names: Bizer
+    given-names: Christian
+url: "https://arxiv.org/abs/2606.28823"
+doi: "10.48550/arXiv.2606.28823"
+date-released: "2026-06-27"
+publisher:
+  name: arXiv

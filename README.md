@@ -2,8 +2,9 @@
 
 This repository is the code and data release for the paper:
 
-> **Labeling Training Data for Entity Matching Using Large Language Models**
-> Aaron Steiner and Christian Bizer, Data and Web Science Group, University of Mannheim.
+> **[Labeling Training Data for Entity Matching Using Large Language Models](https://arxiv.org/abs/2606.28823)**  
+> Aaron Steiner and Christian Bizer, Data and Web Science Group, University of Mannheim.  
+> arXiv:2606.28823 [cs.CL], 2026. DOI: [10.48550/arXiv.2606.28823](https://doi.org/10.48550/arXiv.2606.28823)
 
 It contains the pipeline code, prompts, configuration, and the machine-labeled training sets used in the paper, so the experiments can be inspected and rerun without repeating the LLM labeling.
 
@@ -69,10 +70,16 @@ python scripts/training/train_qwen.py --help            # Qwen student training
 If you use the code, prompts, or machine-labeled training sets, please cite the paper:
 
 ```bibtex
-@inproceedings{steiner2026labeling,
-  title     = {Labeling Training Data for Entity Matching Using Large Language Models},
-  author    = {Steiner, Aaron and Bizer, Christian},
-  booktitle = {let's see},
-  year      = {2026}
+@misc{steiner2026labeling,
+  title         = {Labeling Training Data for Entity Matching Using Large Language Models},
+  author        = {Steiner, Aaron and Bizer, Christian},
+  year          = {2026},
+  eprint        = {2606.28823},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.CL},
+  doi           = {10.48550/arXiv.2606.28823},
+  url           = {https://arxiv.org/abs/2606.28823}
 }
 ```
+
+A `CITATION.cff` file is also included in the repository root.
