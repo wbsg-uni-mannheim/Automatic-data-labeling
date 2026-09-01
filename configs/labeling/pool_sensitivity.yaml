@@ -1,0 +1,178 @@
+# Pool-construction sensitivity (paper §4, 'Sensitivity to Candidate Pool Construction').
+# Same data, budgets and teacher; only the candidate pool differs. Keys are <benchmark>--<method>:
+#   embedding = paper pool (18 NN + 2 random) · bm25 = token-based blocking with ranking, same size
+#   rrf = both rankings fused by reciprocal rank fusion, same size · union = embedding ∪ bm25 top-18, uncapped
+# Run:  python scripts/labeling/similarity_search.py --config configs/labeling/pool_sensitivity.yaml \
+#         --benchmarks wdc--union,dn7-walmart-amazon--union --profiles large
+
+defaults:
+  output_root: output/pool_sensitivity
+  run_prefix: benchmark
+  runner_script: scripts/labeling/active_learning_ditto.py
+  random_profile_enabled: true
+  random_profile_fraction: 0.2
+  random_profile_model: gpt-5.2
+  random_profile_seed: 42
+  labeling_args:
+    model: gpt-5.2
+    faiss_k: 20
+    faiss_random_state: 42
+    pool_method: embedding
+    seed_size: 100
+    seed_positives: 30
+    seed_max_calls: 400
+    seed_pos_per_query: 1
+    seed_neg_per_query: 4
+    seed_batch_size: 5
+    seed_bottom_k: 2
+    seed_query_order: random
+    labels_per_iteration: 500
+    active_candidates: 20000
+    max_iterations: 300
+    adaptive_round_size: 0
+    adaptive_neg_min_share: 0.3
+    adaptive_neg_max_share: 0.9
+    phase2_target_size: 1000
+    phase3_batch_size: 500
+    phase3_candidates: 20000
+    phase3_ensemble_mode: ditto_only
+    llm_concurrency: 10
+benchmarks:
+  wdc--embedding:
+    left_csv: benchmarks/wdc/wdc_train_large_left.csv
+    right_csv: benchmarks/wdc/wdc_train_large_right.csv
+    valid_path: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test_path: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    train_pairs: benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz
+    id_col: id
+    fields: &id001
+      title: title
+      brand: brand
+      description: description
+      price: price
+      priceCurrency: priceCurrency
+    embeddings: &id002
+      dir: benchmarks/wdc/embeddings
+      left_file: wdc_left_embeddings.npy
+      right_file: wdc_right_embeddings.npy
+    profiles: &id003
+      small:
+        target_total: 2500
+        target_pos: 500
+        target_neg: 2000
+        label_budget: 4000
+      medium:
+        target_total: 10000
+        target_pos: 2500
+        target_neg: 7500
+        label_budget: 15000
+      large:
+        target_total: 20000
+        target_pos: 5000
+        target_neg: 15000
+        label_budget: 30000
+      all:
+        all_examples: true
+    labeling_args:
+      pool_method: embedding
+  wdc--bm25:
+    left_csv: benchmarks/wdc/wdc_train_large_left.csv
+    right_csv: benchmarks/wdc/wdc_train_large_right.csv
+    valid_path: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test_path: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    train_pairs: benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz
+    id_col: id
+    fields: *id001
+    embeddings: *id002
+    profiles: *id003
+    labeling_args:
+      pool_method: bm25
+  wdc--rrf:
+    left_csv: benchmarks/wdc/wdc_train_large_left.csv
+    right_csv: benchmarks/wdc/wdc_train_large_right.csv
+    valid_path: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test_path: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    train_pairs: benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz
+    id_col: id
+    fields: *id001
+    embeddings: *id002
+    profiles: *id003
+    labeling_args:
+      pool_method: rrf
+  wdc--union:
+    left_csv: benchmarks/wdc/wdc_train_large_left.csv
+    right_csv: benchmarks/wdc/wdc_train_large_right.csv
+    valid_path: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
+    test_path: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    train_pairs: benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz
+    id_col: id
+    fields: *id001
+    embeddings: *id002
+    profiles: *id003
+    labeling_args:
+      pool_method: union
+  dn7-walmart-amazon--embedding:
+    left_csv: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-left.csv
+    right_csv: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-right.csv
+    valid_path: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.csv
+    test_path: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    id_col: id
+    fields: &id004
+      title: title
+      modelno: modelno
+      price: price
+      shipweight: shipweight
+      brand: brand
+      dimensions: dimensions
+    embeddings: &id005
+      dir: benchmarks/dn7-walmart-amazon/embeddings
+      left_file: dn7-walmart-amazon_left_embeddings.npy
+      right_file: dn7-walmart-amazon_right_embeddings.npy
+    profiles: &id006
+      medium:
+        target_total: 8000
+        target_pos: 300
+        target_neg: 7700
+        label_budget: 12000
+      large:
+        target_total: 26050
+        target_pos: 457
+        target_neg: 25593
+        label_budget: 39000
+      all:
+        all_examples: true
+    labeling_args:
+      pool_method: embedding
+  dn7-walmart-amazon--bm25:
+    left_csv: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-left.csv
+    right_csv: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-right.csv
+    valid_path: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.csv
+    test_path: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    id_col: id
+    fields: *id004
+    embeddings: *id005
+    profiles: *id006
+    labeling_args:
+      pool_method: bm25
+  dn7-walmart-amazon--rrf:
+    left_csv: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-left.csv
+    right_csv: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-right.csv
+    valid_path: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.csv
+    test_path: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    id_col: id
+    fields: *id004
+    embeddings: *id005
+    profiles: *id006
+    labeling_args:
+      pool_method: rrf
+  dn7-walmart-amazon--union:
+    left_csv: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-left.csv
+    right_csv: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-right.csv
+    valid_path: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.csv
+    test_path: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    id_col: id
+    fields: *id004
+    embeddings: *id005
+    profiles: *id006
+    labeling_args:
+      pool_method: union

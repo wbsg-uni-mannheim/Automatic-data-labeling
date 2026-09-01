@@ -1077,6 +1077,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--faiss-k", type=int, default=20)
     parser.add_argument("--faiss-random-state", type=int, default=42)
     parser.add_argument("--candidate-cap", type=int, default=0)
+    parser.add_argument("--pool-method", default="embedding", choices=["embedding", "bm25", "rrf", "union"],
+                        help="Candidate-pool construction: embedding (default, paper), bm25, rrf (size-controlled fusion), union (uncapped).")
 
     parser.add_argument("--seed-size", type=int, default=100)
     parser.add_argument("--seed-positives", type=int, default=30)
@@ -1238,6 +1240,9 @@ def main() -> None:
         candidate_cap=args.candidate_cap,
         bottom_k=args.seed_bottom_k,
         random_state=args.faiss_random_state,
+        method=args.pool_method,
+        left_text=base._pool_texts(left_df, feature_fields) if args.pool_method != "embedding" else None,
+        right_text=base._pool_texts(right_df, feature_fields) if args.pool_method != "embedding" else None,
     )
     candidates_dedup = candidates.copy()
     candidates_dedup["src_id1"] = candidates_dedup["id1"].astype(str).map(left_rid_to_id)

@@ -66,3 +66,31 @@ benchmarks:
     test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
     profiles: [small, medium, large, all]
+
+  dn7-walmart-amazon:
+    train: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    profiles: [medium, large, all]
+
+  semi-heter:
+    train: benchmarks/semi-heter/semi-heter-train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    profiles: [large, xl, all]
+
+  billiger-de:
+    train: benchmarks/billiger-de/billiger-de-train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    profiles: [small, medium, large, all]
+
+  billiger-en:
+    train: benchmarks/billiger-en/billiger-en-train.json.gz
+    valid: benchmarks/billiger-en/billiger-en-valid.json.gz
+    test: benchmarks/billiger-en/billiger-en-gs.json.gz
+    fields: [name, desc, brand, price]
+    profiles: [small, medium, large, all]

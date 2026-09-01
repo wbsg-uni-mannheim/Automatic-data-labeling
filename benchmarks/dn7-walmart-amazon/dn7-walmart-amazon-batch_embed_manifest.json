@@ -1,0 +1,31 @@
+{
+  "dataset": "dn7-walmart-amazon",
+  "model": "text-embedding-3-small",
+  "dimensions": 256,
+  "left_csv": "benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-left.csv",
+  "right_csv": "benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-right.csv",
+  "left_unique_rows": 2554,
+  "right_unique_rows": 10717,
+  "embed_fields": {
+    "left": [
+      "title",
+      "modelno",
+      "price",
+      "shipweight",
+      "brand",
+      "dimensions"
+    ],
+    "right": [
+      "title",
+      "modelno",
+      "price",
+      "shipweight",
+      "brand",
+      "dimensions"
+    ]
+  },
+  "left_batch_jsonl": "benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-batch_embed_left.jsonl",
+  "right_batch_jsonl": "benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-batch_embed_right.jsonl",
+  "left_map_csv": "benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-batch_embed_left_map.csv",
+  "right_map_csv": "benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-batch_embed_right_map.csv"
+}

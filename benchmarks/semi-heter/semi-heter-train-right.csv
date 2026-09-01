@@ -1,0 +1,1050 @@
+id,title,authors,publisher,year,isbn,pages,price,extra,cluster_id
+semi-heterr_11,77-424 Microsoft Access 2013,Microsoft Official Academic Course,Wiley,2013,9780000000000,528,,"series: Microsoft Official Academic Course Series ,#378; edition: 1",110
+semi-heterr_14,A Course in In-Memory Data Management: The Inner Mechanics of In-Memory Databases,Hasso Plattner,Springer Berlin Heidelberg,2013,9780000000000,297,,edition: 1,69
+semi-heterr_65,Access 2007 For Dummies,"Laurie Ulrich Fuller, Ken Cook, John Kaufeld",Wiley,2006,9780000000000,432,,series: For Dummies Series; edition: 1,
+semi-heterr_66,Access 2007 Forms & Reports For Dummies,"Brian Underdahl, Darlene Underdahl",Wiley,2006,9780000000000,390,,series: For Dummies Series; edition: 1,195
+semi-heterr_68,Access 2007: The Missing Manual,Matthew MacDonald,"O'Reilly Media, Incorporated",2007,9780000000000,754,,series: Missing Manual Series; edition: 1,
+semi-heterr_71,"Access 2010: Basic + Certblaster, Student Manual with Data",Axzo Press,Axzo Press,,9780000000000,224,,,198
+semi-heterr_73,Access 2013 All-in-One For Dummies,"Alison Barrows, Joseph C. Stockman, Allen G. Taylor",Wiley,2013,9780000000000,792,,series: For Dummies Series; edition: 1,
+semi-heterr_76,Access 97 Bible,"Cary N. Prague, Michael R. Irwin","Wiley, John & Sons, Incorporated",1997,9780000000000,1176,,"series: Bible Series ,#366; edition: 1",57
+semi-heterr_122,Administrator's Guide To Sybase ASE 15,"Jeffrey Garbus, Ashish Gupta",Jones & Bartlett Learning,,9780000000000,472,,,15
+semi-heterr_125,ADO Programming For Dummies,Rob Krumm,"Wiley, John & Sons, Incorporated",2000,9780000000000,477,,series: For Dummies Series; edition: 1,137
+semi-heterr_127,ADO.NET and ADO Examples and Best Practices for VB Programmers,"William (Bill) Vaughn, Jim Fawcette (Foreword by)",Apress,2002,9780000000000,771,,edition: 2,
+semi-heterr_128,ADO.NET Examples and Best Practices for C# Programmers,"Peter D. Blackburn, William (Bill) Vaughn, William R. Vaughan",Apress,2002,9780000000000,384,,edition: 1,
+semi-heterr_131,Advanced Approaches to Intelligent Information and Database Systems,"Janusz Sobecki (Editor), Veera Boonjing (Editor), Suphamit Chittayasothorn (Editor)",Springer International Publishing,,9780000000000,366,,series: Studies in Computational Intelligence Series,34
+semi-heterr_134,"Advanced Data Mining and Applications: 6th International Conference, ADMA 2010, Chongqing, China, November 19-21, 2010, Proceedings, Part I","Longbing Cao (Editor), Yong Feng (Editor), Jiang Zhong (Editor)",Springer Berlin Heidelberg,2011,9780000000000,628,,series: Lecture Notes in Computer Science / Lecture Notes in Artificial Intelligence Ser; edition: 1,
+semi-heterr_135,Advanced Data Mining Techniques,"David L. Olson, Dursun Delen",Springer Berlin Heidelberg,2008,9780000000000,180,,edition: 1,177
+semi-heterr_138,Advanced Database Indexing,"Yannis Manolopoulos, Yannis Theodoridis, Vassilis Tsotras",Springer US,1999,9780000000000,286,,"series: Advances in Database Systems Series ,#17; edition: 1",47
+semi-heterr_142,Advanced Database Technology And Design,"Mario Piattini, Oscar Diaz (Editor)","Artech House, Incorporated",2000,9780000000000,558,,series: Artech House Computing Library Series; edition: 1,42
+semi-heterr_143,"Advanced DBA Certification Guide and Reference: for DB2 Universal Database v8.1 for Linux, UNIX, and Windows","Dwaine Snow, Thomas Xuan Phan",IBM Press,,9780000000000,800,,series: IBM Press Series--Information Management,163
+semi-heterr_184,"Advances in Database Technology EDBT '96: 5th International Conference on Extending Database Technology, Avignon, France, March 25-29 1996, Proceedings.","Peter Apers (Editor), Georges Gardarin (Editor), Mokrane Bouzeghoub (Editor)",Springer Berlin Heidelberg,1996,9780000000000,646,,"series: Lecture Notes in Computer Science Series ,#1057; edition: 1",175
+semi-heterr_185,"Advances in Database Technology - EDBT '98: 6th International Conference on Extending Database Technology, Valencia, Spain, March 23-27, 1998.","Hans-Jorg Schek, Felix Saltor, Isidro Ramos, Gustavo Alonso",Springer Berlin Heidelberg,1998,9780000000000,532,,"series: Lecture Notes in Computer Science Series ,#1377; edition: 1",
+semi-heterr_192,"Advances in Databases and Information Systems: 6th East European Conference, ADBIS 2002, Bratislava, Slovakia, September 8-11, 2002, Proceedings","Yannis Manolopoulos (Editor), Pavol Navrat (Editor)",Springer Berlin Heidelberg,2002,9780000000000,422,,"series: Lecture Notes in Computer Science Series ,#2435; edition: 1",209
+semi-heterr_193,"Advances in Databases: 19th British National Conference on Databases, BNCOD 19, Sheffield, UK, July 17-19, 2002. Proceedings","Barry Eaglestone (Editor), Siobhan North (Editor), Alexandra Poulovassilis (Editor)",Springer Berlin Heidelberg,2002,9780000000000,204,,"series: Lecture Notes in Computer Science Series ,#2405; edition: 1",100
+semi-heterr_194,"Advances in Databases: 17th British National Conference on Databases, BNCOD 17 Exeter, UK, July 3-5, 2000 Proceedings","Brian Lings (Editor), Keith Jeffery (Editor)",Springer Berlin Heidelberg,2000,9780000000000,226,,"series: Lecture Notes in Computer Science Series ,#1832; edition: 1",1
+semi-heterr_195,"Advances in Databases: 18th British National Conference on Databases, BNCOD 18 Chilton, UK, July 9-11, 2001. Proceedings",Brian Read (Editor),Springer Berlin Heidelberg,2001,9780000000000,219,,"series: Lecture Notes in Computer Science Series ,#2097; edition: 1",213
+semi-heterr_197,"Advances in Databases: Proceedings of the 11th British National Conference on Databases, BNCOD 11. Keele, UK, July 7-9, 1993","M. F. Worboys (Editor), A. F. Grundy (Editor)","Springer-Verlag New York, LLC",,9780000000000,286,,series: Lecture Notes in Computer Science,
+semi-heterr_203,"Advances in Information Retrieval: 30th European Conference on IR Research, ECIR 2008, Glasgow, UK, March 30 -- April 3, 2008","Craig Macdonald (Editor), Iadh Ounis (Editor), Vassilis Plachouras (Editor), Ian Ruthven (Editor), Ryan W. White (Editor)",Springer Berlin Heidelberg,2008,9780000000000,722,,"series: Lecture Notes in Computer Science / Information Systems and Applications, incl. ; edition: 1",20
+semi-heterr_209,"Advances in Intelligent Data Analysis IX: 9th International Symposium, IDA 2010, Tucson, AZ, USA, May 19-21, 2010, Proceedings","Paul R. Cohen (Editor), Niall M. Adams (Editor), Michael R. Berthold (Editor)",Springer Berlin Heidelberg,2010,9780000000000,260,,"series: Lecture Notes in Computer Science / Information Systems and Applications, incl. ; edition: 1",83
+semi-heterr_282,Apache Cassandra Hands-On Training Level One,Ruth Stryker,CreateSpace Publishing,,9780000000000,406,,,6
+semi-heterr_284,Apache Mahout Cookbook,Piero Giacomelli,Packt Publishing,,9780000000000,250,,,204
+semi-heterr_293,Applied Microsoft SQL Server 2008 Reporting Services,Teo Lachev,Prologika,,9780000000000,768,,,208
+semi-heterr_306,"Artificial Immune Systems: 6th International Conference, ICARIS 2007, Santos, Brazil, August 26-29, 2007, Proceedings","Leandro N. de Castro (Editor), Fernando J. Von Zuben (Editor), Helder Knidel (Editor)",Springer Berlin Heidelberg,2007,9780000000000,440,,series: Lecture Notes in Computer Science / Theoretical Computer Science and General Iss; edition: 1,96
+semi-heterr_333,Automated Physical Database Design and Tuning,Nicolas Bruno,CRC Press,,9780000000000,253,,,218
+semi-heterr_334,Automating FileMaker Pro: Scripting and Calculations,Jesse Feiler,Elsevier Science & Technology Books,2000,9780000000000,342,,series: FileMaker Series; edition: 1,207
+semi-heterr_347,Beginner Database Design & SQL Programming Using Microsoft SQL Server 2014,Kalman Toth,CreateSpace Publishing,,9780000000000,608,,,
+semi-heterr_348,Beginner Database Design & SQL Programming Using Microsoft SQL Server,Kalman Toth,CreateSpace Publishing,,9780000000000,510,,,
+semi-heterr_356,Beginning ASP.NET Databases using C#,"Erix Mintz, John West, James Greenwood, John Kauffman, Donald Xie","Wrox Press, Inc.",2002,9780000000000,500,,series: Beginning Ser.; edition: 1,
+semi-heterr_357,Beginning C# 2005 Databases: From Novice to Professional,"Jacob Hammer Pedersen, Syed Fahad Gilani, Jon Reid, James Huddleston, Ranga Raghuram",Apress,2006,9780000000000,528,,edition: 1,
+semi-heterr_365,Beginning DB2: From Novice to Professional,Grant Allen,Apress,2008,9780000000000,544,,edition: 1,72
+semi-heterr_377,Beginning PHP and PostgreSQL 8: From Novice to Professional,"W Jason Gilmore, Robert H. Treat",Apress,2006,9780000000000,892,,series: Beginning; edition: 1,132
+semi-heterr_379,Beginning Relational Data Modeling,"Sharon Allen, Evan Terry",Apress,2005,9780000000000,632,,edition: 2,199
+semi-heterr_380,Beginning SQL,"Paul Wilton, John Colby",Wiley,2005,9780000000000,520,,edition: 1,222
+semi-heterr_386,Beginning SQL Server 2005 Programming,Robert Vieira,Wiley,2006,9780000000000,720,,series: Programmer to Programmer Series; edition: 1,
+semi-heterr_387,Beginning SQL Server 2008 Express for Developers: From Novice to Professional,Robin Dewson,Apress,2008,9780000000000,536,,edition: 1,75
+semi-heterr_389,Beginning SQL Server 2012 for Developers,Robin Dewson,Apress,2012,9780000000000,720,,edition: 3,90
+semi-heterr_407,"Big Data Analytics: Second International Conference, BDA 2013, Mysore, India, December 16-18, 2013, Proceedings","Vasudha Bhatnagar (Editor), Srinath Srinivasa (Editor)",Springer International Publishing,,9780000000000,197,,"series: Lecture Notes in Computer Science / Information Systems and Applications, incl. ",7
+semi-heterr_419,"Biodiversity Databases: Techniques, Politics, and Applications","Gordon B. Curry (Editor), Chris J. Humphries (Editor)",CRC Press,,9780000000000,208,,series: Systematics Association Special Volumes Series,63
+semi-heterr_424,"Bioinformatics Research and Applications: 9th International Symposium, ISBRA 2013, Charlotte, NC, USA, May 20-22, 2013, Proceedings","Zhipeng Cai (Editor), Oliver Eulenstein (Editor), Daniel Janies (Editor), Daniel Schwartz (Editor)",Springer Berlin Heidelberg,2013,9780000000000,312,,"series: Lecture Notes in Computer Science / Lecture Notes in Bioinformatics Series ,#787; edition: 1",54
+semi-heterr_447,Build Your Own Database,"Peter Jacso, F. Wilfrid Lancaster, F. Wilfred Lancaster (Joint Author)",American Library Association,1999,9780000000000,163,,edition: 1,115
+semi-heterr_454,Building Data Warehouse,Milind Zodge,CreateSpace Publishing,,9780000000000,110,,,
+semi-heterr_462,Building Microsoft Access Applications,John Viescas,Microsoft Press,,9780000000000,720,,,162
+semi-heterr_466,Building the Agile Database: How to Build a Successful Application Using Agile Without Sacrificing Data Management,Larry Burns,"Technics Publications, LLC",,9780000000000,276,,,
+semi-heterr_485,C++ Object Databases: Programming with the ODMG Standard,David Jordan,Addison Wesley Professional,1997,9780000000000,480,,series: The Addison-Wesley Object Technology Series; edition: 1,215
+semi-heterr_512,Chemical Information Mining: Facilitating Literature-Based Discovery,Debra L. Banville (Editor),CRC Press,,9780000000000,208,,,185
+semi-heterr_532,Clickstream Data Warehousing,"Mark Sweiger, Mark R. Madsen, Jimmy Langston, Howard Lombard, Howard Lombard (Joint Author)","Wiley, John & Sons, Incorporated",2002,9780000000000,480,,edition: 1,
+semi-heterr_555,Comparing Distributions,Olivier Thas,Springer New York,2009,9780000000000,354,,series: Springer Series in Statistics; edition: 1,120
+semi-heterr_602,Conceptual Schema and Relational Database Design,Terry A. Halpin,Prentice Hall Professional Technical Reference,1995,9780000000000,547,,edition: 2,
+semi-heterr_622,Content Management Bible,Bob Boiko,Wiley,2004,9780000000000,1176,,"series: Bible Series ,#349; edition: 2",78
+semi-heterr_636,Corporate Information Factory,"W. H. Inmon, Claudia Imhoff, Ryan Sousa",Wiley,2001,9780000000000,400,,edition: 2,150
+semi-heterr_665,Crystal Reports Encyclopedia Volume 2: Programming .NET 2005,Brian Bischof,Dotnet Tech,,9780000000000,500,,,152
+semi-heterr_671,Customer Data Integration: Reaching a Single Version of the Truth,"Jill Dyche, Evan Levy, Don Peppers (Foreword by), Martha Rogers (Foreword by)",Wiley,2006,9780000000000,320,,"series: Wiley and SAS Business Series ,#7; edition: 1",31
+semi-heterr_676,Data Analysis for Database Design,David Howe,Elsevier Science,2001,9780000000000,336,,edition: 3,192
+semi-heterr_736,Data Mining and Business Analytics with R,Johannes Ledolter,Wiley,2013,9780000000000,368,,edition: 1,176
+semi-heterr_741,DATA MINING con SAS a traves de ejemplos,Antonio Prieto,CreateSpace Independent Publishing Platform,,9780000000000,316,,language: Spanish,
+semi-heterr_749,"Data Mining for Business Intelligence: Concepts, Techniques, and Applications in Microsoft Office Excel with XLMiner","Galit Shmueli, Nitin R. Patel, Peter C. Bruce",Wiley,2010,9780000000000,428,,edition: 2,30
+semi-heterr_750,Data Mining For Dummies,Meta S. Brown,Wiley,2014,9780000000000,408,,series: For Dummies Series; edition: 1,67
+semi-heterr_758,Data Mining: Introductory and Advanced Topics,Margaret H. Dunham,Prentice Hall,2002,9780000000000,315,,edition: 1,226
+semi-heterr_759,Data Mining Methods and Applications,"Kenneth D. Lawrence (Editor), Stephan Kudyba (Editor), Ronald K. Klimberg (Editor), Ronald Klimberg (Editor), Stephan Kudyba",Taylor & Francis,,9780000000000,336,,series: Discrete Mathematics and Its Applications Series,
+semi-heterr_760,Data Mining Methods and Models,Daniel T. Larose,Wiley,2006,9780000000000,344,,edition: 1,37
+semi-heterr_764,"Data Mining Techniques in Sensor Networks: Summarization, Interpolation and Surveillance","Annalisa Appice, Anna Ciampi, Fabio Fumarola, Donato Malerba",Springer London,,9780000000000,105,,series: SpringerBriefs in Computer Science Series,201
+semi-heterr_773,Data Modeling and Database Design,"Richard W. Scamell, Narayan S. Umanath",Cengage Learning,2007,9780000000000,720,,edition: 1,122
+semi-heterr_785,Data Quality For The Information Age,"Thomas C. Redman, A. Blanton Godfrey (Foreword by)","Artech House, Incorporated",1997,9780000000000,332,,edition: 1,141
+semi-heterr_788,Data Quality: The Field Guide,"Thomas Redman, Mike Daugherty, Michael Daugherty",Elsevier Science,,9780000000000,256,,,70
+semi-heterr_790,Data Replication: Tools and Techniques for Managing Distributed Information,Marie Buretta,"Wiley, John & Sons, Incorporated",1997,9780000000000,384,,edition: 1,169
+semi-heterr_801,Data Visualization: A Successful Design Process,Andy Kirk,Packt Publishing,,9780000000000,206,,,191
+semi-heterr_806,Data Visualization Techniques,"Chandrajit Bajaj (Editor), Bala Krishnamurthy, Bala Krishnamurthy","Wiley, John & Sons, Incorporated",1999,9780000000000,156,,series: Trends in Software Series; edition: 1,108
+semi-heterr_814,Data Warehousing And Business Intelligence For e-Commerce,"Alan R. Simon, Steven L. Shaffer",Elsevier Science,2001,9780000000000,320,,series: Morgan Kaufmann Series in Data Management Systems Series; edition: 1,58
+semi-heterr_821,"Data Warehousing and Knowledge Discovery: First International Conference, DaWaK'99 Florence, Italy, August 30 - September 1, 1999 Proceedings","Mukesh Mohania (Editor), A Min Tjoa (Editor)",Springer Berlin Heidelberg,1999,9780000000000,408,,"series: Lecture Notes in Computer Science Series ,#1676; edition: 1",91
+semi-heterr_823,"Data Warehousing, Data Mining, and Olap","Alex Berson, Stephen J. Smith","McGraw-Hill Companies, The",1997,9780000000000,612,,series: Series on Data Warehousing and Data Mana; edition: 1,
+semi-heterr_825,Data Warehousing Essentials,Sudhir Warier,CreateSpace Publishing,,9780000000000,134,,,
+semi-heterr_826,Data Warehousing For Dummies,Alan R. Simon,Wiley,1997,9780000000000,360,,series: For Dummies Series; edition: 1,219
+semi-heterr_827,Data Warehousing Fundamentals for IT Professionals,Paulraj Ponniah,Wiley,2010,9780000000000,600,,edition: 2,65
+semi-heterr_828,Data Warehousing Fundamentals: A Comprehensive Guide for IT Professionals,"Paulraj Ponniah, Ponniah, Pratap P. Reddy (Foreword by)","Wiley, John & Sons, Incorporated",2001,9780000000000,544,,edition: 1,33
+semi-heterr_830,Data Warehousing in Action,Sean Kelly,Wiley,1997,9780000000000,334,,edition: 1,145
+semi-heterr_862,Database Application Development and Design,Michael V. Mannino,"McGraw-Hill Companies, The",2000,9780000000000,583,,edition: 1,
+semi-heterr_884,"Database Design, Application Development, and Administration",Michael V. Mannino,"McGraw-Hill Companies, The",2003,9780000000000,735,,edition: 2,
+semi-heterr_889,Database Design for Smarties: Using UML for Data Modeling,"Robert J. Muller, Muller",Elsevier Science,1999,9780000000000,464,,series: Morgan Kaufmann Series in Data Management Systems Series; edition: 1,0
+semi-heterr_894,Database Design Manual: using MySQL for Windows,Matthew Norman,Springer London,2003,9780000000000,209,,series: Springer Professional Computing Series; edition: 1,107
+semi-heterr_902,Database Development 26 Success Secrets - 26 Most Asked Questions on Database Development - What You Need to Know,Lori Adams,Emereo Pty Ltd,,9780000000000,28,,,
+semi-heterr_951,Database Management Systems: Designing and Building Business Applications,Gerald V. Post,"McGraw-Hill Companies, The",2001,9780000000000,,,edition: 2,53
+semi-heterr_957,Database Management Systems,"Raghu Ramakrishnan, Johannes Gehrke",McGraw-Hill Osborne,2000,9780000000000,,,edition: 2,
+semi-heterr_976,Database Modeling with Microsoft Visio for Enterprise Architects,"Terry Halpin, Ken Evans, Pat Hallock, Bill Maclean, Pat Hallock",Elsevier Science,2003,9780000000000,425,,series: Morgan Kaufmann Series in Data Management Systems Series; edition: 1,24
+semi-heterr_984,"Database Performance Tuning Handbook, with CD-ROM",Jeff Dunham,"McGraw-Hill Companies, The",,9780000000000,778,,series: Data Management Series,139
+semi-heterr_986,Database Principles and Design,Colin Ritchie,Cengage Learning EMEA Higher Education,2008,9780000000000,544,,edition: 3,160
+semi-heterr_999,Database Programming with Visual Basic .NET,Carsten Thomsen,Apress,2002,9780000000000,984,,series: .NET Developer Series; edition: 2,
+semi-heterr_1017,Database Solutions: A Step by Step Guide to Building Databases,"Thomas Connolly, Carolyn Begg",Addison-Wesley,1999,9780000000000,256,,series: Database Solutions Series; edition: 1,
+semi-heterr_1032,Database Systems,"Elvis C. Foster, Shripad V. Godbole",Xlibris Corporation,,9780000000000,678,,,
+semi-heterr_1052,Database Systems Management and Design,"Philip J. Pratt, Joseph J. Adamski","Course Technology, Inc.",1994,9780000000000,,,edition: 3,
+semi-heterr_1060,"Database Theory - ICDT 2001: 8th International Conference London, UK, January 4-6, 2001 Proceedings","Jan Van den Bussche (Editor), Victor Vianu (Editor)",Springer Berlin Heidelberg,2001,9780000000000,448,,"series: Lecture Notes in Computer Science Series ,#1973; edition: 1",164
+semi-heterr_1093,"Databases, Information Systems, and Peer-to-Peer Computing: Second International Workshop, DBISP2P 2004, Toronto, Canada, August 29-30, 2004, Revised Selected Papers","Wee Siong Ng (Editor), Beng Chin Ooi (Editor), Aris Ouksel (Editor), Claudio Sartori (Editor)",Springer Berlin Heidelberg,2005,9780000000000,232,,"series: Lecture Notes in Computer Science / Information Systems and Applications, incl. ; edition: 1",182
+semi-heterr_1101,"Dataspace: The Final Frontier: 26th British National Conference on Databases, BNCOD 26, Birmingham, UK, July 7-9, 2009, Proceedings",Alan Sexton (Editor),Springer Berlin Heidelberg,2009,9780000000000,248,,"series: Lecture Notes in Computer Science / Information Systems and Applications, incl. ; edition: 1",158
+semi-heterr_1116,DB2 9 for Developers,Philip K. Gunning,Mc Press,,9780000000000,550,,,165
+semi-heterr_1122,DB2: Universal Database Certification Guide,"Calene Janacek, Dwayne Snow",Prentice Hall Professional Technical Reference,1997,9780000000000,770,,series: IBM DB2 Series; edition: 2,
+semi-heterr_1128,DB2 High Performance Design and Tuning,"Richard Yevich, Susan Lawson, Susan Lawson",Pearson Education,2000,9780000000000,697,,edition: 2,
+semi-heterr_1134,DB2 Universal Database v7.1: Application Development Certification Guide,"Steve Sanyal, Michael Kyprianou, Kevin Gashyna, David Martineau",Pearson Education,,9780000000000,320,,series: IBM DB2 Series,221
+semi-heterr_1135,DB2 Universal Database v8 Handbook for Windows and UNIX and Linux,Phillip Gunning,"MC Press, LLC",,9780000000000,496,,series: IBM Press Series--Information Management,170
+semi-heterr_1160,The Definitive Guide to db4o,"Jim Paterson, Stefan Edlich, Reidar Horning",Apress,2006,9780000000000,512,,edition: 1,
+semi-heterr_1162,Delivering Business Intelligence with Microsoft SQL Server 2012 3E,Brian Larson,McGraw-Hill Professional Publishing,2012,9780000000000,832,,edition: 3,217
+semi-heterr_1181,Designing Database Applications with Objects and Rules: The IDEA Methodology,"Stefano Ceri, Piero Fraternali",Addison-Wesley,1997,9780000000000,600,,edition: 1,43
+semi-heterr_1185,"Designing Scalable Object-Oriented Database Applications: Object-Oriented Design, Architectures, and Implementations","Peter M. Heinckiens, Mary Loomis (Foreword by), Peter Heineckiens",Addison-Wesley,1998,9780000000000,336,,series: Addison-Wesley Object Technology Series; edition: 1,166
+semi-heterr_1190,A Developer's Guide to Amazon SimpleDB,Mocky Habeeb,Addison-Wesley,,9780000000000,269,,series: Developer's Library Series,
+semi-heterr_1191,Developer's Handbook to DB2 for Common Servers,"Roger E. Sanders, Craig S. Mullins (Foreword by)","McGraw-Hill Companies, The",,9780000000000,1045,,series: McGraw-Hill Database Warehousing and Data Management Ser.,56
+semi-heterr_1194,Developing Essbase Applications: Advanced Techniques for Finance and IT Professionals,Cameron Lackpour (Editor),Taylor & Francis,,9780000000000,445,,,32
+semi-heterr_1215,"Directions in Databases; 12th British National Conference on Databases, BNCOD 12, Guildford, United Kingdom, July 6-8, 1994","David S. Bowers (Editor), Juris Hartmanis (Editor), Gerhard Goos (Editor)","Springer-Verlag New York, LLC",,9780000000000,234,,series: Lecture Notes in Computer Science,
+semi-heterr_1241,Distributed Database Management Systems,"Olin H. Bray, William Stieger (Foreword by)",Free Press,,9780000000000,176,,series: Lexington Books Series in Computer Science,55
+semi-heterr_1242,Distributed Database Systems,David Bell,Addison-Wesley,1992,9780000000000,410,,series: International Computer Science Series; edition: 1,
+semi-heterr_1367,Expert Cube Development with SQL Server Analysis Services 2012 Multidimensional Models,Alberto Ferrari,Packt Publishing,,9780000000000,402,,,87
+semi-heterr_1376,Expert Oracle Application Express,"Dietmar Aust, Martin D'Souza, Doug Gaul",CreateSpace Publishing,,9780000000000,612,,,5
+semi-heterr_1380,Expert Oracle Database Architecture: 9i and 10g Programming Techniques and Solutions,"Thomas Kyte, Tony Davis (Editor)",Apress,2005,9780000000000,768,,series: Expert's Voice in Oracle Series; edition: 1,148
+semi-heterr_1383,Expert Oracle Exadata,"Kerry Osborne, Randy Johnson, Tanel Pder",Apress,2011,9780000000000,588,,edition: 1,206
+semi-heterr_1387,Expert Performance Indexing for SQL Server 2012,"Jason Strate, Ted Krueger",Apress,2012,9780000000000,354,,edition: 1,159
+semi-heterr_1390,Expert SQL Server 2008 Development,Adam Machanic,Apress,2010,9780000000000,430,,edition: 1,225
+semi-heterr_1391,Exploratory Image Databases: Content-Based Retrieval,"Simone Santini, Jerry D. Gibson, Jerry D. Gibson (Editor)",Elsevier Science,,9780000000000,613,,"series: Communications, Networking and Multimedia Series",116
+semi-heterr_1399,Exploring Microsoft Office Access 2010 Introductory,"Robert Grauer, Mary Anne Poatsy, Keith Mast, Lynn Hogan",Prentice Hall,,9780000000000,336,,series: Custom PHIT,
+semi-heterr_1413,Fast Track to MDX,"Mark Whitehorn, Robert Zare, Mosha Pasumansky",Springer London,2005,9780000000000,310,,edition: 2,186
+semi-heterr_1440,FileMaker Pro 5/5.5 Advanced for Windows and Macintosh: Visual QuickPro Guide,"Cynthia L. Baron, Daniel Peck",Pearson Education,,9780000000000,500,,series: Visual QuickPro Series,227
+semi-heterr_1442,FileMaker Pro 5.5 for Windows and Macintosh,Nolan Hester,Peachpit Press,,9780000000000,341,,series: Visual QuickStart Guide Series,
+semi-heterr_1461,First Steps in Data Mining with SAS Enterprise Miner,Martha Abell,CreateSpace Publishing,,9780000000000,74,,,
+semi-heterr_1498,Fundamentals of Database Management Systems,Mark L. Gillenson,Wiley,2011,9780000000000,416,,edition: 2,
+semi-heterr_1502,Fundamentals of Database Systems,UMUC,Pearson Custom Publishing,,9780000000000,,,,
+semi-heterr_1537,Getting Started with CouchDB,MC Brown,"O'Reilly Media, Incorporated",2012,9780000000000,84,,edition: 1,180
+semi-heterr_1548,"GO! with Microsoft Access 2010, Comprehensive with Student Videos","Shelley Gaskin, Nancy Graviett",Prentice Hall,2011,9780000000000,,,edition: 1,
+semi-heterr_1554,Google Analytics,Justin Cutroni,"O'Reilly Media, Incorporated",2010,9780000000000,218,,edition: 1,144
+semi-heterr_1580,Hadoop: The Definitive Guide,Tom White,"O'Reilly Media, Incorporated",2010,9780000000000,600,,edition: 2,
+semi-heterr_1591,Handbook of Statistical Analysis and Data Mining Applications,"Robert Nisbet, Gary Miner, John Elder IV",Elsevier Science,,9780000000000,864,,,22
+semi-heterr_1603,High Availability Guide for DB2,"Chris Eaton, Enzo Cialini",IBM Press,,9780000000000,256,,series: IBM Press Series,
+semi-heterr_1623,How to Secure and Audit Oracle 10g and 11g,Ron Ben-Natan,Taylor & Francis,,9780000000000,470,,,106
+semi-heterr_1658,Improving Data Warehouse and Business Information Quality: Methods for Reducing Costs and Increasing Profits,"Larry P. English, Robert M. Elliot (Editor)",Wiley,1999,9780000000000,544,,series: Wiley Computer Publishing Series; edition: 1,130
+semi-heterr_1666,Index Data Structures in Object-Oriented Databases,"Thomas A. Mueck, Martin L. Polaschek",Springer US,1997,9780000000000,177,,"series: Advances in Database Systems Series ,#7; edition: 1",
+semi-heterr_1681,Information Discovery on Electronic Health Records,Vagelis Hristidis (Editor),Taylor & Francis,2009,9780000000000,331,,series: Chapman & Hall/CRC Data Mining and Knowledge Discovery Series; edition: 1,140
+semi-heterr_1691,Information Modeling and Relational Databases: From Conceptual Analysis to Logical Design,"Terry Halpin, T. A. Halpin",Elsevier Science,2001,9780000000000,761,,series: The Morgan Kaufmann Series in Data Management Systems Series; edition: 1,113
+semi-heterr_1727,Innovating in Product/Process Development: Gaining Pace in New Product Development,"Mikel Sorli, Dragan Stokic",Springer London,2009,9780000000000,280,,edition: 1,214
+semi-heterr_1760,"Intelligent Systems Design: Integrating Expert Systems, Hypermedia, and Database Technologies","Larry Bielawski, Robert Lewand","Wiley, John & Sons, Incorporated",1991,9780000000000,302,,series: Wiley Professional Computing Series; edition: 1,
+semi-heterr_1775,Introducing Microsoft SQL Server 2012,"Ross Mistry, Stacia Misner",Microsoft Press,,9780000000000,290,,,
+semi-heterr_1788,Introduction to Database Systems/E-book,C.J. Date,Pearson Education,2000,9780000000000,,,edition: 7,
+semi-heterr_1789,Introduction to Database Systems,St'phane Bressan,"McGraw-Hill Companies, The",,9780000000000,,,,
+semi-heterr_1795,Introduction to Online Company Research,"Chris Dobson, Chris Dobson (Other)",Cengage Learning,,9780000000000,380,,,
+semi-heterr_1808,Java 2 Database Programming for Dummies,"Jim Keogh, James Edward Keogh",Wiley,2001,9780000000000,408,,series: For Dummies Series; edition: 1,
+semi-heterr_1810,Java Database Best Practices,"George Reese, Brett McLaughlin (Editor)","O'Reilly Media, Incorporated",2003,9780000000000,288,,edition: 1,
+semi-heterr_1827,"Joe Celko's Thinking in Sets: Auxiliary, Temporal, and Virtual Tables in SQL",Joe Celko,Elsevier Science,,9780000000000,384,,series: Morgan Kaufmann Series in Data Management Systems Series,99
+semi-heterr_1848,Knowledge and Systems Science: Enabling Systemic Knowledge Synthesis,Yoshiteru Nakamori,Taylor & Francis,,9780000000000,246,,,229
+semi-heterr_1851,Knowledge Discovery and Data Mining: The Info-Fuzzy Network Methodology,"O. Maimon, M. Last",Springer US,2000,9780000000000,168,,"series: Massive Computing Series ,#1; edition: 1",
+semi-heterr_1876,Learn Access 2003 Vba With The Smart Method,Mike Smart,The Smart Method Ltd,,9780000000000,296,,,52
+semi-heterr_1900,Linear Algebra Tools for Data Mining,Dan A. Simovici,"World Scientific Publishing Company, Incorporated",,9790000000000,880,,,39
+semi-heterr_1913,Literature-based Discovery,"Peter Bruza (Editor), Marc Weeber (Editor)",Springer Berlin Heidelberg,2008,9780000000000,198,,"series: Information Science and Knowledge Management Series ,#15; edition: 1",183
+semi-heterr_1928,Lotus Approach 96 for Windows 95,James E. Powell,"Wiley, John & Sons, Incorporated",1996,9780000000000,816,,series: Mastering Series; edition: 2,
+semi-heterr_1947,"Making Sense of Data II: A Practical Guide to Data Visualization, Advanced Data Mining Methods, and Applications","Glenn J. Myatt, Myatt, Wayne P. Johnson",Wiley,2009,9780000000000,308,,edition: 1,23
+semi-heterr_1948,Making Sense of NoSQL: A guide for managers and the rest of us,"Dan McCreary, Ann Kelly",Manning Publications Company,,9780000000000,312,,,11
+semi-heterr_1957,Managing the Data Warehouse,"W. H. Inmon, J. D. Welch, Katherine L. Glassey","Wiley, John & Sons, Incorporated",1997,9780000000000,400,,edition: 1,133
+semi-heterr_1980,Mastering Microsoft SQL Server 2005 express,"Mike Gunderloy, Susan Sales Harkins",Wiley,2006,9780000000000,600,,series: Mastering Series; edition: 1,
+semi-heterr_1984,Mastering Oracle SQL,"Sanjay Mishra, Alan Beaulieu","O'Reilly Media, Incorporated",2002,9780000000000,336,,edition: 1,
+semi-heterr_1985,Mastering Phpmyadmin 3.4 for Effective MySQL Management,Marc Delisle,Packt Publishing,,9780000000000,394,,,
+semi-heterr_2005,MCTS Self-Paced Training Kit : Microsoft SQL Server 2008 Database Development,"Tobias Thernstrom, Ann Weber, Mike Hotek",Microsoft Press,,9780000000000,496,,,
+semi-heterr_2006,MDM for Customer Data: Optimizing Customer Centric Management of Your Business,Kelvin K. A. Looi,Mc Press,,9780000000000,85,,,
+semi-heterr_2008,Mdx With Microsoft Sql Server 2008 R2 Analysis Services Cookbook,Tomislav Piasevoli,Packt Publishing,,9780000000000,480,,,
+semi-heterr_2016,"Metadata 100 Success Secrets 100 Most Asked Questions On Meta Data How-To Management, Repositories, Software, Standards, Tools And Databases",George Nelson,Emereo Pty Ltd,,9780000000000,180,,,
+semi-heterr_2038,Microsoft Access 2000,"Julia Kelly, Kelly","Wiley, John & Sons, Incorporated",1999,9780000000000,360,,series: One Step at a Time Ser.; edition: 1,
+semi-heterr_2042,Microsoft Access 2000,"Stephen L Nelson CPA, Paula Thurman (Editor)",Microsoft Press,1999,9780000000000,208,,series: Pocket Guide Series; edition: 1,
+semi-heterr_2048,"Microsoft Access 2010: A Case Approach, Complete","Timothy O'Leary, Linda O'Leary",McGraw-Hill Higher Education,2011,9780000000000,688,,edition: 1,
+semi-heterr_2051,Microsoft Access 2010 VBA Programming Inside Out,Andrew Couch,Microsoft Press,,9780000000000,736,,,
+semi-heterr_2052,Microsoft Access 2013: Illustrated Brief,Lisa Friedrichsen,Cengage Learning,,9780000000000,152,,series: Illustrated Series,
+semi-heterr_2065,Microsoft Access Version 2002 Plain and Simple,Curtis Frye D.,Microsoft Press,,9780000000000,240,,series: Msp Temp XP Series,147
+semi-heterr_2067,Microsoft Ado.Net Step by Step,Rebecca M. Riordan,Microsoft Press,,9780000000000,528,,series: Step by Step Developer Series,40
+semi-heterr_2083,Microsoft Office Access 2007,Alison Balter,Que,,9780000000000,96,,series: LiveLessons Series,
+semi-heterr_2084,Microsoft Office Access 2007: Introductory Concepts and Techniques,"Gary B. Shelly, Thomas J. Cashman, Philip J. Pratt, Mary Z. Last",Cengage Learning,2007,9780000000000,296,,series: Available Titles Skills Assessment Manager (SAM) - Office 2007 Series; edition: 1,
+semi-heterr_2085,Microsoft Office Access 2007-Illustrated Complete,Lisa Friedrichsen,Cengage Learning,2007,9780000000000,488,,series: Available Titles Skills Assessment Manager (SAM) - Office 2007 Series; edition: 1,
+semi-heterr_2089,Microsoft Office Access 2007 Introductory,"Linda O'Leary, Linda I. O'Leary",McGraw-Hill Higher Education,2007,9780000000000,672,,series: O'Leary Series; edition: 1,
+semi-heterr_2091,Microsoft Office Access 2007: Introductory,"Pasewark/Pasewark, Pasewark;, Scott G. Pasewark",Cengage Learning,2007,9780000000000,279,,series: Available Titles Skills Assessment Manager (SAM) - Office 2007 Series; edition: 1,
+semi-heterr_2094,"Microsoft Office Access 2010: A Lesson Approach, Complete","John Carter, Jon Juarez, Juarez Jon",McGraw-Hill Higher Education,2010,9780000000000,688,,edition: 1,194
+semi-heterr_2095,Microsoft Office Access 2010,Lisa Friedrichsen,Cengage Learning,2010,9780000000000,152,,series: Available Titles Skills Assessment Manager (SAM) - Office 2010 Series; edition: 1,
+semi-heterr_2105,Microsoft SQL Server 2000 Programming Step by Step,"Rebecca M. Riordan, Rebecca Riordan",Microsoft Press,,9780000000000,720,,series: Step by Step Developer Series,
+semi-heterr_2108,Microsoft SQL Server 2000 Unleashed,"Ray Rankins, Sharon Bjeletich, Paul Bertucci (Joint Author)",Pearson Education,,9780000000000,1472,,series: Unleashed Series,
+semi-heterr_2110,Microsoft SQL Server 2005 Administrator's Pocket Consultant,"William R. Stanek, William Stanek",Microsoft Press,,9780000000000,578,,series: Pocket Consultant Series,
+semi-heterr_2111,Microsoft SQL Server 2005 Analysis Services Step by Step,"Reed Jacobsen, Hitachi Consulting, Stacia Misner, Stacia Misner (Editor)",Microsoft Press,,9780000000000,400,,series: Step by Step Developer Series,88
+semi-heterr_2114,Microsoft SQL Server 2005 Integration Services,"Kirk Haselden, Trey Johnson, Bill Baker (Foreword by)",Sams,,9780000000000,717,,series: SQL Server Series,
+semi-heterr_2116,Microsoft SQL Server 2005 Reporting Services,"Michael Lisin, Jim Joseph",Sams,,9780000000000,480,,series: SQL Server Series,
+semi-heterr_2119,Microsoft SQL Server 2008 Analysis Services : Step by Step,Scott Cameron,Microsoft Press,,9780000000000,448,,series: Step by Step Developer Series,
+semi-heterr_2120,Microsoft SQL Server 2008 for Dummies,Chapple,Wiley,2008,9780000000000,408,,series: For Dummies Series; edition: 1,167
+semi-heterr_2123,Microsoft SQL Server 2008 R2 Unleashed,"Ray Rankins, Paul T. Bertucci, Chris Gallelli, Alex T. Silverstein",Sams,,9780000000000,2451,,series: Unleashed Series,
+semi-heterr_2125,Microsoft SQL Server 2008 Reporting Services Step by Step,Stacia Misner,Microsoft Press,,9780000000000,576,,series: Step by Step Developer Series,
+semi-heterr_2130,Microsoft SQL Server 2012 Integration Services: An Expert Cookbook,"Reza Rad, Pedro Perfeito",Packt Publishing,,9780000000000,564,,,202
+semi-heterr_2131,Microsoft SQL Server 2012 Master Data Services 2E,"Tyler Graham, Suzanne Selhorn",McGraw-Hill Professional Publishing,2012,9780000000000,416,,edition: 2,51
+semi-heterr_2132,Microsoft SQL Server 2012 Reporting Services 4E,Brian Larson,McGraw-Hill Professional Publishing,2012,9780000000000,784,,edition: 4,
+semi-heterr_2133,Microsoft SQL Server 2012 Security Cookbook,Rudi Bruchez,Packt Publishing,,9780000000000,322,,,74
+semi-heterr_2134,Microsoft SQL Server 2012 Unleashed,"Ray Rankins, Paul T. Bertucci, Chris Gallelli, Alex T. Silverstein",Sams,2013,9780000000000,1872,,series: Unleashed Series; edition: 1,
+semi-heterr_2148,MicrosoftSQL Server 7 For Dummies,Anthony T. Mann,Wiley,1998,9780000000000,359,,series: For Dummies Series; edition: 1,45
+semi-heterr_2151,"Middleware 2006: ACM/IFIP/USENIX 7th International Middleware Conference, Melbourne, Australia, November 27 - December 1, 2006, Proceedings","Maarten van Steen (Editor), Michi Henning (Editor)",Springer Berlin Heidelberg,2006,9780000000000,434,,"series: Lecture Notes in Computer Science Series ,#4290; edition: 1",135
+semi-heterr_2155,MINERIA DE DATOS. REDES NEURONALES Y ARBOLES DE DECISION. Ejemplos con SAS ENTERPRISE MINER,Cesar Perez Lopez,CreateSpace Independent Publishing Platform,,9780000000000,196,,,197
+semi-heterr_2171,Mobility Data Management and Exploration,"Nikos Pelekis, Yannis Theodoridis",Springer New York,,9780000000000,300,,,71
+semi-heterr_2172,"Mobility, Data Mining and Privacy: Geographic Knowledge Discovery","Fosca Giannotti (Editor), Dino Pedreschi (Editor)",Springer Berlin Heidelberg,2008,9780000000000,410,,edition: 1,16
+semi-heterr_2180,Modern Analytics Methodologies: Driving Business Value with Big Data,"Michele Chambers, Thomas Dinsmore",Pearson FT Press,2014,9780000000000,240,,series: FT Press Operations Management Series; edition: 1,
+semi-heterr_2184,Modern Database Management - Casebook,"Whitlock, Jeffrey A. Hoffer",Pearson,2002,9780000000000,,,edition: 6,102
+semi-heterr_2187,Modern Database Management,"Jeffrey A. Hoffer, Fred R. McFadden, Mary B. Prescott",Pearson,2004,9780000000000,736,,edition: 7,
+semi-heterr_2190,Mondrian in Action: Open source business analytics,"William Back D., Nicholas Goodman, Julian Hyde",Manning Publications Company,,9780000000000,288,,,149
+semi-heterr_2210,Multidatabase Systems: An Advance Solution for Global Information Sharing,"Ali R. Hurson, IEEE, M. W. Bright (Editor)","Wiley, John & Sons, Incorporated",,9780000000000,400,,,
+semi-heterr_2215,Multimedia Data Mining: A Systematic Introduction to Concepts and Theory,"Zhongfei Zhang, Ruofei Zhang",Taylor & Francis,,9780000000000,320,,series: Chapman & Hall/CRC Data Mining and Knowledge Discovery Series,84
+semi-heterr_2216,Multimedia Database Management Systems,B. Prabhakaran,Springer US,1996,9780000000000,206,,"series: The Springer International Series in Engineering and Computer Science ,#375; edition: 1",
+semi-heterr_2217,Multimedia Database Management Systems,Guojun Lu,"Artech House, Incorporated",1999,9780000000000,400,,series: Computing Library; edition: 1,
+semi-heterr_2227,Multivariate Statistics: Exercises and Solutions,"Wolfgang Karl Hardle, Zdenek Hlavka",Springer New York,2007,9780000000000,368,,edition: 1,188
+semi-heterr_2243,MySQL Management and Administration with Navicat,G̦khan Ozar,Packt Publishing,,9780000000000,134,,,48
+semi-heterr_2246,MySQL/PHP Database Applications,"Jay Greenspan, Brad Bulger",Wiley,2001,9780000000000,648,,series: M and T Bks.; edition: 1,114
+semi-heterr_2248,MySQL Pocket Reference,George Reese,"O'Reilly Media, Incorporated",,9780000000000,96,,series: Pocket Reference (O'Reilly) Series,81
+semi-heterr_2250,MySQL Stored Procedure Programming,"Guy Harrison, Steven Feuerstein","O'Reilly Media, Incorporated",2006,9780000000000,640,,edition: 1,4
+semi-heterr_2329,Object Relationship Notation for Database Applications: Enhancing the Modeling and Implementation of Associations,Bryon K. Ehlmann,Springer US,2009,9780000000000,246,,"series: Advances in Database Systems Series ,#39; edition: 1",187
+semi-heterr_2332,OCA/OCP Oracle Database 12c All-in-One Exam Guide,"John Watson, Roopesh Ramklass, Bob Bryla",McGraw-Hill Professional Publishing,2015,9780000000000,1072,,series: All-in-One Series; edition: 2,98
+semi-heterr_2338,OCP Oracle9i Database: Performance Tuning Exam Guide,"Charles Pack, Jason S. Couchman",McGraw-Hill Professional Publishing,2002,9780000000000,470,,series: Oracle Press Series; edition: 1,190
+semi-heterr_2371,Open Source Data Warehousing and Business Intelligence,Lakshman Bulusu,CRC Press,,9780000000000,432,,,
+semi-heterr_2383,Oracle 10g Developing Media Rich Applications,"Lynne Dunckley, Larry Guros",Elsevier Science,,9780000000000,520,,,49
+semi-heterr_2393,Oracle 12c For Dummies,"Chris Ruel, Wessler",Wiley,2013,9780000000000,432,,series: For Dummies Series; edition: 1,168
+semi-heterr_2404,"Oracle ADF Enterprise Application Development Made Simple, Second Edition",Sten E. Vesterli,Packt Publishing,2014,9780000000000,432,,edition: 2,44
+semi-heterr_2406,Oracle And Open Source,"Andy Duncan, Sean Hull","O'Reilly Media, Incorporated",2001,9780000000000,426,,edition: 1,173
+semi-heterr_2411,Oracle Applications DBA Field Guide,"Paul Jackson, Elke Phelps",Apress,2006,9780000000000,264,,series: Expert's Voice in Oracle Series; edition: 1,117
+semi-heterr_2412,Oracle Applications Performance Tuning Handbook,"Andy Tremayne, Roger E. Sanders (Joint Author)","McGraw-Hill Companies, The",2000,9780000000000,908,,series: Oracle Press Series; edition: 1,142
+semi-heterr_2414,Oracle Business Intelligence 11g R1 Cookbook,Yilmaz Cuneyt,Packt Publishing,,9780000000000,364,,,179
+semi-heterr_2418,Oracle Data Warehousing: With Business Intelligence Solutions,"Robert Stackowiak, Joseph Rayman, Rick Greenwald",Wiley,2007,9780000000000,408,,edition: 1,79
+semi-heterr_2432,Oracle Database 12c PL/SQL Programming,Michael McLaughlin,McGraw-Hill Professional Publishing,2014,9780000000000,1192,,edition: 1,
+semi-heterr_2438,Oracle Database Ajax & PHP Web Application Development,"Lee Barney, Michael McLaughlin",McGraw-Hill Professional Publishing,2008,9780000000000,458,,series: Oracle Press Series; edition: 1,50
+semi-heterr_2444,Oracle Database XE 11gR2 Jump Start Guide,Asif Momen,Packt Publishing,,9780000000000,146,,,73
+semi-heterr_2449,Oracle DBA Checklists Pocket Reference,Quest Software,"O'Reilly Media, Incorporated",2001,9780000000000,82,,edition: 1,
+semi-heterr_2450,Oracle DBA Guide to Data Warehousing and Star Schemas,Bert Scalzo,Prentice Hall,,9780000000000,240,,series: Prentice Hall Professional Oracle Series,136
+semi-heterr_2461,Oracle Distributed Systems,"Charles Dye, Debby Russell (Editor)","O'Reilly Media, Incorporated",,9780000000000,552,,,154
+semi-heterr_2463,Oracle Enterprise Manager 12c Command-Line Interface,Kellyn Pot'Vin,Apress,2014,9780000000000,300,,edition: 1,210
+semi-heterr_2467,Oracle Exadata Survival Guide,"David Fitzjarrell, Mary Mikell Spence",Apress,2013,9780000000000,284,,edition: 1,131
+semi-heterr_2472,Oracle Grid and Real Application Clusters: Oracle Grid Computing with RAC,"Steve Karam, Brian Jones",Rampant TechPress,,9780000000000,214,,,25
+semi-heterr_2481,Oracle Parallel Processing,"Tushar Mahapatra, Sanjay Mishra, Sanjay Mishra (Joint Author), Jonathan Gennick (Editor)","O'Reilly Media, Incorporated",,9780000000000,288,,,8
+semi-heterr_2504,Oracle Solid State Disk Tuning: High Performance Oracle Tuning with RAM Disk,"Donald K. Burleson (Editor), Michael R. Ault, Teri Wade (Editor), Donald K. Buarleson, Mike Ault",Rampant Techpress,,9780000000000,187,,series: Oracle in Focus Series,
+semi-heterr_2505,Oracle SQL by Example,Alice Rischert,Prentice Hall,2004,9780000000000,848,,series: Prentice Hall Professional Oracle Series; edition: 3,
+semi-heterr_2516,Oracle Tuning Power Scripts: With 100+ High Performance SQL Scripts,"Harry Conway, Mike Ault, Donald Burleson",Rampant TechPress,,9780000000000,492,,,223
+semi-heterr_2519,Oracle Utilities Pocket Reference,Sanjay Mishra,"O'Reilly Media, Incorporated",2004,9780000000000,128,,series: Pocket Reference (O'Reilly) Series; edition: 1,19
+semi-heterr_2521,Oracle Web Application Programming for PL/SQL Developers,"Susan Boardman, Melanie Caffrey, Solomon Morse, Benjamin Rosenzweig",Prentice Hall,,9780000000000,745,,series: Prentice Hall Professional Oracle Series,3
+semi-heterr_2524,Oracle WebLogic Server 12c Administration Handbook,Sam R. Alapati,McGraw-Hill Professional Publishing,2014,9780000000000,576,,edition: 1,62
+semi-heterr_2525,Oracle8 Architecture,Steven M. Bobrowski,"McGraw-Hill Companies, The",1997,9780000000000,343,,edition: 1,
+semi-heterr_2526,Oracle8 Bible,"Carol McCullough-Dieter, Jatinder Prem, Ramesh Chandak, Purshottam Chandak","Wiley, John & Sons, Incorporated",1998,9780000000000,1140,,series: Bible Series; edition: 1,92
+semi-heterr_2533,Oracle8i DBA Bible,"Jonathan Gennick, Carol McCullough-Dieter, Gerrit-Jan Linker",Wiley,2000,9780000000000,1152,,series: Bible Series; edition: 1,27
+semi-heterr_2538,Oracle9i DBA Jumpstart,Bob Bryla,Wiley,2003,9780000000000,345,,edition: 1,
+semi-heterr_2540,Oracle9i High-Performance Tuning with STATSPACK,"Donald Burleson, Don Burleson",McGraw-Hill Professional Publishing,2002,9780000000000,645,,series: Oracle Press Series; edition: 1,
+semi-heterr_2542,Oracle9i: The Complete Reference,"Kevin Loney, George Koch","McGraw-Hill Companies, The",2002,9780000000000,1256,,series: Osborne Oracle Press Series; edition: 1,82
+semi-heterr_2573,Pentaho Analytics for MongoDB,Bo Borland,Packt Publishing,,9780000000000,146,,,17
+semi-heterr_2574,"Pentaho Data Integration Beginner's Guide, Second Edition",Maria Carina,Packt Publishing,2013,9780000000000,502,,edition: 2,143
+semi-heterr_2587,Phase change memory in Relational Database,Suraj Pathak,AV Akademikerverlag GmbH & Co. KG.,,9780000000000,84,,,21
+semi-heterr_2601,Portable DBA Oracle,Robert Freeman,McGraw-Hill Professional Publishing,2004,9780000000000,598,,series: Server Technologies and Tools Series; edition: 1,76
+semi-heterr_2619,Practical Data Mining,"Monte F. Hancock, Jr.",Taylor & Francis,,9780000000000,304,,,138
+semi-heterr_2621,Practical Database Programming with Java,Ying Bai,Wiley,2011,9780000000000,952,,edition: 1,59
+semi-heterr_2622,Practical Database Programming with Visual Basic.NET,Ying Bai,Wiley,2012,9780000000000,900,,edition: 2,189
+semi-heterr_2632,Practical Text Mining with Perl,Roger Bilisoly,Wiley,2008,9780000000000,320,,"series: Wiley Series on Methods and Applications in Data Mining Series ,#2; edition: 1",126
+semi-heterr_2655,Principles of Distributed Database Systems,Patrick Valduriez,Prentice Hall Professional Technical Reference,1990,9780000000000,528,,edition: 1,80
+semi-heterr_2663,Pro Access 2010 Development,"Mark Collins, Creative Enterprises",Apress,2011,9780000000000,604,,edition: 1,200
+semi-heterr_2671,Pro Microsoft HDInsight: Hadoop on Windows,Debarchan Sarkar,Apress,2014,9780000000000,272,,edition: 1,203
+semi-heterr_2674,Pro ODP.NET for Oracle Database 11g,"Edmund Zehoo, Yap Wai Hong",Apress,2010,9780000000000,468,,edition: 1,77
+semi-heterr_2677,Pro Oracle Database 11g RAC on Linux,"Steve Shaw, Martin Bach",Apress,2010,9780000000000,840,,edition: 2,212
+semi-heterr_2679,Pro Spatial with SQL Server 2012,Alastair Aitchison,Apress,2012,9780000000000,560,,edition: 1,171
+semi-heterr_2684,Pro SQL Server 2005 Service Broker,Klaus Aschenbrenner,Apress,2007,9780000000000,453,,series: Expert's Voice Series; edition: 1,104
+semi-heterr_2685,Pro SQL Server 2008 Analysis Services,"Philo Janus, Guy Fouche",Apress,2010,9780000000000,480,,edition: 1,123
+semi-heterr_2687,Pro SQL Server 2008 Mirroring,"Robert Davis, Ken Simmons",Apress,2009,9780000000000,400,,edition: 1,119
+semi-heterr_2695,Pro SQL Server 2012 Internals,Dmitri Korotkevitch,Apress,2014,9780000000000,804,,edition: 1,68
+semi-heterr_2699,Pro T-SQL 2012 Programmer's Guide,"Jay Natarajan, Scott Shaw, Rudi Bruchez, Michael Coles",Apress,2012,9780000000000,696,,edition: 3,220
+semi-heterr_2721,Professional ADO. NET 3. 5 with LINQ and the Entity Framework,Roger Jennings,Wiley,2009,9780000000000,672,,edition: 1,181
+semi-heterr_2727,Professional Hadoop Solutions,"Boris Lublinsky, Kevin T. Smith, Alexey Yakubovich",Wiley,2013,9780000000000,504,,edition: 1,35
+semi-heterr_2735,Professional Microsoft SQL Server 2008 Reporting Services,"Paul Turley, Thiago Silva, Bryan C. Smith, Ken Withee, Jason Carlson (Foreword by)",Wiley,2008,9780000000000,816,,edition: 1,105
+semi-heterr_2737,Professional Microsoft SQL Server 2012 Integration Services,"Brian Knight, Erik Veerman, Jessica M. Moss, Mike Davis, Chris Rock",Wiley,2012,9780000000000,960,,edition: 1,
+semi-heterr_2738,Professional Microsoft SQL Server 2012 Reporting Services,"Paul Turley, Robert M. Bruckner, Thiago Silva, Ken Withee, Grant Paisley",Wiley,2012,9780000000000,912,,edition: 1,61
+semi-heterr_2749,Professional SQL Server 2008 Internals and Troubleshooting,"Christian Bolton, Justin Langford, Brent Ozar, James Rowland-Jones, Jonathan Kehayias",Wiley,2010,9780000000000,624,,edition: 1,
+semi-heterr_2763,Programming Microsoft LINQ in Microsoft .NET Framework 4,"Paolo Pialorsi, Marco Russo",Microsoft Press,,9780000000000,704,,,
+semi-heterr_2766,Programming SQL Server 2005,"Bill Hamilton, Richard Blewett","O'Reilly Media, Incorporated",2006,9780000000000,588,,edition: 1,
+semi-heterr_2774,Provenance Data in Social Media,"Geoffrey Barbier, Huan Liu, Jiawei Han (Contribution by), Lise Getoor (Contribution by), Wei Wang (Contribution by)",Morgan and Claypool Publishers,,9780000000000,86,,series: Synthesis Lectures on Data Mining and Knowledge Discovery Series,
+semi-heterr_2791,Query Processing in Parallel Relationship Database Systems,"Hongjun Lu, K. L. Tan (Editor), Beng Chin Ooi (Editor)",IEEE Computer Society Press,,9780000000000,392,,,
+semi-heterr_2797,R-Trees: Theory and Applications,"Yannis Manolopoulos, Alexandros Nanopoulos, Apostolos N. Papadopoulos, Yannis Theodoridis",Springer London,2005,9780000000000,194,,series: Advanced Information and Knowledge Processing Series; edition: 1,46
+semi-heterr_2804,Rdb: A Comprehensive Guide,"Lilian Hobbs, Ken England, Ian Smith",Elsevier Science,1999,9780000000000,480,,edition: 3,196
+semi-heterr_2818,Recommender Systems and the Social Web: Leveraging Tagging Data for Recommender Systems,Fatih Gedikli,Springer Fachmedien Wiesbaden,2013,9780000000000,112,,edition: 1,66
+semi-heterr_2820,Recommender Systems for Location-based Social Networks,"Panagiotis Symeonidis, Dimitrios Ntempos, Yannis Manolopoulos",Springer New York,,9780000000000,108,,series: SpringerBriefs in Electrical and Computer Engineering Series,29
+semi-heterr_2824,Redis in Action,Josiah L. Carlson,Manning Publications Company,,9780000000000,320,,,156
+semi-heterr_2825,Refactoring Databases: Evolutionary Database Design,"Scott W. Ambler, Pramodkumar J. Sadalage",Addison-Wesley,2006,9780000000000,384,,series: Addison-Wesley Signature Series; edition: 1,10
+semi-heterr_2831,"Relational Data Clustering: Models, Algorithms, and Applications","Bo Long, Zhongfei Zhang, Philip S. Yu",Taylor & Francis,2010,9780000000000,216,,series: Chapman & Hall/CRC Data Mining and Knowledge Discovery Series; edition: 1,94
+semi-heterr_2833,Relational Database: Selected Writings,"Chris J. Date, C. J. Date",Addison-Wesley,1986,9780000000000,514,,edition: 1,
+semi-heterr_2837,Relational Database Design with Microcomputer Applications,Glenn A. Jackson,Prentice Hall Professional Technical Reference,,9780000000000,256,,,184
+semi-heterr_2845,Relational Database Technology,"Suad Alagic, S. Alagic",Springer New York,1986,9780000000000,276,,series: Monographs in Computer Science Series; edition: 1,224
+semi-heterr_2846,"Relational Database Writings, 1989-1991","Chris J. Date, Hugh Darwen (With)",Addison-Wesley,1992,9780000000000,521,,edition: 1,151
+semi-heterr_2847,"Relational Database Writings, 1991-1994",Date,Addison-Wesley,1995,9780000000000,542,,edition: 1,128
+semi-heterr_2872,"Research in Computational Molecular Biology: 11th Annunal International Conference, RECOMB 2007, Oakland, CA, USA, April 21-25, 2007, Proceedings","Terence (Terry) Speed (Editor), Haiyan Huang (Editor)",Springer Berlin Heidelberg,2007,9780000000000,550,,"series: Lecture Notes in Computer Science / Lecture Notes in Bioinformatics Series ,#445; edition: 1",26
+semi-heterr_2877,"Rough Sets and Current Trends in Computing: 6th International Conference, RSCTC 2008 Akron, OH, USA, October 23 - 25, 2008 Proceedings","Chien-Chung Chan (Editor), Jerzy W. Grzymala-Busse (Editor), Wojciech P. Ziarko (Editor)",Springer Berlin Heidelberg,2008,9780000000000,534,,series: Lecture Notes in Computer Science / Lecture Notes in Artificial Intelligence Ser; edition: 1,103
+semi-heterr_2887,Sams Teach Yourself ADO.NET in 21 Days,Dan Fox,Sams,,9780000000000,633,,series: Sams Teach Yourself Series,
+semi-heterr_2888,Sams Teach Yourself Beginning Databases in 24 Hours,"Ron Plew, Ronald Plew",Sams,,9780000000000,480,,series: Sams Teach Yourself Series,18
+semi-heterr_2898,Sams Teach Yourself MySQL in 10 Minutes,Chris Newman,Sams,,9780000000000,288,,series: Sams Teach Yourself Series,
+semi-heterr_2899,Sams Teach Yourself MySQL in 21 Days,"Anthony Butcher, Anthony Raymond Butcher, Mark Maslakowski",Sams,2002,9780000000000,608,,series: Sams Teach Yourself Series; edition: 2,
+semi-heterr_2904,Sams Teach Yourself Transact-SQL in 21 Days,"Lowell Mauer, David Solomons (With), Bennett Wm McEwan (With)",Sams,2001,9780000000000,640,,series: Sams Teach Yourself Series; edition: 2,
+semi-heterr_2935,"Scientific Data Management: Challenges, Technology, and Deployment","Arie Shoshani (Editor), Doron Rotem (Editor)",Taylor & Francis,2009,9780000000000,590,,series: Chapman & Hall/CRC Computational Science Series; edition: 1,174
+semi-heterr_2989,Similarity Search: The Metric Space Approach,"Pavel Zezula, Giuseppe Amato, Vlastislav Dohnal, Michal Batko",Springer US,2005,9780000000000,220,,"series: Advances in Database Systems Series ,#32; edition: 1",12
+semi-heterr_2996,Smart Business Intelligence Solutions with Microsoft SQL Server 2008,Lynn Langit,Microsoft Press,,9780000000000,800,,,193
+semi-heterr_2999,Social Computing and Behavioral Modeling,"Huan Liu (Editor), John Salerno (Editor), Michael J. Young (Editor)",Springer US,2009,9780000000000,264,,edition: 1,109
+semi-heterr_3041,SQL Antipatterns: Avoiding the Pitfalls of Database Programming,Bill Karwin,"Pragmatic Programmers, LLC, The",2010,9780000000000,328,,edition: 1,112
+semi-heterr_3045,SQL Bible,"Alex Kriegel, Boris M. Trukhnov",Wiley,2008,9780000000000,888,,"series: Bible Series ,#742; edition: 2",64
+semi-heterr_3048,Sql,Forrest Houlette,McGraw-Hill/OsborneMedia,2000,9780000000000,452,,edition: 1,
+semi-heterr_3052,"SQL Interoperability Joes 2 Pros: A Guide to Integrating SQL Server with XML, C#, and PowerShell","Jessica Brown (Editor), Vinay Chopra (Editor), Simon Nicholson (Editor), Rick Morelan",CreateSpace,,9780000000000,418,,,85
+semi-heterr_3055,SQL Pocket Guide,Jonathan Gennick,"O'Reilly Media, Incorporated",2006,9780000000000,192,,series: Pocket Reference (O'Reilly) Series; edition: 2,111
+semi-heterr_3056,SQL Power!: The Comprehensive Guide,"Kenneth Hess, Thomson Course Technology PTR Development Staff",Cengage Learning,,9780000000000,444,,series: Power! Series,
+semi-heterr_3059,SQL Queries for Mere Mortals: A Hands-On Guide to Data Manipulation in SQL,"Michael J. Hernandez, John L. Viescas, John L. Viescas (Joint Author)",Addison-Wesley,,9780000000000,528,,series: For Mere Mortals,157
+semi-heterr_3062,SQL Server 2000 for Experienceed DBAs,Brian Knight,"McGraw-Hill Companies, The",2003,9780000000000,520,,edition: 1,230
+semi-heterr_3065,Sql Server 2000 Web Application Developer's Guide,Craig Utley,"McGraw-Hill Companies, The",,9780000000000,688,,series: Database Professional's Library,
+semi-heterr_3066,SQL Server 2005 Bible,Paul Nielsen,Wiley,2006,9780000000000,1344,,"series: Bible Series ,#112; edition: 1",153
+semi-heterr_3068,SQL Server 2005 Reporting Services in Action,"Bret Updegraff, Brian Welcker (Foreword by)",Manning Publications Company,2006,9780000000000,656,,series: In Action Series; edition: 2,28
+semi-heterr_3073,SQL Server 2008 Transact-SQL Recipes: A Problem-Solution Approach,Joseph Sack,Apress,2008,9780000000000,872,,series: The Expert's Voice in SQL Server Series; edition: 1,121
+semi-heterr_3080,SQL Server 2012 Database Design,Kalman Toth,CreateSpace Publishing,,9780000000000,464,,,
+semi-heterr_3083,SQL Server 2012 Reporting Services Blueprints,Marlon Ribunal,Packt Publishing,,9780000000000,246,,,95
+semi-heterr_3085,SQL Server 2014 Database Design,Kalman Toth,CreateSpace Publishing,,9780000000000,464,,,
+semi-heterr_3089,SQL Server and Ado Programming Complete,"Dave Evans, Greg Jarboe, Hollis Thomases, Mari Smith, Chris Treadaway, Sybex Inc",Wiley,2001,9780000000000,1024,,series: Sybex Complete Series; edition: 1,38
+semi-heterr_3092,SQL Server DMVs in Action: Better Queries with Dynamic Management Views,Ian W. Stirk,Manning Publications Company,,9780000000000,375,,,2
+semi-heterr_3094,SQL Server MVP Deep Dives,"Paul Nielsen, Kalen Delaney, Adam Machanic, Kimberly Tripp, Paul Randal",Manning Publications Company,,9780000000000,848,,,161
+semi-heterr_3097,SQL Server Query Performance Tuning Distilled,"Sajal Dam, Tony Davis (Editor)",Apress,2004,9780000000000,624,,edition: 2,14
+semi-heterr_3104,SQL: Access to SQL Server,"Susan Sales Harkins, Martin WP Reid",Apress,2002,9780000000000,698,,edition: 1,
+semi-heterr_3130,Strategic Data Warehousing: Achieving Alignment with Business,Neera Bhansali,Taylor & Francis,2009,9780000000000,224,,edition: 1,97
+semi-heterr_3142,Student Videos for GO! with Microsoft Access 2010 Introductory,Shelley Gaskin,Prentice Hall,2011,9780000000000,,,edition: 1,
+semi-heterr_3145,Study Guide for 1Z0-051: Oracle Database 11g: SQL Fundamentals I: Oracle Certification Prep,Matthew Morris,CreateSpace Independent Publishing Platform,,9780000000000,144,,,211
+semi-heterr_3148,Study Guide for 1z0-117: Oracle Database 11g Release 2: SQL Tuning,"Matthew Morris, Kevin Meade (Editor), Ross Leishman (Editor)",CreateSpace Independent Publishing Platform,,9780000000000,190,,,89
+semi-heterr_3150,Study Guide for 1z0-146: Oracle Database 11g: Advanced PL/SQL,Matthew Morris,CreateSpace Independent Publishing Platform,,9780000000000,172,,,129
+semi-heterr_3165,Super Charge Your Data Warehouse: Invaluable Data Modeling Rules to Implement Your Data Vault,"Dan Linstedt, Kent Graziano (Editor)",CreateSpace Publishing,,9780000000000,128,,,
+semi-heterr_3173,Swarm Based Implementation of a Virtual Distributed Database System in a Sensor Network,Wen Chian Lee,BiblioScholar,,9780000000000,122,,,231
+semi-heterr_3183,T-SQL 2008 Joes 2 Pros: Core T-SQL Coding Fundamentals for Microsoft SQL Server 2008,"Rick Morelan, Peter Kendall (Editor)","BookSurge, LLC",,9780000000000,256,,,
+semi-heterr_3184,Talend for Big Data,Bahaaldine Azarmi,Packt Publishing,,9780000000000,96,,,155
+semi-heterr_3191,Teach Yourself Database Programming with Delphi in 21 Days,"Nathan Gurewich, Ori Gurewich",Sams,1995,9780000000000,608,,edition: 1,
+semi-heterr_3192,Teach Yourself Database Programming with Visual J++ in 21 Days,"John W. Fronckowiak, Gordon McMillan",Sams,,9780000000000,774,,,
+semi-heterr_3197,Teach Yourself VISUALLY Access 2013,Paul McFedries (Editor),Wiley,2013,9780000000000,352,,"series: Teach Yourself VISUALLY (Tech) Series ,#146; edition: 1",178
+semi-heterr_3212,"Terminological Ontologies: Design, Management and Practical Applications","Javier Lacasta, Javier Nogueras-Iso, Francisco Javier Zarazaga Soria",Springer US,2010,9780000000000,198,,"series: Semantic Web and Beyond Series ,#9; edition: 1",118
+semi-heterr_3242,The Data Warehouse Toolkit: The Complete Guide to Dimensional Modeling,"Margy Ross, Ralph Kimball","Wiley, John & Sons, Incorporated",2002,9780000000000,464,,edition: 2,101
+semi-heterr_3243,The Data Warehouse Toolkit: The Definitive Guide to Dimensional Modeling,"Ralph Kimball, Margy Ross",Wiley,2013,9780000000000,600,,edition: 3,9
+semi-heterr_3276,The Microsoft Data Warehouse Toolkit: With SQL Server 2008 and the Microsoft Business Intelligence Toolset,"Joy Mundy, Ralph Kimball (With), Warren Thornthwaite",Wiley,2006,9780000000000,792,,edition: 1,125
+semi-heterr_3277,The Microsoft SQL Server 2000 Analysis Services Step by Step,"Reed Jacobson, OLAP Train, Reed Jacobsen",Microsoft Press,2000,9780000000000,400,,series: Step by Step Developer Series; edition: 1,13
+semi-heterr_3285,The Official Guide to Informix/Red Brick Data Warehousing,"Robert J. Hocutt, Bob Hocutt (Joint Author)","Wiley, John & Sons, Incorporated",2000,9780000000000,395,,series: Bible Ser.; edition: 1,124
+semi-heterr_3325,Transact-SQL Cookbook,"Ales Spetic, Jonathan Gennick","O'Reilly Media, Incorporated",2002,9780000000000,304,,edition: 1,60
+semi-heterr_3329,Transactions on Computational Systems Biology IX,Corrado Priami (Editor),Springer Berlin Heidelberg,2008,9780000000000,153,,series: Lecture Notes in Computer Science / Transactions on Computational Systems Biolog; edition: 1,
+semi-heterr_3332,Transactions on Large-Scale Data- and Knowledge-Centered Systems I,"Abdelkader Hameurlain (Editor), Josef Kung (Editor), Roland Wagner (Editor)",Springer Berlin Heidelberg,2009,9780000000000,374,,series: Lecture Notes in Computer Science / Transactions on Large-Scale Data- and Knowle; edition: 1,93
+semi-heterr_3361,UML for Database Design,"Eric J. Naiburg, Robert A. Maksimchuk, Robert A. Maksimchuck (Joint Author)",Addison-Wesley,2001,9780000000000,304,,series: Addison-Wesley Object Technology Series; edition: 1,
+semi-heterr_3362,Unauthorized Access: The Crisis in Online Privacy and Security,"Robert H. Sloan, Richard Warner",CRC Press,,9780000000000,398,,,146
+semi-heterr_3369,Understanding DB2 9 Security,"Rebecca Bond, Kevin Yeung-Kuen See, Carmen Ka Man Wong, Yuk-Kuen Henry Chan, Yuk-Kuen Henry Chan",IBM Press,,9780000000000,432,,,86
+semi-heterr_3386,Unsupervised Information Extraction by Text Segmentation,"Eli Cortez, Altigran S da da Silva",Springer International Publishing,,9780000000000,94,,series: SpringerBriefs in Computer Science Series,172
+semi-heterr_3403,Using Microsoft Office Access 2007,Roger Jennings,Que,,9780000000000,1460,,series: Special Edition Using Series,
+semi-heterr_3423,Visual Basic and Databases - Professional Edition,"Philip Conrod, Lou Tylee",Kidware Software & BibleByte Books,2013,9780000000000,908,,edition: 12,127
+semi-heterr_3425,Visual Basic Database Programming,Michael Kofler,Pearson Education,,9780000000000,592,,,
+semi-heterr_3427,Visual Basic6 Database Programming For Dummies,Richard Mansfield,Wiley,1999,9780000000000,408,,series: For Dummies Series; edition: 1,
+semi-heterr_3429,Visual Data Mining: Techniques and Tools for Data Visualization and Mining,"Tom Soukup, Ian Davidson",Wiley,2002,9780000000000,424,,edition: 1,134
+semi-heterr_3438,Visualizing the Data City: Social Media as a Source of Knowledge for Urban Planning and Management,"Paolo Ciuccarelli, Giorgia Lupi, Luca Simeone",Springer International Publishing,,9780000000000,76,,series: SpringerBriefs in Applied Sciences and Technology / PoliMI SpringerBriefs Series,228
+semi-heterr_3441,Web 2.0 and Beyond: Principles and Technologies,Paul Anderson,Taylor & Francis,,9780000000000,408,,"series: Chapman & Hall/CRC Textbooks in Computing Series ,#7",36
+semi-heterr_3491,World Wide Web Database Programming for Windows NT,Brian Jepson,Wiley,1996,9780000000000,352,,edition: 1,216
+semi-heterr_3496,XML and SQL: Developing Web Applications,"Daniel K. Appelquist, Daniel K. Appelquist (Other), Daniel K. Applequist",Addison-Wesley,2001,9780000000000,256,,edition: 1,205
+semi-heterr_3503,"Your Office: Microsoft Access 2013, Comprehensive","Amy S. Kinser, Patti Hammerle, Eric Kinser, Diane Lending, Jennifer P. Nightingale-Massart",Prentice Hall,2013,9780000000000,800,,edition: 1,41
+semi-heterr_3516,Knots in My Yo-yo String: The Autobiography of a Kid,Jerry Spinelli,Random House Children's Books,2012,9780679887911,160,,Productdimensions: 5.49(w) x 8.28(h) x 0.39(d); Paperbackprice: $8.43; Hardcoverprice: $21.00; Nookbookprice: $9.99,240
+semi-heterr_3517,"Autobiography of Mark Twain, Volume 3: The Complete and Authoritative Edition",Mark Twain,University of California Press,2015,9780520279940,792,,Productdimensions: 7.10(w) x 10.10(h) x 2.40(d); Hardcoverprice: $32.35; Nookbookprice: $31.49,
+semi-heterr_3523,One Direction: Who We Are: Our Official Autobiography,One Direction,HarperCollins UK,2014,9780007577316,352,,Productdimensions: 6.10(w) x 9.30(h) x 1.50(d); Hardcoverprice: $16.27; Nookbookprice: $9.99,255
+semi-heterr_3529,Black Beauty: The Autobiography of a Horse,"Anna Sewell, Sewell",Dover Publications,1999,9780486407883,208,,Productdimensions: 8.26(w) x 5.46(h) x 0.49(d); Paperbackprice: $4.50; Hardcoverprice: $9.95; Nookbookprice: $2.99; Audiobookprice: $7.11,
+semi-heterr_3534,"Autobiography of Mark Twain, Volume 2: The Complete and Authoritative Edition",Mark Twain,University of California Press,2013,9780520272781,776,,Productdimensions: 7.62(w) x 10.24(h) x 2.42(d); Hardcoverprice: $33.91; Nookbookprice: $29.25; Audiobookprice: $25.22,
+semi-heterr_3542,The Autobiography Of General Ulysses S Grant,Ulysses S Grant,Red and Black Publishers,2008,9781934941140,436,,Productdimensions: 5.90(w) x 8.90(h) x 1.00(d),314
+semi-heterr_3543,Theodore Roosevelt: An Autobiography,Theodore Roosevelt,CreateSpace Publishing,2010,9781451580129,298,,Productdimensions: 7.00(w) x 10.00(h) x 0.62(d); Paperbackprice: $14.95; Hardcoverprice: $25.73; Nookbookprice: $0.99,
+semi-heterr_3544,The Autobiography of an Ex-Colored Man,James Weldon Johnson,Dover Publications,1995,9780486285122,112,,Productdimensions: 5.21(w) x 8.28(h) x 0.32(d); Paperbackprice: $2.70; Hardcoverprice: $16.99; Nookbookprice: $0.99; Audiobookprice: $29.99,
+semi-heterr_3559,E.A.R.L.: The Autobiography of DMX,"DMX, Smokey D. Fontaine, D",HarperCollins Publishers,2003,9780060934033,352,,Productdimensions: 6.00(w) x 9.00(h) x 0.91(d); Paperbackprice: $13.62,253
+semi-heterr_3571,Autobiography of St. Teresa of Avila,St. Teresa of Avila,Dover Publications,2010,9780486475981,352,,Productdimensions: 5.30(w) x 8.40(h) x 0.80(d); Paperbackprice: $7.52; Nookbookprice: $9.99,233
+semi-heterr_3582,Autobiography of Thomas Jefferson,Thomas Jefferson,MobileReference,2010,9781607783091,,,Paperbackprice: $6.95; Hardcoverprice: $18.97; Nookbookprice: $0.95,
+semi-heterr_3599,Autobiography of Herbert W. Armstrong - Volume 1,"Herbert W. Armstrong, Philadelphia Church of God",Lulu.com,2013,9781304501332,,,,
+semi-heterr_3604,Moving Pictures: An Autobiography,Ali MacGraw,Renaissance Literary &amp; Talent,2015,2940151374255,,,Paperbackprice: $4.99; Nookbookprice: $4.99,
+semi-heterr_3611,Up from Slavery: An Autobiography,Booker T. Washington,"Wilder Publications, Inc.",2015,9781627557863,148,,Paperbackprice: $6.99; Hardcoverprice: $26.95; Nookbookprice: $0.99,
+semi-heterr_3612,THE GREATEST AMERICAN PRESIDENT: THE AUTOBIOGRAPHY OF THEODORE ROOSEVELT (Worldwide Bestseller),"Theodore TEDDY ROOSEVELT [Winner of the Nobel Prize] Nook Edition (Part I of the Best Presidents Series incl. George Washington, Abraham Lincoln) NOOKBook",Great American Presidents Biographies,2012,2940013017061,,,,
+semi-heterr_3615,"The Complete Works of Mark Twain: The Novels, short stories, essays and satires, travel writing, non-fiction, the complete letters, the complete speeches, and the autobiography of Mark Twain Mark Twain",Mark Twain,e-artnow Editions,2014,9788026804529,5000,,,
+semi-heterr_3622,THE AUTOBIOGRAPHY OF BENJAMIN FRANKLIN,Benjamin Franklin,Robin Michell,2011,2940012259776,,,,
+semi-heterr_3644,Where White Men Fear to Tread: The Autobiography of Russell Means,"Russell Means, Marvin Wolf",St. Martin's Press,1996,9780312147617,624,,Productdimensions: 6.10(w) x 9.23(h) x 1.69(d); Paperbackprice: $14.99; Nookbookprice: $9.99,263
+semi-heterr_3651,Marcus: The Autobiography of Marcus Allen,"Marcus Allen, Carlton Stowers",St. Martin's Press,2015,9781466889743,352,,Paperbackprice: $7.99; Nookbookprice: $7.99,318
+semi-heterr_3659,"Autobiography of Mark Twain: Volume 1, Reader's Edition",Mark Twain,University of California Press,2012,9780520952447,440,,Paperbackprice: $19.42; Hardcoverprice: $30.19; Nookbookprice: $18.81,
+semi-heterr_3663,KP: The Autobiography,Kevin Pietersen,"Little, Brown Book Group",2014,9780751557565,,,Paperbackprice: $13.95; Nookbookprice: $4.99,
+semi-heterr_3665,Bill Peet: An Autobiography,Bill Peet,Houghton Mifflin Harcourt,1994,9780395689820,192,,Productdimensions: 7.90(w) x 9.90(h) x 0.60(d); Paperbackprice: $11.99,317
+semi-heterr_3667,Crusade for Justice: The Autobiography of IDA B. Wells,"Ida B. Wells, Ada B. Wells",University of Chicago Press,1991,9780226893440,466,,Productdimensions: 5.50(w) x 8.50(h) x 1.40(d); Paperbackprice: $30.00; Nookbookprice: $27.00,274
+semi-heterr_3675,King of the Mild Frontier: An Ill-Advised Autobiography,Chris Crutcher,HarperCollins Publishers,2004,9780060502515,272,,Productdimensions: 5.31(w) x 8.00(h) x 0.61(d); Paperbackprice: $8.05; Nookbookprice: $7.42,243
+semi-heterr_3688,Gaz: The Autobiography of Geordie Shore's Ultimate Lad,Gary Beadle,"John Blake Publishing, Limited",2014,9781782199526,288,,Paperbackprice: $17.95; Hardcoverprice: $27.36; Nookbookprice: $10.49,320
+semi-heterr_3698,Spitfire: The Autobiography,Jon E. Lewis,"Little, Brown Book Group",2013,9781472107824,544,,,
+semi-heterr_3702,Autobiography of Benjamin Franklin: with Related Documents / Edition 2,Benjamin Franklin,Bedford/St. Martin's,2003,9780312404154,208,,Productdimensions: 5.46(w) x 8.17(h) x 0.40(d); Paperbackprice: $16.67,
+semi-heterr_3709,"The Autobiography of Medgar Evers: A Hero's Life and Legacy Revealed Through His Writings, Letters, and Speeches","Myrlie Evers-Williams, Manning Marable",Basic Books,2006,9780786722495,416,,Paperbackprice: $13.66; Nookbookprice: $11.49,
+semi-heterr_3712,Blue Plate Special: An Autobiography of My Appetites,Kate Christensen,Knopf Doubleday Publishing Group,2013,9780385536271,368,,Paperbackprice: $10.79; Nookbookprice: $11.99,312
+semi-heterr_3714,Clark: The Autobiography of Clark Terry,Clark Terry,University of California Press,2015,9780520287518,344,,Productdimensions: 5.90(w) x 8.90(h) x 0.90(d); Paperbackprice: $21.17; Hardcoverprice: $33.83; Nookbookprice: $17.51,282
+semi-heterr_3718,The Autobiography of Charles Darwin (Barnes & Noble Library of Essential Reading),Charles Darwin,Barnes &amp; Noble,2009,9781411429178,464,,Paperbackprice: $14.90; Nookbookprice: $3.49,
+semi-heterr_3728,Autobiography of Mark Twain - 100th Anniversary Edition,Mark Twain,KRE,2013,9781608427710,600,,Productdimensions: 6.00(w) x 9.00(h) x 1.50(d); Paperbackprice: $12.95; Hardcoverprice: $19.95,
+semi-heterr_3732,Always Managing: My Autobiography,Harry Redknapp,Ebury Publishing,2013,9781407060736,432,,Paperbackprice: $25.18; Hardcoverprice: $30.11; Nookbookprice: $9.99,261
+semi-heterr_3735,An Autobiography - The Story of My Life and Work,Booker T. Washington,Jazzybee Verlag,2014,9783849644024,451,,Paperbackprice: $6.99; Nookbookprice: $0.99,
+semi-heterr_3736,The Autobiography and Other Writings,Benjamin Franklin,Random House Publishing Group,2008,9780553904987,384,,Paperbackprice: $4.95; Nookbookprice: $1.99,
+semi-heterr_3738,Buck 'Em!: The Autobiography of Buck Owens,"Randy Poe, Buck Owens",Hal Leonard Corporation,2013,9781480366916,304,,Paperbackprice: $19.99; Hardcoverprice: $21.91; Nookbookprice: $16.49,311
+semi-heterr_3742,The Autobiography and Other Writings,Benjamin Franklin,Knopf Doubleday Publishing Group,2015,9781101907603,344,,Productdimensions: 8.10(w) x 5.20(h) x 1.20(d); Paperbackprice: $8.85; Hardcoverprice: $18.75; Nookbookprice: $9.99,
+semi-heterr_3748,The Long Haul: An Autobiography / Edition 1,Myles Horton,Teachers College Press,2003,9780807737002,256,,Productdimensions: 5.00(w) x 0.00(h) x 0.64(d); Paperbackprice: $18.50,250
+semi-heterr_3758,Mark Twain's Autobiography VOL 1 & 2,Mark Twain,WDS Publishing,2012,2940013663541,,,,
+semi-heterr_3761,The Test: My Autobiography,Brian O'Driscoll,Penguin UK,2014,9780241962695,,,,298
+semi-heterr_3765,Maradona: The Autobiography of Soccer's Greatest and Most Controversial Star,Diego Armando Maradona,Skyhorse Publishing,2011,9781616081867,328,,Productdimensions: 6.00(w) x 8.80(h) x 1.00(d); Paperbackprice: $9.97; Nookbookprice: $10.49,
+semi-heterr_3773,"The Autobiography of Benjamin Franklin: In His Own Words, the Life of the Inventor, Philosopher, Satirist, Political Theorist, Statesman, and Diplomat","Benjamin Franklin, Ben Franklin, Poor Richard",ReadaClassic.com,2010,9781611043297,182,,Productdimensions: 6.00(w) x 9.00(h) x 0.39(d); Paperbackprice: $9.95,
+semi-heterr_3784,Israel Rank: The Autobiography of a Criminal,Roy Horniman,CreateSpace Publishing,2014,9781500857806,392,,Productdimensions: 5.00(w) x 8.00(h) x 0.87(d); Paperbackprice: $13.11,290
+semi-heterr_3786,Samurai!: The Autobiography of Japan's World War Two Flying Ace,Saburo Sakai,CreateSpace Publishing,2015,9781507795859,296,,Productdimensions: 5.50(w) x 8.50(h) x 0.62(d),
+semi-heterr_3793,Faster than Lightning: My Autobiography,Usain Bolt,HarperCollins Publishers,2013,9780007523658,320,,Paperbackprice: $12.15; Nookbookprice: $9.99,266
+semi-heterr_3811,A Bazaar Life: The Autobiography of David Alliance,David Alliance,"Biteback Publishing, Ltd.",2015,9781849541923,448,,Productdimensions: 5.90(w) x 9.30(h) x 1.60(d),270
+semi-heterr_3812,Vidal: The Autobiography,Vidal Sassoon,Pan Macmillan,2010,9780230753792,,,Paperbackprice: $10.66; Hardcoverprice: $28.04; Nookbookprice: $8.49,286
+semi-heterr_3815,An Only Child and My Father's Son: The Autobiography,Frank O'Connor,Open Road Media,2014,9781497655072,464,,,
+semi-heterr_3831,From the Holocaust to Hogan's Heroes: An Autobiography of Robert Clary,Robert Clary,Taylor Trade Publishing,2008,9781589793453,248,,Productdimensions: 5.85(w) x 8.96(h) x 0.58(d),
+semi-heterr_3834,The Autobiography Of Ben Franklin,Benjamin Franklin,NuVision Publications,2009,9781595475725,152,,Productdimensions: 6.00(w) x 9.00(h) x 0.50(d); Paperbackprice: $12.99; Hardcoverprice: $29.99,
+semi-heterr_3842,Chapters from my Autobiography,Mark Twain,B&amp;R Samizdat Express,2012,2940000737101,,,Paperbackprice: $22.99; Hardcoverprice: $29.99; Nookbookprice: $0.99; Audiobookprice: $29.95,
+semi-heterr_3850,The Unfinished Autobiography,"Alice A. Bailey, Alice Bailey",Lucis Publishing Company,2013,2940016583327,304,,Paperbackprice: $9.99; Nookbookprice: $9.99,305
+semi-heterr_3869,The Fry Chronicles: An Autobiography,Stephen Fry,The Overlook Press,2012,9781468300192,448,,Paperbackprice: $17.95; Hardcoverprice: $22.57; Nookbookprice: $16.99,
+semi-heterr_3879,The Autobiography of an African Princess,Fatima Massaquoi,"Palgrave Us, Print Us",2013,9780230609587,300,,Productdimensions: 5.70(w) x 8.50(h) x 0.90(d); Hardcoverprice: $83.62; Nookbookprice: $95.00,300
+semi-heterr_3881,Diana: A Strange Autobiography / Edition 1,"Justin Holcomb, Julie Abraham",New York University Press,1995,9780814726358,282,,Productdimensions: 6.00(w) x 9.00(h) x 8.50(d),302
+semi-heterr_3884,In Me Own Words: The Autobiography of Bigfoot,Graham Roumieu,"Manic D Press, Inc.",2003,9780916397845,44,,Productdimensions: 6.20(w) x 9.20(h) x 0.30(d),235
+semi-heterr_3887,The Autobiography of G. K. Chesterton,G. K. Chesterton,Ignatius Press,2006,9781586170714,336,,Productdimensions: 5.20(w) x 7.90(h) x 1.10(d),248
+semi-heterr_3889,The Autobiography of Theodore Roosevelt,Theodore Roosevelt,Seven Treasures Publications,2011,2940013239296,,,Paperbackprice: $14.99; Nookbookprice: $0.99,
+semi-heterr_3905,As If: An Autobiography,Herbert Blau,University of Michigan Press,2012,9780472035144,302,,Productdimensions: 5.90(w) x 8.80(h) x 3.10(d),
+semi-heterr_3907,An Autobiography of Buffalo Bill (Colonel W. F. Cody),Buffalo Bill,CreateSpace Independent Publishing Platform,2014,9781495225123,128,,Productdimensions: 6.00(w) x 9.00(h) x 0.27(d); Paperbackprice: $7.99; Nookbookprice: $0.99,
+semi-heterr_3908,Imagine No Religion: The Autobiography of Blase Bonpane,"Blase Bonpane, Blase",Red Hen Press,2012,9781597091800,214,,Paperbackprice: $24.95; Nookbookprice: $8.49,249
+semi-heterr_3914,The Burden Is Light: A Spiritual Autobiography,Eugenia Price,Crown/Archetype,2010,9780307515599,188,,Paperbackprice: $13.53; Nookbookprice: $13.99,
+semi-heterr_3918,Being Jordan: My Autobiography,Katie Price,"John Blake Publishing, Limited",2005,9781843582434,288,,Paperbackprice: $13.43; Nookbookprice: $8.49,321
+semi-heterr_3919,Wings Of Fire: An Autobiography,A P J Abdul Kalam,Universities Press (India)PL,2015,9788173717802,,,,
+semi-heterr_3927,The Story of a Soul - The Autobiography of St Therese of Liseaux,St Therese of Liseaux,CreateSpace Publishing,2015,9781507779590,106,,Productdimensions: 6.00(w) x 9.00(h) x 0.22(d),
+semi-heterr_3933,Frank Lloyd Wright: An Autobiography,Frank Lloyd Wright,"Pomegranate Art Books, Incorporated",2005,9780764932434,561,,Productdimensions: 8.12(w) x 9.42(h) x 1.64(d); Paperbackprice: $16.85; Hardcoverprice: $16.85,259
+semi-heterr_3944,The Autobiography of Charles G. Finney: The Life Story of America's Greatest Evangelist--In His Own Words,Charles G. Finney,Baker Publishing Group,2006,9781441205469,240,,Paperbackprice: $15.68; Nookbookprice: $9.99,234
+semi-heterr_3948,An Autobiography (Barnes & Noble Digital Library),Theodore Roosevelt,Barnes &amp; Noble,2011,9781411439252,633,,Paperbackprice: $20.90; Hardcoverprice: $141.60; Nookbookprice: $1.99,
+semi-heterr_3954,Mark Twain's Autobiography,Mark Twain,Baxter St.,2010,2940011938245,,,Paperbackprice: $9.28; Nookbookprice: $0.99,
+semi-heterr_3955,Autobiography of Benjamin Franklin: A Founding Father,Benjamin Franklin,CreateSpace Publishing,2015,9781512149340,132,,Productdimensions: 7.00(w) x 10.00(h) x 0.28(d),
+semi-heterr_3958,And the Walls Came Tumbling Down: An Autobiography,Ralph David Abernathy,"Chicago Review Press, Incorporated",2010,9781569762790,672,,Productdimensions: 6.00(w) x 8.90(h) x 1.40(d); Paperbackprice: $16.28,277
+semi-heterr_3961,Bit of a Blur: The Autobiography,Alex James,"Little, Brown Book Group",2008,9780349119939,288,,Productdimensions: 5.00(w) x 8.00(h) x 0.90(d); Paperbackprice: $14.06,306
+semi-heterr_3966,"Nearer, My God",William F. Buckley Jr.,The Crown Publishing Group,2011,9780307803023,336,,Paperbackprice: $15.17; Nookbookprice: $9.99,
+semi-heterr_3971,The Autobiography of Charles Darwin 1809-1882: With Original Omissions Restored,Charles Darwin,"Norton, W. W. &amp; Company, Inc.",1993,9780393310696,253,,Productdimensions: 5.60(w) x 8.20(h) x 0.70(d); Paperbackprice: $11.07,
+semi-heterr_3977,Autobiography of Mark Twain Volume 2,Mark Twain,CreateSpace Independent Publishing Platform,2012,9781477475539,406,,Productdimensions: 6.00(w) x 9.00(h) x 0.83(d),
+semi-heterr_3983,Dior,Dior: The Autobiography of Christian Dior,V&amp;A Publishing,2007,9781851776719,192,,Paperbackprice: $5.49; Nookbookprice: $5.49,
+semi-heterr_3988,"Tony Visconti: The Autobiography: Bowie, Bolan and the Brooklyn Boy",Tony Visconti,HarperCollins Publishers,2009,9780007343577,400,,Paperbackprice: $7.99; Nookbookprice: $7.99,301
+semi-heterr_3994,Q: The Autobiography of Quincy Jones,Quincy Jones,Crown/Archetype,2002,9780385504744,416,,Paperbackprice: $13.99; Nookbookprice: $13.99,
+semi-heterr_4003,The Curious Autobiography of Elaine Jakes,H.R. Jakes,Archway Publishing,2015,9781480814752,268,,Paperbackprice: $17.99; Hardcoverprice: $35.95; Nookbookprice: $6.49,264
+semi-heterr_4011,Classic American Autobiographies,William L. Andrews,Penguin Publishing Group,2014,9780451471444,496,,Productdimensions: 4.12(w) x 6.75(h) x 1.25(d); Paperbackprice: $8.95; Nookbookprice: $7.99,
+semi-heterr_4020,Play of Consciousness: A Spiritual Autobiography,Gurumayi Chidvilasananda,S Y D A Foundation,2000,9780911307818,368,,Productdimensions: 5.40(w) x 8.30(h) x 0.90(d); Paperbackprice: $21.71,241
+semi-heterr_4022,Here and Now!: The Autobiography of Pat Martino,Pat Martino,Hal Leonard Corporation,2011,9781617130274,224,,Productdimensions: 6.10(w) x 9.10(h) x 0.80(d); Hardcoverprice: $17.54; Nookbookprice: $13.99,236
+semi-heterr_4026,"Bill Bruford: The Autobiography. Yes, King Crimson, Earthworks and More.",Bill Bruford,Foruli Limited,2013,9781905792436,320,,Productdimensions: 6.10(w) x 9.10(h) x 0.50(d),
+semi-heterr_4031,Tesla's Autobiography,Nikola Tesla,CreateSpace Publishing,2012,9781470101312,122,,Productdimensions: 6.00(w) x 9.00(h) x 0.26(d),
+semi-heterr_4033,The Story of a Soul: The Autobiography of St. Therese of Lisieux (Illustrated),St Therese Of Lisieux,CreateSpace Publishing,2014,9781499324037,242,,Productdimensions: 8.50(w) x 11.00(h) x 0.51(d),
+semi-heterr_4035,Autobiography of Madame Guyon (Authentic Original Classic),Jeanne-Marie de la Motte-Guyon,"Destiny Image, Inc.",2011,9780768498103,450,,Paperbackprice: $15.99; Nookbookprice: $1.99,
+semi-heterr_4045,The Mark Twain Autobiography + 3 Biographies: 4 Mark Twain Biographies In 1 Book: Chapters From My Autobiography By Mark Twain + My Mark Twain By William Dean Howells' + Mark Twain A Biography By Albert Bigelow Paine + The Boys' Life Of Mark Twain By Albe,"Mark Twain, William Dean Howells, Albert Bigelow Paine",e-artnow Editions,2014,9788026804642,840,,,
+semi-heterr_4047,World War II: The Autobiography,Jon E. Lewis,"Little, Brown Book Group",2009,9781849012638,300,,Paperbackprice: $10.78; Nookbookprice: $6.99,
+semi-heterr_4052,The Autobiography of St. Ignatius Loyola / Edition 1,"John C. Olin, Joseph (Trans. ) O'Callaghan, John (Ed.) Olin",Fordham University Press,1993,9780823214808,113,,Productdimensions: 8.30(w) x 5.40(h) x 0.40(d); Paperbackprice: $19.07,
+semi-heterr_4072,An Autobiography of John Muir,Stephen Brennan,Skyhorse Publishing,2014,9781629141367,288,,Hardcoverprice: $21.32; Nookbookprice: $13.99,
+semi-heterr_4079,"The Benjamin Franklin Anthology: The Autobiography, The Memoirs, The Silence Dogood Letters and Over 80 Other Works",Benjamin Franklin,Bybliotech,2014,2940148136941,,,,
+semi-heterr_4082,"Exploring The Dangerous Trades - The Autobiography Of Alice Hamilton, M.D.",Alice Hamilton,Miller Press,2008,9781443721219,472,,Productdimensions: 5.50(w) x 8.50(h) x 1.19(d); Paperbackprice: $44.95; Hardcoverprice: $44.95; Nookbookprice: $5.49,
+semi-heterr_4086,Up From Slavery: An Autobiography of Booker T. Washington,Booker T. Washington,Bronson Tweed Publishing,2014,2940148325369,,,,
+semi-heterr_4087,Totally Frank: The Autobiography of Frank Lampard,Frank Lampard,HarperCollins Publishers,2010,9780007382217,480,,Hardcoverprice: $9.99; Nookbookprice: $9.99,
+semi-heterr_4115,"Autobiography of Thomas Jefferson, 1743-1790, Together With a Summary of the Chief Events in Jefferson's Life (Classic Reprint)",Thomas Jefferson,FB &amp;c Ltd,2015,9781440086007,224,,Productdimensions: 6.00(w) x 9.00(h) x 0.47(d); Paperbackprice: $18.20; Nookbookprice: $0.00,
+semi-heterr_4136,Franklin's Autobiography [Illustrated],Benjamin Franklin,"Five Star Publishing, LLC",2011,2940012753205,144,,Paperbackprice: $15.95; Hardcoverprice: $25.95; Nookbookprice: $0.99,
+semi-heterr_4145,Autobiography of Ma-Ka-Tai-Me-She-Kia-Kiak or Black Hawk (1882),Black Hawk,B&amp;R Samizdat Express,2009,2940000785560,,,Paperbackprice: $8.95; Nookbookprice: $0.99,
+semi-heterr_4150,Outside the Magic Circle: The Autobiography of Virginia Foster Durr,Virginia Foster Durr,University of Alabama Press,2013,9780817387105,384,,Hardcoverprice: $19.99; Nookbookprice: $19.99,
+semi-heterr_4152,London: the Autobiography,Jon E. Lewis,"Little, Brown Book Group",2012,9781780337500,480,,Paperbackprice: $15.95; Nookbookprice: $6.99,
+semi-heterr_4161,The Life Of Shabkar: Autobiography Of A Tibetan Yogin / Edition 1,Matthieu Ricard,"Shambhala Publications, Inc.",2001,9781559391542,712,,Productdimensions: 7.02(w) x 9.83(h) x 1.81(d); Paperbackprice: $35.71; Nookbookprice: $28.49,
+semi-heterr_4164,Evolutionary Writings: Including the Autobiographies,Charles Darwin,Oxford University Press,2010,9780199580149,544,,Productdimensions: 5.10(w) x 7.60(h) x 1.10(d); Paperbackprice: $10.42; Hardcoverprice: $19.96; Nookbookprice: $7.99,
+semi-heterr_4166,The Complete Autobiographies of Frederick Douglass,Frederick Douglass,Start Publishing LLC,2013,9781627931687,755,,Hardcoverprice: $29.99; Nookbookprice: $1.99,
+semi-heterr_4196,"Bill W., My First 40 Years: An Autobiography",the Co-founder of AA,Hazelden Publishing,2010,9781616490010,232,,Paperbackprice: $13.53; Nookbookprice: $10.49,
+semi-heterr_4197,My Quests for Hope and Meaning: An Autobiography,Rosemary Radford Ruether,Wipf &amp; Stock Publishers,2013,9781620327128,195,,Productdimensions: 6.00(w) x 8.90(h) x 0.50(d); Paperbackprice: $23.00; Nookbookprice: $10.49,279
+semi-heterr_4198,The Autobiography of John Stuart Mill (Barnes & Noble Digital Library),John Stuart Mill,Barnes &amp; Noble,2011,9781411458253,276,,Paperbackprice: $8.99; Nookbookprice: $1.99; Audiobookprice: $29.95,
+semi-heterr_4207,That Thing You Do With Your Mouth: The Sexual Autobiography of Samantha Matthews as Told to David Shields,"David Shields, Samantha Matthews",McSweeney's Publishing,2015,9781940450810,160,,Paperbackprice: $11.43; Nookbookprice: $9.99,315
+semi-heterr_4210,Over the Moon: My Autobiography,"David Essex, Various",Ebury Publishing,2012,9780753547632,320,,Paperbackprice: $14.95; Hardcoverprice: $34.95; Nookbookprice: $10.49,310
+semi-heterr_4213,"Interfaces: Women, Autobiography, Image, Performance",Sidonie Ann Smith,University of Michigan Press,2002,9780472068142,496,,Productdimensions: 6.13(w) x 9.25(h) x 1.10(d); Paperbackprice: $30.88,
+semi-heterr_4224,Up from Slavery : An Autobiography (Illustrated),Booker T. Washington,Lulu.com,2012,9781300323471,,,Paperbackprice: $20.96; Hardcoverprice: $26.95; Nookbookprice: $1.99,
+semi-heterr_4235,The Autobiography of W. E. B. Du Bois: A Soliloquy on Viewing My Life from the Last Decade of Its First Century,W. E. B. Du Bois,"International Publishers Company, Incorporated",1968,9780717802340,448,,Paperbackprice: $14.11,
+semi-heterr_4236,Autobiography of a People: Three Centuries of African American History Told,Those Who Lived It,Knopf Doubleday Publishing Group,2000,9780385492799,576,,Productdimensions: 5.24(w) x 8.00(h) x 1.20(d); Paperbackprice: $16.88; Nookbookprice: $17.99,258
+semi-heterr_4249,Summer Wine & Other Stories: My Autobiography,Peter Sallis,"John Blake Publishing, Limited",2014,9781782197454,288,,Productdimensions: 7.60(w) x 5.00(h) x 0.90(d),
+semi-heterr_4254,The Rough Riders and An Autobiography,Theodore Roosevelt,Library of America,2004,9781931082655,864,,Productdimensions: 5.09(w) x 8.10(h) x 1.41(d),
+semi-heterr_4260,Beyond the Light Barrier: The Autobiography of Elizabeth Klarer,Elizabeth Klarer,"Light Technology Publishing, LLC",2009,9781891824777,244,,Productdimensions: 5.90(w) x 8.90(h) x 0.50(d),281
+semi-heterr_4263,"Autobiography of Mark Twain, Vol. 1: The Complete and Authoritative Edition",Mark Twain,"Blackstone Audio, Inc.",2010,9781441778437,20,,Productdimensions: 7.82(w) x 11.80(h) x 1.95(d); Audiobookprice: $39.95,
+semi-heterr_4279,The Autobiography Of Black Hawk,Black Hawk,Cosimo,2007,9781602067615,160,,Productdimensions: 6.00(w) x 9.00(h) x 0.37(d),
+semi-heterr_4281,Up From Slavery: The Autobiography of Booker T. Washington,Booker T. Washington,CreateSpace Independent Publishing Platform,2013,9781494802127,184,,Productdimensions: 5.50(w) x 8.50(h) x 0.39(d); Paperbackprice: $8.95,
+semi-heterr_4282,General George Crook: His Autobiography,"George Crook, Martin F. Schmitt",University of Oklahoma Press,1986,9780806119823,370,,Productdimensions: 5.50(w) x 8.50(h) x 0.82(d),242
+semi-heterr_4309,Douglass: Autobiographies,Frederick Douglass,Library of America,1994,9780940450790,1100,,Productdimensions: 5.13(w) x 8.16(h) x 1.50(d); Hardcoverprice: $31.81,
+semi-heterr_4313,Beggars of Life: A Hobo Autobiography,Jim Tully,AK Press,2003,9781902593784,256,,Productdimensions: 6.00(w) x 9.00(h) x 0.50(d),
+semi-heterr_4320,Factory Lives: Four Nineteenth-Century Working-Class Autobiographies (1828-1850) / Edition 1,"James R. Simmons, Jr",Broadview Press,2007,9781551112725,498,,Productdimensions: 5.50(w) x 8.50(h) x 0.75(d),
+semi-heterr_4328,Don't Hassel the Hoff: The Autobiography,"David Hasselhoff, Peter Thompson",St. Martin's Press,2007,9781429901062,304,,,304
+semi-heterr_4334,Geological Observations on Volcanic Islands (Illustrated and Bundled with The Autobiography of Charles Darwin),Charles Darwin,AS Team,2014,2940150490260,,,Paperbackprice: $15.99; Nookbookprice: $1.09,
+semi-heterr_4362,The Autobiography of Maria Callas,"Alma H. Bond, Frank Eckmair",Birch Brook Press,1998,9780913559499,219,,Productdimensions: 6.35(w) x 9.39(h) x 1.02(d); Paperbackprice: $16.47; Hardcoverprice: $26.27,254
+semi-heterr_4377,The Life of St. Teresa of Jesus: Autobiography,Teresa of Jesus,limovia.net,2014,9781783360826,,,,251
+semi-heterr_4390,Things I Couldn't Tell My Mother: My Autobiography,Sue Johnston,Ebury Publishing,2011,9781409034698,352,,Paperbackprice: $13.50; Nookbookprice: $10.49,292
+semi-heterr_4397,The Kindness of Strangers: The Autobiography,Kate Adie,"Headline Book Publishing, Limited",2003,9780755310739,448,,Productdimensions: 5.00(w) x 7.70(h) x 1.20(d); Paperbackprice: $13.58,252
+semi-heterr_4409,This Is Me: The Autobiography,Ian Thorpe,Simon &amp; Schuster Australia,2012,9780731815739,336,,Hardcoverprice: $27.38; Nookbookprice: $10.99,262
+semi-heterr_4410,With Head And Heart,Howard Thurman,Houghton Mifflin Harcourt,1981,9780156976480,298,,Productdimensions: 5.20(w) x 7.90(h) x 0.80(d); Paperbackprice: $16.37; Nookbookprice: $9.99,295
+semi-heterr_4418,Johann Wolfgang Von Goethe Classics: Autobiography Truth and Fiction Relating to My Life,Johann Wolfgang Von Goethe,Lulu.com,2012,9781105749797,,,,
+semi-heterr_4431,The Autobiography of Frau Adolf Hitler,Frank Sanello,CreateSpace Publishing,2012,9781477581728,252,,Productdimensions: 6.00(w) x 9.00(h) x 0.53(d),283
+semi-heterr_4438,Autobiography Of Mark Twain - Abridged Edition,Mark Twain,KRE,2010,9781608429943,600,,Productdimensions: 6.00(w) x 9.00(h) x 1.33(d),
+semi-heterr_4442,"Works of Anthony Trollope: (50+ works). Includes The Way We Live Now, Barchester Towers, The Warden, The Small House at Allington, Palliser Novels, Chronicles of Barsetshire, An Eye for an Eye and MORE",Anthony Trollope,MobileReference,2010,9781607785293,,,Nookbookprice: $5.49,
+semi-heterr_4446,"Autobiography of Mark Twain, Vol. 3","Mark Twain, Grover Gardner","Blackstone Audio, Inc.",2015,9781504637169,,,Productdimensions: 5.70(w) x 6.60(h) x 2.00(d); Audiobookprice: $44.95,
+semi-heterr_4466,The The Compleated Autobiography,Benjamin Franklin: 1757-1790,Regnery Publishing,2007,9781596985759,480,,Paperbackprice: $13.48; Nookbookprice: $11.99,
+semi-heterr_4477,"Autobiography of Mark Twain, the authentic original version",Mark Twain,Unforgotten Classics,2013,2940016310794,,,Nookbookprice: $0.99,
+semi-heterr_4487,White Tiger: An Autobiography of Yang Xianyi,Yang Xianyi,"Chinese University Press, The",2003,9789629960704,328,,Productdimensions: 5.80(w) x 8.40(h) x 1.00(d); Paperbackprice: $28.00; Hardcoverprice: $28.00,245
+semi-heterr_4493,"Works of Thomas Jefferson, Including His Presidential Papers, Correspondence, and Autobiography",Thomas Jefferson,B&amp;R Samizdat Express,2011,9781455415588,,,,
+semi-heterr_4504,The Booker T. Washington Reader: Up From Slavery: An Autobiography; My Larger Education; Character Building; The Negro Problem,Booker T. Washington,"Wilder Publications, Inc.",2015,9781633846586,420,,,
+semi-heterr_4513,A Life Worth Living: Michael Smurfit's Autobiography,Michael Smurfit,Oak Tree Press,2014,9781781190135,328,,Paperbackprice: $17.98; Hardcoverprice: $27.32; Nookbookprice: $9.99,247
+semi-heterr_4517,Autobiography,Bertrand Russell,"Taylor &amp; Francis, Inc.",2009,9780203864999,768,,,
+semi-heterr_4523,Seven and Nine years Among the Camanches and Apaches An Autobiography,Edwin Eastman,MVB E-Books,2010,9783655257951,,,Paperbackprice: $23.99; Nookbookprice: $2.99,
+semi-heterr_4528,Experiencing the Depth of Jesus Christ: The Autobiography,Jeanne Marie Bouvier de la Motte Guyon l Summary & Study Guide,BookRags.com,2011,2940013005020,,,,
+semi-heterr_4531,THE WOODCHOPPER: An African Cultural Autobiography,WILLIAM C. ONYEBEKE,Xlibris US,2010,9781465319388,195,,Paperbackprice: $18.23; Nookbookprice: $8.49,
+semi-heterr_4537,Journey Out of Silence: Second Edition: An Autobiography,William L. Rush,Lulu.com,2011,9781257192694,,,,
+semi-heterr_4553,Mark Twain's Burlesque Autobiography,Mark Twain,MobileReference,2010,9781607788249,,,Paperbackprice: $7.00; Nookbookprice: $0.95,
+semi-heterr_4559,"A Burlesque Autobiography and, First Romance",Mark Twain,WHITE DOG PUBLISHING,2010,2940011919084,,,Paperbackprice: $6.99; Nookbookprice: $0.99,
+semi-heterr_4560,A Scientific Autobiography,"Aldo Rossi, Lawrence Venuti",MIT Press,2010,9780262514385,128,,Productdimensions: 8.40(w) x 9.70(h) x 0.30(d); Paperbackprice: $19.34,297
+semi-heterr_4567,Dior,Dior Deluxe Edition: The Autobiography of Christian Dior,V &amp; A Publishing,2015,9781851778690,208,,Productdimensions: 5.40(w) x 8.10(h) x 0.90(d),
+semi-heterr_4593,Riccardo Muti,Riccardo Muti,Rizzoli,2011,9780847837458,,,Hardcoverprice: $23.24; Nookbookprice: $16.49,
+semi-heterr_4597,God's Grace for Graham: An Autobiography,Graham Jones as Told to Mary Alice Baker Ferguson,"Nelson, Thomas, Inc.",2014,9781490850412,108,,Productdimensions: 5.50(w) x 8.50(h) x 0.26(d); Paperbackprice: $11.16; Hardcoverprice: $28.95; Nookbookprice: $3.99,
+semi-heterr_4652,"Little Masterpieces ; Selections From Autobiography, Poor Richard's Almanac, Advice to a Young Tradesman, the Whistle, Necessary Hints to Those That Would Be Rich, Motion for Prayers, Selected Letters",Benjamin Franklin,HardPress Publishing,2012,9781290477079,208,,Productdimensions: 6.00(w) x 9.00(h) x 0.44(d); Paperbackprice: $11.95; Hardcoverprice: $24.95; Nookbookprice: $0.00,
+semi-heterr_4655,Spitfire: The Autobiography: The Plane and the Men That Saved Britain in 1940 in Their Own Words (Large Print 16pt),Jon E. Lewis,ReadHowYouWant.com Pty Limited,2012,9781459642973,454,,Productdimensions: 7.00(w) x 10.00(h) x 0.92(d),
+semi-heterr_4680,Theodore Roosevelt; an Autobiography,Theodore Roosevelt,CreateSpace Publishing,2015,9781502958662,536,,Productdimensions: 6.00(w) x 9.00(h) x 1.08(d); Paperbackprice: $22.99; Nookbookprice: $2.99,294
+semi-heterr_4684,"The Autobiography of Thomas Jefferson, 1743-1790",Thomas Jefferson,"University of Pennsylvania Press, Inc.",2004,9780812219012,200,,Productdimensions: 0.47(w) x 5.50(h) x 8.50(d); Paperbackprice: $14.70; Nookbookprice: $12.99,
+semi-heterr_4694,The autobiography of Margot Asquith,Margot Asquith Oxford and Asquith,London : Butterworth,,2940019401550,,,,
+semi-heterr_4717,Confessions of an Actor : The Autobiography,Laurence Olivier,Gardners Books,1994,9781857974935,,,,
+semi-heterr_4718,"Autobiography of Thomas Guthrie, D.D. And Memoir / [edited]",David K. Guthrie and Charles J. Guthrie [microform],Toronto : Belford,,2940028998348,,,,
+semi-heterr_4738,Autobiography of love,Warren Holden,[Philadelphia] : Press of J.B. Lippincott Company,,2940017677230,,,Paperbackprice: $7.95; Nookbookprice: $0.00,
+semi-heterr_4740,Autobiographies: Charles Darwin and Thomas Henry Huxley,"Charles Darwin, Thomas Henry Huxley","Oxford University Press, USA",1984,9780192851314,149,,Productdimensions: 5.06(w) x 7.69(h) x 0.44(d),
+semi-heterr_4773,Men of mark in Massachusetts. Ideals of American life told in biographies and autobiographies of eminent living americans,John Howard Brown,"Boston, Mass., Johnson-Wynne co.",,2940020559660,,,,
+semi-heterr_4778,The Autobiography of Elder Joseph Bates,Joseph Bates,"TEACH Services, Inc.",2014,9781479602872,174,,Productdimensions: 7.44(w) x 9.69(h) x 0.37(d); Paperbackprice: $17.95; Nookbookprice: $6.99,
+semi-heterr_4794,To the Fairway Born: The Autobiography,Sandy Lyle,"Headline Book Publishing, Limited",2007,9780755314720,320,,Productdimensions: 5.00(w) x 7.50(h) x 0.89(d),275
+semi-heterr_4804,Apology to Apostrophe: Autobiography and the Rhetoric of Self-Representation in Spain,James D. Fernandez,Duke University Press Books,1992,9780822312543,182,,Productdimensions: 6.16(w) x 9.16(h) x 0.74(d),
+semi-heterr_4844,As If: An Autobiography,Herbert Blau,University of Michigan Press,2011,9780472117789,302,,Productdimensions: 6.30(w) x 9.10(h) x 1.20(d); Hardcoverprice: $51.06; Nookbookprice: $16.99,256
+semi-heterr_4882,Autobiography of George Dewey: Admiral of the Navy (Classic Reprint),George Dewey,FB &amp;c Ltd,2015,9781330247976,410,,Productdimensions: 6.00(w) x 9.00(h) x 0.84(d); Paperbackprice: $22.48; Hardcoverprice: $27.57; Nookbookprice: $0.00,
+semi-heterr_4897,"Edward Wortley Montagu, Vol. 1 of 3: An Autobiography (Classic Reprint)",Unknown Author,FB &amp;c Ltd,2015,9781330303962,366,,Productdimensions: 6.00(w) x 9.00(h) x 0.76(d),
+semi-heterr_4898,The Autobiography of a Super-Tramp - With a preface,Bernard Shaw (The life of William Henry Davies),e-artnow ebooks,2013,9788074849374,336,,,
+semi-heterr_4900,"C. H. Spurgeon Autobiography, Vol. 2: The Full Harvest, 1860-1892",C. H. Spurgeon,"Blackstone Audio, Inc.",2013,9781433267093,,,Productdimensions: 5.70(w) x 5.30(h) x 1.90(d),
+semi-heterr_4911,Ready Reference Treatise: The Autobiography of an Ex-Colored Man,Raja Sharma,Raja Sharma,2013,2940045205054,,,,
+semi-heterr_4933,Ditka: An Autobiography,"Mike Ditka, Don Pierson","Bonus Books, Inc.",1986,9780933893382,271,,Productdimensions: 6.05(w) x 9.00(h) x 0.89(d),299
+semi-heterr_4945,The Adventure of Living : a Subjective Autobiography,John St. Loe Strachey,Lost Leaf Publications,2014,2940148195481,,,,
+semi-heterr_4951,"Autobiography of an Actress; Or, Eight Years on the Stage",Anna Cora Ogden Mowatt Ritchie,"Ticknor, Reed, and Fields",,2940026619948,,,Nookbookprice: $0.00,
+semi-heterr_4955,Magician: Together with a Fragment of Autobiography,W. Somerset Maugham,Penguin Group (USA) Incorporated,1978,9780140026689,208,,Productdimensions: 7.00(w) x 5.00(h) x 1.00(d),
+semi-heterr_4978,Is Shakespeare Dead? From my autobiography.,Mark Twain,pubOne.info,2010,9782819913436,,,Paperbackprice: $6.99; Nookbookprice: $0.99,
+semi-heterr_5008,The autobiography of Benjamin Franklin and a sketch of Franklin's life from the point where the autobiography ends,Benjamin Franklin,"Boston, New York [etc.] Houghton, Mifflin and company",,2940017704479,,,Nookbookprice: $0.00,
+semi-heterr_5034,"Benjamin Franklin: Writings (The Autobiography, Poor Richard's Almanack, Bagatelles, Pamphlets, Essays, & Letters) (Library of America)",Benjamin Franklin,Library of America,1987,9780940450295,1632,,Productdimensions: 5.10(w) x 8.10(h) x 1.85(d),
+semi-heterr_5054,Life on a Plate: The Autobiography,Greg Wallace,"Orion Publishing Group, Limited",2014,9781409139218,320,,Productdimensions: 5.10(w) x 7.70(h) x 0.80(d); Paperbackprice: $14.95; Nookbookprice: $5.99,287
+semi-heterr_5056,The autobiography & deliverance of Mark Rutherford [pseud.],William Hale White,"New York, Dodd, Mead",,2940019240104,,,,
+semi-heterr_5060,Autobiography of Benjamin Franklin; with an introduction and notes,Benjamin Franklin,"New York, London, Macmillan Co",,2940017678008,,,,
+semi-heterr_5062,Benjamin Franklin: His Autobiography: With a Narrative of His Public Life ...,Horatio Hastings Weld Benjamin Franklin,Harper &amp; Brothers Publishers,,2940017483688,,,,
+semi-heterr_5076,Autobiography of a Chinese Girl,Ping-Ying Hsieh,Rivers Oram Press/Pandora Press,1986,9780863580529,224,,,246
+semi-heterr_5077,Autobiography of Anthony Trollope - Scholar's Choice Edition,Anthony Trollope,Scholar's Choice,2015,9781297052828,272,,Productdimensions: 7.44(w) x 9.69(h) x 0.57(d); Paperbackprice: $27.75,
+semi-heterr_5079,I Refuse to Learn to Fail : The Autobiography of Dempsey J. Travis,Dempsey J. Travis,"Urban Research Press, Incorporated",1991,9780941484121,75,,,
+semi-heterr_5100,"Autobiography of Mark Twain, Volume 1: The Complete and Authoritative Edition [With Earbuds]","Mark Twain, Grover Gardner",Findaway World,2011,9781441778475,,,Productdimensions: 5.40(w) x 7.90(h) x 1.00(d),
+semi-heterr_5104,"The Autobiography Of Charles H. Spurgeon, Compiled From Hios Dairy, Letters, And Records - Volume Ii 1854-186",Charles H. Spurgeon,Read Books Design,2010,9781445507941,384,,Productdimensions: 5.50(w) x 8.50(h) x 0.85(d),
+semi-heterr_5127,Afrika My Music: An Autobiography 1957-1983,Ezekiel Mphahlele,Ohio University Press,1995,2900869754848,260,,Paperbackprice: $9.61,
+semi-heterr_5146,"Autobiography of Benjamin Franklin : edited from his manuscript, with notes and an introduction",Benjamin Franklin,Philadelphia : J.B. Lippincott ; London : Tr�bner &amp; Co,,2940017484579,,,,
+semi-heterr_5168,"Writings. Library ed., containing his autobiography, notes on Virginia, parliamentary manual, official papers, messages and addresses, and other writings, official and private, now collected and published in their entirety for the first time, including al",Thomas Jefferson,"Washington, D.C. Issued under the auspices of the Thomas Jefferson Memorial Association",,2940030532790,,,Nookbookprice: $0.00,
+semi-heterr_5171,"Political Education of Arnold Brecht: An Autobiography, 1884-1970",Arnold Brecht,Princeton University Press,2015,9780691621050,564,,Productdimensions: 9.20(w) x 6.00(h) x 1.30(d); Paperbackprice: $70.50,280
+semi-heterr_5172,An Autobiography: Volume 1 and 2,Herbert Spencer (Illustrated),AS Team,2014,2940150659667,,,,
+semi-heterr_5186,Hashish: The Autobiography of a Red Sea Smuggler,Henri de Monfreid,Stonehill Publishing Company,1973,9780883730065,287,,,238
+semi-heterr_5191,Not for Your Hands; An Autobiography,David Rees,Lpc Inbook,1992,9781870188197,257,,,269
+semi-heterr_5207,Stand and Deliver: The Autobiography,Adam Ant,Pan Macmillan,2007,9780283070273,,,,237
+semi-heterr_5208,"Jack Westropp, Vol. 2 of 2: An Autobiography (Classic Reprint)",Unknown Author,FB &amp;c Ltd,2015,9781330161746,228,,Productdimensions: 6.00(w) x 9.00(h) x 0.48(d),
+semi-heterr_5212,"The Autobiography of a Beggar Boy: In Which Will Be Found Related the Numerous Trials, Hard Struggles, and Vicissitudes of a Strangely Chequered Life; With Glimpses of Social and Political History Over a Period of Fifty Years (Classic Reprint)",Unknown Author,FB &amp;c Ltd,2015,9781330949276,218,,Productdimensions: 6.00(w) x 9.00(h) x 0.46(d),
+semi-heterr_5218,Lion's Mouth: Concluding Chapters of Autobiography,Kathleen Raine,"Braziller, George Inc.",1978,9780807608777,192,,,260
+semi-heterr_5220,Life of Benjamin Franklin: On the Basis of His Autobiography (Classic Reprint),Benjamin Franklin,FB &amp;c Ltd,2015,9781330154151,260,,Productdimensions: 6.00(w) x 9.00(h) x 0.55(d); Paperbackprice: $10.57,
+semi-heterr_5246,An Autobiography Volume 2,Spencer Herbert 1820-1903,HardPress Publishing,2013,9781314499094,628,,Productdimensions: 6.00(w) x 9.00(h) x 1.27(d); Paperbackprice: $19.95,
+semi-heterr_5260,Autobiography of Andrew T. Still: With a History of the Discovery and Development of the Science ...,Andrew Taylor Still,The author,,2940026620111,,,,
+semi-heterr_5280,"Mark Twain's Autobiography, Volume 2",Mark Twain,Kessinger Publishing Company,2003,9780766161375,376,,Productdimensions: 8.25(w) x 11.00(h) x 0.78(d),
+semi-heterr_5291,Come What May: The Autobiography,D�nal �g Cusack,Penguin UK,2009,9780141959788,,,,284
+semi-heterr_5300,Autobiography And Selected Essays,Thomas Henry Huxley,Dodo Press,2008,9781406589436,144,,Productdimensions: 6.00(w) x 9.00(h) x 0.34(d); Paperbackprice: $14.99; Nookbookprice: $0.99,
+semi-heterr_5335,Autobiography ; Poor Richard ; Letters,Benjamin Franklin,New York : D. Appleton and Company,,2940017335871,,,,
+semi-heterr_5388,Life's A Scream,Ingrid Pitt,Random House Adult Trade Publishing Group,2011,9781446441503,304,,Hardcoverprice: $16.49; Nookbookprice: $16.49,
+semi-heterr_5402,Up From Slavery: The Autobiography Of Booker T. Washington: Aun Autobiography,Booker T. Washington,Kensington,2001,9780806521831,330,,Productdimensions: 5.58(w) x 8.20(h) x 1.09(d),
+semi-heterr_5407,"Margot Asquith, An Autobiography - Two Volumes In One",Margot Asquith,HardPress Publishing,2010,9781407625164,268,,Productdimensions: 6.00(w) x 9.00(h) x 0.56(d); Paperbackprice: $15.95; Nookbookprice: $2.99,
+semi-heterr_5424,From Slavery to Salvation: The Autobiography of Rev. Thomas W. Henry of the A. M. E. Church,Thomas W. Henry,University Press of Mississippi,1994,9780878056903,128,,Productdimensions: 5.92(w) x 8.80(h) x 0.77(d),
+semi-heterr_5429,Franklin's autobiography - Scholar's Choice Edition,"Benjamin Franklin, Frank Woodworth Pine",Scholar's Choice,2015,9781294997160,272,,Productdimensions: 7.44(w) x 9.69(h) x 0.57(d); Paperbackprice: $27.75,
+semi-heterr_5444,Write Your Own Autobiography,Natalie M. Rosinsky,Capstone Press,2008,9780756535254,24,,Productdimensions: 6.10(w) x 9.10(h) x 0.40(d); Paperbackprice: $33.99; Hardcoverprice: $33.99,288
+semi-heterr_5448,Black Bolshevik: Autobiography of an Afro-American Communist,Harry Haywood,University of Minnesota Press,1978,9780930720537,736,,,313
+semi-heterr_5453,"Sir Henry Bessemer, F. R. S. An autobiography",Henry Bessemer,"London, Offices of _Engineering,_",,2940020578142,,,Paperbackprice: $16.95; Nookbookprice: $0.00,
+semi-heterr_5468,The Autobiography of Benjamin Franklin,Franklin Benjamin 1706-1790,HardPress Publishing,2013,9781313898133,270,,Productdimensions: 6.00(w) x 9.00(h) x 0.57(d); Paperbackprice: $11.95,
+semi-heterr_5474,Autobiography of Will Rogers,Will Rogers,HarperCollins Publishers,1980,9780380002139,,,,
+semi-heterr_5479,The Autobiography of Anne Lady Halkett,John Gough Nichols Anne Halkett,Printed for the Camden Society,,2940017595343,,,Nookbookprice: $0.00,
+semi-heterr_5496,"The Autobiography of an Electron, Wherein the Scientific Ideas of the Present Time Are Explained in an Interesting and Novel Fashion (Classic Reprint)",Charles R. Gibson,FB &amp;c Ltd,2015,9781331029328,220,,Productdimensions: 6.00(w) x 9.00(h) x 0.46(d); Paperbackprice: $19.57,
+semi-heterr_5504,"Autobiography of the late Donald Fraser, D.D. [microform] : and a selection from his sermons",Donald Fraser,London : James Nisbet &amp; Co.,,2940027418854,,,,
+semi-heterr_5517,Harriet Martineau's Autobiography,Maria Weston Chapman Harriet Martineau,Smith Elder,,2940019732739,,,Nookbookprice: $0.00,
+semi-heterr_5519,"To Tell A Free Story: The First Century Of Afro-American Autobiography, 1760-1865",William L. Andrews,University of Illinois Press,1986,9780252012228,368,,Productdimensions: 6.00(w) x 9.00(h) x (d),
+semi-heterr_5539,History of Psychology in Autobiography,Gardner Lindzey,"Freeman, W. H. &amp; Company",1980,9780716711193,472,,Productdimensions: 5.91(w) x 9.06(h) x (d),
+semi-heterr_5540,The Sport of Queens: The Autobiography of Dick Francis,Dick Francis,McClelland &amp; Stewart Ltd.,1995,9780330339025,208,,Productdimensions: 4.37(w) x 7.01(h) x (d),
+semi-heterr_5550,"The autobiography of Leigh Hunt, with reminiscences of friends and contemporaries",Leigh Hunt,New York : Harper &amp; Brothers,,2940017734315,,,Nookbookprice: $0.00,
+semi-heterr_5583,Contemplation and Action: The Spiritual Autobiography of a Shi'i Philosopher,Nasir al-Din Tusi,"I. B.Tauris &amp; Company, Limited",1999,9781860645235,128,,Productdimensions: 5.46(w) x 8.56(h) x 0.42(d),272
+semi-heterr_5595,All the Days of My Life : An Autobiography (Illustrated),Amelia E. Barr,"Five Star Publishing, LLC",2014,2940148260394,,,Nookbookprice: $0.99,
+semi-heterr_5645,The Autobiography of an Ex-Coloured Man,James Weldon Johnson l Summary & Study Guide,BookRags.com,2015,2940150040571,,,,
+semi-heterr_5663,Autobiography,John Cowper Powys,Faber and Faber,2013,9780571309467,662,,Paperbackprice: $35.20; Nookbookprice: $12.49,
+semi-heterr_5669,The Autobiography of Benjamin Franklin: The Journal of John Woolman. Fruits ...,John Woolman Benjamin Franklin,P.F. Collier,,2940027397265,,,,
+semi-heterr_5683,"Autobiography of Dr. D. B. Kellogg: Or, Explanation of Clairvoyance ...",Daniel B. Kellogg,Chase,,2940023961163,,,,
+semi-heterr_5708,The Autobiography of SATAN (Authorized Edition),William A. Glasser,CreateSpace Publishing,2015,9781515097112,156,,Productdimensions: 5.50(w) x 8.50(h) x 0.36(d),
+semi-heterr_5733,"The Autobiography of Leigh Hunt, Vol. 1 of 3: With Reminiscences of Friends and Contemporaries (Classic Reprint)",Unknown Author,FB &amp;c Ltd,2015,9781330106952,318,,Productdimensions: 6.00(w) x 9.00(h) x 0.67(d),
+semi-heterr_5753,Home Ground: Southern Autobiography,J. Bill Berry,University of Missouri Press,1992,9780826208132,216,,Productdimensions: 6.24(w) x 9.31(h) x 0.91(d),
+semi-heterr_5777,Postcolonial Theory and Autobiography,David Huddart,Taylor &amp; Francis,2007,9780415759014,208,,Productdimensions: 6.00(w) x 8.90(h) x 0.50(d),
+semi-heterr_5781,Seven And Nine Years Among The Camanches And Apaches: An Autobiography,"Edwin Eastman, Clark Johnson",Andesite Press,2015,9781296853433,336,,Productdimensions: 6.14(w) x 9.21(h) x 0.75(d); Paperbackprice: $18.99; Hardcoverprice: $26.95; Nookbookprice: $0.00,
+semi-heterr_5784,The Autobiography and Essays - Scholar's Choice Edition,Benjamin Franklin,Scholar's Choice,2015,9781297173585,248,,Productdimensions: 7.44(w) x 9.69(h) x 0.52(d),
+semi-heterr_5791,"Anthony Trollope: a classic collection of his novels (American Senator, Autobiography of Anthony Trollope, Ayala's Angel, Barchester Towers, Belton Estate, Bertrams, Can You Forgive Her? and more)",Anthony Trollope,Milsap Publishers,2011,2940012207586,,,,
+semi-heterr_5810,Autobiography of Benjamin Franklin: With Introduction and Notes,Benjamin Franklin,The Macmillan co.,,2940026646524,,,,
+semi-heterr_5811,Up from Slavery: An Autobiography - Scholar's Choice Edition,Booker T. Washington,Scholar's Choice,2015,9781295966271,348,,Productdimensions: 7.44(w) x 9.69(h) x 0.72(d); Paperbackprice: $32.75,
+semi-heterr_5825,The Autobiography of Benjamin Franklin: Now First Printed in England from ...,William MacDonald Benjamin Franklin,E. P. Dutton,,2940017623817,,,,
+semi-heterr_5826,"The Life and Letters of Thomas Jefferson: Being His Autobiography and Select Correspondence, from Original Manuscripts",Thomas Jefferson,"New York : Edwards, Pratt &amp; Foster",,2940021467605,,,,
+semi-heterr_5856,Autobiographies: Poems,Alfred Dewitt Corn,Penguin Publishing Group,1993,9780140586909,128,,Productdimensions: 7.00(w) x 5.00(h) x 1.00(d),
+semi-heterr_5884,An Autobiography Volume 1,Spencer Herbert 1820-1903,HardPress Publishing,2013,9781314499100,606,,Productdimensions: 6.00(w) x 9.00(h) x 1.22(d),
+semi-heterr_5885,Jawaharlal Nehru: An Autobiography,Jawaharlal Nehru,"Oxford University Press, USA",1981,9780195612202,684,,Productdimensions: 5.81(w) x 8.75(h) x 1.65(d),
+semi-heterr_5900,Noel Coward:Autobiography,No�l Coward,Bloomsbury USA,2003,9780413733801,528,,Productdimensions: 5.12(w) x 7.82(h) x 1.42(d),
+semi-heterr_5903,Explorations in Glass: An Autobiography / Edition 1,"S. Donald Stookey, George H. Beall",Wiley,2000,9781574981247,74,,Productdimensions: 6.02(w) x 8.98(h) x 0.33(d),
+semi-heterr_5907,The Autobiography of Charles Darwin (Annotated): From The Life and Letters of Charles Darwin,Charles Darwin,CreateSpace Publishing,2014,9781500174736,104,,Productdimensions: 6.00(w) x 9.00(h) x 0.22(d); Paperbackprice: $6.50,
+semi-heterr_5915,Mrs. Amanda Smith: An Autobiography,Amanda Smith,ASmith Books,2012,2940014750141,,,,
+semi-heterr_5953,An Autobiography Volume 2,Asquith Margot Countess of 1864-1945,HardPress Publishing,2013,9781314130119,322,,Productdimensions: 6.00(w) x 9.00(h) x 0.67(d),
+semi-heterr_5955,Louis Spohr's autobiography : translated from the German,Louis Spohr,"London : Longman, Green, Longman, Roberts, &amp; Green",,2940021452618,,,,
+semi-heterr_5983,Beyond the Blue Mountain: An Autobiography,George Woodcock,Fitzhenry &amp; Whiteside Ltd.,2010,9781550051841,304,,Productdimensions: 6.00(w) x 8.90(h) x 1.00(d),
+semi-heterr_6014,"A Country Curate's Autobiography, or Passages of a Life Without a Living, Vol. 2 of 2 (Classic Reprint)",Unknown Author,FB &amp;c Ltd,2015,9781330881569,276,,Productdimensions: 6.00(w) x 9.00(h) x 0.58(d),
+semi-heterr_6030,Icebreaker: The Autobiography of Rudy Galindo,Rudy Galindo,Atria Books,1997,9780671003906,255,,Productdimensions: 6.36(w) x 9.52(h) x 0.87(d),316
+semi-heterr_6033,Autobiography of Peter Cartwright : the backwoods preacher,Peter Cartwright,Cincinnati : Hitchcock and Walden,,2940017762288,,,,
+semi-heterr_6049,Betty Boothroyd Autobiography,Betty Boothroyd,Random House UK,2002,9780099427049,434,,Productdimensions: 4.20(w) x 6.80(h) x 1.60(d),232
+semi-heterr_6050,The Select Works of Benjamin Franklin; Including His Autobiography,Franklin Benjamin 1706-1790,HardPress Publishing,2013,9781314378177,528,,Productdimensions: 6.00(w) x 9.00(h) x 1.06(d); Paperbackprice: $29.95,
+semi-heterr_6069,Mark Rutherford's Deliverance: Being the Second Part of His Autobiography,"William Hale White, Mark Rutherford, Reuben Shapcott",Sagwan Press,2015,9781298882561,220,,Productdimensions: 6.14(w) x 9.21(h) x 0.56(d),
+semi-heterr_6072,Little Masterpieces of Autobiography: Actors,George Iles,pubOne.info,2010,9782819934158,,,Paperbackprice: $13.99; Nookbookprice: $1.99,
+semi-heterr_6082,Finding My Way: The Autobiography of an Optimist,Evelyn Stefansson Nef,"Francis Press, The",2002,9780966505153,320,,Productdimensions: 6.10(w) x 9.10(h) x 1.30(d),
+semi-heterr_6117,Autobiography of Andrew Carnegie,Andrew Carnegie,CreateSpace Independent Publishing Platform,2013,9781490572543,174,,Productdimensions: 6.00(w) x 9.00(h) x 0.37(d); Paperbackprice: $8.99; Nookbookprice: $0.00,
+semi-heterr_6127,Wind Spirit: An Autobiography,Michel Tournier,Beacon,1988,9780807070406,292,,,308
+semi-heterr_6136,Worlds Apart: The Autobiography of a Dancer from Brooklyn,Robert Maiorano,"Aperture Press, LLC",2011,9780983687801,174,,Productdimensions: 5.50(w) x 8.50(h) x 0.40(d); Paperbackprice: $14.99,267
+semi-heterr_6148,The youth of Washington : told in the form of an autobiography,S. Weir Mitchell,New York : The Century Co.,,2940024756683,,,Paperbackprice: $11.57; Nookbookprice: $0.00,
+semi-heterr_6170,The autobiography of Benjamin Franklin and a sketch of Franklin's life from the point where the autobiography ends,Benjamin Franklin,"Boston, New York [etc.] Houghton, Mifflin and company",,2940017704479,,,Nookbookprice: $0.00,
+semi-heterr_6206,Street Fighting Years: An Autobiography of the Sixties,Tariq Ali,Verso Books,2005,9781844670291,403,,Productdimensions: 6.06(w) x 7.96(h) x 1.30(d); Paperbackprice: $15.62,296
+semi-heterr_6220,Dear Theo: The Autobiography of Vincent Van Gogh,Irving Stone,Penguin Group (USA) Incorporated,1969,9780451038364,,,Productdimensions: 7.00(w) x 5.00(h) x 1.00(d),293
+semi-heterr_6222,The Autobiography of Alexander Luria A Dialogue With the Making of Mind,"Michael Cole, Alexander R. Luria, Karl Levitin",Taylor &amp; Francis,2005,9780805854992,296,,Productdimensions: 5.90(w) x 8.80(h) x 0.60(d); Paperbackprice: $36.26; Nookbookprice: $31.49,257
+semi-heterr_6223,The Autobiography,Benjamin Franklin,The Pocket Library,,2940026618460,,,Paperbackprice: $0.00; Nookbookprice: $0.00,
+semi-heterr_6260,The Autobiography of Benjamin Franklin - Scholar's Choice Edition,Benjamin Franklin,Scholar's Choice,2015,9781298188465,274,,Productdimensions: 7.44(w) x 9.69(h) x 0.58(d); Paperbackprice: $27.75,
+semi-heterr_6284,"The Autobiography of Leigh Hunt, with Reminiscences of Friends and Contemporaries, and with Thornton Hunt's Introduction and PostScript Volume 2",Leigh Hunt,HardPress Publishing,2013,9781314131222,356,,Productdimensions: 6.00(w) x 9.00(h) x 0.74(d),
+semi-heterr_6337,Philosopher at Large: An Intellectual Autobiography,Mortimer Jerome Adler,"Macmillan Publishing Company, Incorporated",1977,9780025004900,349,,,309
+semi-heterr_6339,The Autobiography of Benjamin Franklin and a Sketch of Franklin's Life from the Point where the ...,Benjamin Franklin,"Houghton, Mifflin and company",,2940026646487,,,Nookbookprice: $0.00,
+semi-heterr_6340,Graeme Swann: The Breaks Are Off - My Autobiography,Graeme Swann,"Hodder &amp; Stoughton, Ltd.",2011,9781444727395,432,,Paperbackprice: $14.10; Nookbookprice: $6.99,244
+semi-heterr_6370,Living of Charlotte Perkins Gilman: An Autobiography,"Charlotte Perkins Gilman, Zona Gale",University of Wisconsin Press,1991,2900299127441,394,,Paperbackprice: $17.20,303
+semi-heterr_6376,"Campaign echoes [microform] : the autobiography of Mrs. Letitia Youmans, the pioneer of the white ribbon movement in Canada : written",request of the Provincial Woman's Christian Temperance Union of Ontario,Toronto : W. Briggs; Montreal : C.W. Coates,,2940028765971,,,,
+semi-heterr_6388,"Clean Politics, Clean Streams: A Legislative Autobiography and Reflections",Franklin L. Kury,Lehigh University Press,2011,9781611460742,286,,Paperbackprice: $20.99; Nookbookprice: $20.99,289
+semi-heterr_6397,Mark Twain's Burlesque Autobiography: First Romance - Scholar's Choice Edition,Twain Mark,Scholar's Choice,2015,9781297300837,52,,Productdimensions: 7.44(w) x 9.69(h) x 0.11(d),
+semi-heterr_6445,"Yo, Claudio / I, Claudius : A partir de la autobiografia de Claudio. Emperador de los romanos nacido en el ano 10 a. de C. y asesinado y deificado el 54 d. de C. / From the Autobiography of Tiberius Claudius, Born 10 B.C., Murdered and Deified A.D. 54",Robert Graves,Grupo Anaya Comercial,2010,9788420650470,,,,
+semi-heterr_6477,"The autobiography of Benjamin Franklin, now first printed in England from the full and authentic text",Benjamin Franklin,"London, J. M. Dent; New York, E. P. Dutton",,2940017454565,,,,
+semi-heterr_6486,"Still Untitled, (Not Quite) Autobiography",Ron Moody,JR,2010,9781907532115,,,,268
+semi-heterr_6489,Antonin Raymond: An Autobiography,Antonin Raymond,Tuttle Publishing,1972,9780804810449,328,,,285
+semi-heterr_6502,"Autobiography of William H. Seward, from 1801 to 1834. With a memoir of his life, and selections from his letters from 1831 to 1846",William Henry Seward,"New York, D. Appleton and company",,2940017335710,,,Nookbookprice: $0.00,
+semi-heterr_6529,The Autobiography of Sergeant William Lawrence,William Lawrence,Lushena Books,2014,9781631826450,152,,Productdimensions: 6.00(w) x 9.00(h) x 0.33(d); Paperbackprice: $7.95,
+semi-heterr_6544,I Put a Spell on You: The Autobiography of Nina Simone,"Nina Simone, Stephen Cleary",Knopf Doubleday Publishing Group,1992,9780679410683,192,,Productdimensions: 6.69(w) x 9.45(h) x (d),
+semi-heterr_6558,Good,e to the City of Dreams: An Autobiography,Art Gallery of South Australia,2004,9780730830061,296,,Productdimensions: 6.50(w) x 9.25(h) x 0.87(d),
+semi-heterr_6562,A Cellarful of Noise,Brian Epstein,Souvenir Press,2011,9780285640252,132,,Paperbackprice: $6.49; Nookbookprice: $6.49,
+semi-heterr_6591,"John G. Paton, missionary to the New Hebrides : an autobiography",John Gibson Paton,New York : Carter,,2940018791737,,,Paperbackprice: $13.48; Hardcoverprice: $22.95; Nookbookprice: $0.00,
+semi-heterr_6598,"Rev. William S. White, D.D., and his times (1800-1873) : an autobiography",William S. White,Richmond : Presbyterian Committee of Publication,,2940022699234,,,,
+semi-heterr_6617,Voices Made Flesh : Performing Women's Autobiography / Edition 1,Lynn C. Miller,University of Wisconsin Press,2003,9780299184247,344,,Productdimensions: 6.00(w) x 9.00(h) x 1.00(d),271
+semi-heterr_6619,Holding the Line: An Autobiography,John C. Hermon,"Gill &amp; MacMillan, Limited",1997,9780717125913,280,,,
+semi-heterr_6623,Autobiography of Andrew Carnegie: Autobiography,Andrew Carnegie,CreateSpace Independent Publishing Platform,2013,9781494715953,384,,Productdimensions: 6.00(w) x 9.00(h) x 0.79(d),
+semi-heterr_6625,The autobiography of a thief,Hutchins Hapgood,"New York : Fox, Duffield",,2940017335086,,,,
+semi-heterr_6628,"James Nasmyth, Engineer: An Autobiography","Samuel Jr. Smiles, James Nasmyth",Vero Verlag,2014,9783957388001,376,,Productdimensions: 5.83(w) x 8.27(h) x 0.84(d); Paperbackprice: $49.19; Hardcoverprice: $28.52,
+semi-heterr_6643,Is Shakespeare Dead?: From My Autobiography,Roy J . Friedman Mark Twain Collection Mark Twain,Harper &amp; Brothers Publishers,,2940018903741,,,,
+semi-heterr_6662,"An Autobiography, Volume II - Scholar's Choice Edition",Anthony Trollope,Scholar's Choice,2015,9781297173226,234,,Productdimensions: 7.44(w) x 9.69(h) x 0.49(d),
+semi-heterr_6666,The autobiography of Charles H. Spurgeon,C. H. Spurgeon,Chicago : F. H. Revell,,2940017705049,,,,
+semi-heterr_6669,What Did I Do?: The Unauthorized Autobiography of Larry Rivers,"Larry Rivers, Arnold Weinstein",HarperCollins Publishers,1992,9780060190071,498,,,
+semi-heterr_6674,A Way of Hope: An Autobiography,Lech Walesa,"Holt, Henry &amp; Company, Inc.",1987,9780805006681,325,,,319
+semi-heterr_6675,"The Radical: an autobiography,",the author of 'The member'.,,,2940025991335,,,,
+semi-heterr_6686,Autobiography of Rev. Charles H. Sage: Embracing an Account of His Pioneer ...,William Backus Olmstead Charles H. Sage,Free MethodistPublishing House,,2940017335895,,,,
+semi-heterr_6763,Autobiography of C. H. Spurgeon,Charles Haddon H. Spurgeon,"Hodder &amp; Stoughton, Ltd.",,9780340577783,,,Productdimensions: 5.08(w) x 7.80(h) x 0.75(d),
+semi-heterr_6786,A Hoosier Autobiography,William Dudley Foulke,Oxford University Press,,2940023621807,,,,
+semi-heterr_6787,"Kaloolah, Or, Journeyings to the Dj�bel Kumri: An Autobiography of Jonathan Romer",William Starbuck Mayo,David Bogue,,2940025492559,,,,
+semi-heterr_6794,The autobiography of a tomboy,Jeannette L. Gilder,"New York : Doubleday, Page",,2940017335062,,,,276
+semi-heterr_6795,Fragment Of A Great Confession - A Psychoanalytic Autobiography,Theodor Reik,Read Books Design,2011,9781446528532,508,,Productdimensions: 5.50(w) x 8.50(h) x 1.13(d),278
+semi-heterr_6813,Autobiography of a Pocket-Handkerchief,James Fenimore Cooper,HM,2014,2940150408982,,,Nookbookprice: $0.99,
+semi-heterr_6829,Marion Harland's Autobiography: The Story of a Long Life,Marion Harland,CreateSpace Independent Publishing Platform,2013,9781492353287,298,,Productdimensions: 6.00(w) x 9.00(h) x 0.62(d); Paperbackprice: $19.95; Hardcoverprice: $28.52; Nookbookprice: $0.00,
+semi-heterr_6833,"Mark Twain's Autobiography, Volume 2",Mark Twain,Kessinger Publishing Company,2003,9780766161375,376,,Productdimensions: 8.25(w) x 11.00(h) x 0.78(d),239
+semi-heterr_6842,The Kaiser Vs. Bismarck; Suppressed Letters,the Kaiser and New Chapters from the Autobiography of the Iron Chancellor,HardPress Publishing,2013,9781313491822,256,,Productdimensions: 6.00(w) x 9.00(h) x 0.54(d),
+semi-heterr_6845,Invented Symbols: An Art Autobiography,Alex Katz,Charta,2012,9788881588404,173,,Productdimensions: 5.80(w) x 8.20(h) x 0.50(d),265
+semi-heterr_6865,La Follette's Autobiography: A Personal Narrative of Political Experiences ...,Robert Marion La Follette,The Robert M. LaFollette Co.,,2940029904119,,,,
+semi-heterr_6878,"Holding the Lotus to the Rock: The Autobiography of Sokei-an, America's First Zen Master","Michael Hotz, Shigetsu Sasaki",Da Capo Press,2002,9781568582481,265,,Productdimensions: 5.84(w) x 8.48(h) x 0.99(d),291
+semi-heterr_6922,True: Autobiography of Martin Kemp,"Martin Kemp, Kemp","Orion Publishing Group, Limited",2000,9780752832647,256,,Productdimensions: 6.30(w) x 9.45(h) x 1.18(d),273
+semi-heterr_6957,"The Autobiography of Benjamin Franklin, Poor Richard's Almanac, and Other Papers",Benjamin Franklin,Andesite Press,2015,9781297613395,326,,Productdimensions: 6.14(w) x 9.21(h) x 0.75(d),
+semi-heterr_6970,"When the Tree Flowered: The Fictional Autobiography of Eagle Voice, a Sioux Indian",John G. Neihardt,University of Nebraska Press,1970,9780803257245,248,,Productdimensions: 5.25(w) x 8.00(h) x (d),
+semi-heterr_6993,Enough About You: Notes Toward the New Autobiography,David Shields,"Soft Skull Press, Inc.",2008,9781593763565,192,,Paperbackprice: $17.99; Nookbookprice: $10.49,
+semi-heterr_7000,Our Irish theater; a chapter of autobiography,Lady Gregory,"New York, London : G.P. Putnam''s Sons",,2940020302778,,,Paperbackprice: $21.95; Nookbookprice: $0.00,
+semi-heterr_7009,Grace Like a River: An Autobiography,"Christopher Parkening, Kathy Tyers",Tyndale House Publishers,2006,9781414300467,304,,Productdimensions: 5.60(w) x 8.40(h) x 1.20(d),307
+semi-heterr_7023,"THE AUTOBIOGRAPHY OF BENJAMIN FRANKLIN [Deluxe Edition] Includes Photos, Illustrations, PLUS BONUS ENTIRE AUDIOBOOK","Benjamin Franklin, Featuring Dynamic Chapter Navigation & Professional Formatting for a Premium Reading Experience, Published By Northpointe Classics",Northpointe Classics,2012,2940014070621,,,,
+semi-heterr_7031,"Autobiography of Rev. Charles H. Sage : embracing an account of his pioneer work in Michigan, of the formation of the Canada Conference and of his labors in various states",Charles H Sage,Chicago : Free Methodist Publishing House,,2940027397470,,,,
+semi-heterr_7036,"Autobiography, Memories and Experiences of Moncure Daniel Conway: With Two Portraits Volume 1",Moncure Daniel Conway,HardPress Publishing,2012,9781407711294,422,,Productdimensions: 6.00(w) x 9.00(h) x 0.86(d),
+semi-heterr_7046,"The Autobiography of Charles H. Spurgeon, Vol. 3: Compiled From His Diary, Letters, and Records; 1856 1878 (Classic Reprint)",Unknown Author,FB &amp;c Ltd,2015,9781330066676,386,,Productdimensions: 6.00(w) x 9.00(h) x 0.80(d),
+semi-heterr_7047,Ringing the Changes: An Autobiography,Mazo de la Roche,Dundurn Press,2015,9781459730397,304,,Paperbackprice: $20.37; Nookbookprice: $10.49,
+semi-heterr_7060,Charles G. Finney An Autobiography,"Charles G. Finney, Revival Press",CreateSpace Publishing,2015,9781517290627,382,,Productdimensions: 6.00(w) x 9.00(h) x 0.79(d),
+semi-heterr_7070,Autobiography,No�l Coward,Reed Consumer Books Limited,1998,9780749314132,512,,,
+semi-heterr_7083,"The autobiography of Benjamin Franklin, Poor Richard's almanac, and other papers",Benjamin Franklin,"New York, A. L. Burt Co",,2940017678770,,,,
+semi-heterr_7119,Autobiography and Other Writings / Edition 1,"Benjamin Franklin, Russel B. Nye",Cengage Learning,1957,9780395051306,224,,Productdimensions: 5.25(w) x 8.25(h) x (d),
+semi-heterr_7132,Chuck Berry,Chuck Berry,Hal Leonard Corporation,1986,9780793502639,120,,Productdimensions: 8.90(w) x 11.94(h) x 0.26(d); Paperbackprice: $17.34,
+semi-heterr_7204,"Alton Locke ; tailor and poet, an autobiography",Charles Kingsley,"New York, A.L. Burt",,2940018134428,,,,
+semi-heterr_7218,The Maze Runner(Maze Runner Trilogy (Paperback)),James Dashner,Delacorte Press Books for Young Readers,2010,0385737955,375,$5.79,Dimensions: 5.30 x 8.50 x 0.84 inches,327
+semi-heterr_7222,Hatchet,Gary Paulsen,Simon & Schuster Books for Young Readers,2007,1416936475,186,$3.98,Dimensions: 4.83 x 8.08 x 0.53 inches,328
+semi-heterr_7228,Matched(Matched Trilogy),Ally Condie,Speak,2011,014241977X,400,$6.48,Dimensions: 5.50 x 8.10 x 1.00 inches,338
+semi-heterr_7229,Harry Potter and the Sorcerer's Stone(Harry Potter (Paperback)),J. K. Rowling,Arthur A. Levine Books,1999,059035342X,312,$5.79,Dimensions: 5.20 x 7.50 x 0.80 inches,322
+semi-heterr_7233,Paper Towns,John Green,Speak,2009,014241493X,305,$3.98,Dimensions: 5.58 x 8.12 x 0.84 inches,326
+semi-heterr_7235,A Wrinkle in Time(Madeleine L'Engle's Time Quintet),Madeleine L'Engle,Square Fish,2007,0312367546,245,$5.79,Dimensions: 5.10 x 7.60 x 0.70 inches,
+semi-heterr_7237,City of Bones(Mortal Instruments (Paperback)),Cassandra Clare,Margaret K. McElderry Books,2008,1416955070,485,$5.79,Dimensions: 5.49 x 8.28 x 1.35 inches,
+semi-heterr_7240,Beautiful Creatures(Beautiful Creatures),Kami Garcia,"Little, Brown Books for Young Readers",2012,0316231657,576,$3.98,,400
+semi-heterr_7255,The Beautiful Creatures Paperback Set(Beautiful Creatures),Kami Garcia,"Little, Brown Books for Young Readers",2012,0316243760,1696,$21.19,,
+semi-heterr_7261,Seedfolks(Joanna Colter Books),Paul Fleischman,HarperTrophy,1999,0064472078,80,$3.98,Dimensions: 4.18 x 6.80 x 0.31 inches,363
+semi-heterr_7265,Beautiful Creatures(Beautiful Creatures),Kami Garcia,"Little, Brown Books for Young Readers",2012,0316231673,592,$3.98,,
+semi-heterr_7269,Uglies(Uglies Trilogy),Scott Westerfeld,Simon Pulse,2011,1442419814,406,$3.98,Dimensions: 5.50 x 8.20 x 1.20 inches,334
+semi-heterr_7290,Farewell to Manzanar,Jeanne Wakatsuki Houston,Ember,2012,0307976076,208,$5.79,Dimensions: 5.40 x 8.00 x 0.70 inches,346
+semi-heterr_7299,I Am Number Four(I Am Number Four (Paperback)),Pittacus Lore,Harper,2011,0061969575,440,$5.80,Dimensions: 5.34 x 8.09 x 1.23 inches,333
+semi-heterr_7303,Harry Potter and the Chamber of Secrets(Harry Potter (Paperback)),J. K. Rowling,Scholastic,2000,0439064872,341,$6.48,Dimensions: 5.26 x 7.62 x 0.90 inches,330
+semi-heterr_7320,Harry Potter and the Prisoner of Azkaban(Harry Potter (Paperback)),J. K. Rowling,Scholastic,2001,0439136369,435,$5.98,Dimensions: 5.32 x 7.52 x 1.07 inches,331
+semi-heterr_7334,The Skin I'm In,Sharon G. Flake,Jump at the Sun,2007,1423103858,171,$9.83,Dimensions: 5.62 x 8.24 x 0.38 inches,365
+semi-heterr_7340,The 6 Most Important Decisions You'll Ever Make,Sean Covey,Fireside Books,2006,0743265041,324,$3.98,Dimensions: 6.12 x 9.12 x 0.68 inches,377
+semi-heterr_7351,Twilight(Twilight Saga (Paperback)),Stephenie Meyer,Megan Tingley Books,2006,0316015849,498,$8.48,Dimensions: 5.40 x 8.20 x 1.40 inches,352
+semi-heterr_7353,Bronx Masquerade,Nikki Grimes,Speak,2003,0142501891,167,$5.79,Dimensions: 4.30 x 6.78 x 0.46 inches,389
+semi-heterr_7356,Opal(Lux Novel),Jennifer L. Armentrout,Entangled Select,2012,1620610094,452,$6.48,,372
+semi-heterr_7358,Eragon(Inheritance Cycle (Paperback)),Christopher Paolini,Alfred A. Knopf Books for Young Readers,2005,0375826696,528,$3.98,Dimensions: 5.50 x 8.20 x 1.20 inches,381
+semi-heterr_7369,Gone(Gone (Paper)),Michael Grant,Harper Teen,2009,0061448788,558,$3.98,Dimensions: 5.28 x 8.04 x 1.35 inches,339
+semi-heterr_7374,Inheritance(Inheritance Cycle (Paperback)),Christopher Paolini,Alfred A. Knopf Books for Young Readers,2012,037584631X,880,$9.40,,323
+semi-heterr_7397,I Am the Messenger,Markus Zusak,Alfred A. Knopf Books for Young Readers,2006,0375836675,357,$5.79,Dimensions: 5.30 x 7.10 x 0.90 inches,335
+semi-heterr_7404,Before I Fall,Lauren Oliver,HarperCollins,2011,0061726818,470,$3.98,Dimensions: 5.50 x 8.00 x 1.40 inches,344
+semi-heterr_7417,Brisingr(Inheritance Cycle (Paperback)),Christopher Paolini,Alfred A. Knopf Books for Young Readers,2010,0375826742,800,$4.98,Dimensions: 5.70 x 8.10 x 1.70 inches,350
+semi-heterr_7431,Before We Were Free,Julia Alvarez,Laurel Leaf Library,2004,044023784X,192,$3.98,Dimensions: 4.18 x 6.86 x 0.56 inches,361
+semi-heterr_7445,Chinese Cinderella,Adeline Yen Mah,Delacorte Press Books for Young Readers,2010,0385740077,205,$4.48,Dimensions: 5.50 x 8.04 x 0.52 inches,359
+semi-heterr_7447,Breaking Dawn(Twilight Saga (Paperback)),Stephenie Meyer,"Little, Brown Books for Young Readers",2010,0316067938,768,$5.79,Dimensions: 5.40 x 8.20 x 2.10 inches,325
+semi-heterr_7449,A Wrinkle in Time(Madeleine L'Engle's Time Quintet),Madeleine L'Engle,Square Fish,2007,0312367554,212,$3.98,Dimensions: 4.20 x 6.80 x 0.60 inches,
+semi-heterr_7463,New Moon(Twilight Saga (Paperback)),Stephenie Meyer,"Little, Brown Young Readers",2008,0316024961,563,$8.48,Dimensions: 5.50 x 8.20 x 1.50 inches,367
+semi-heterr_7468,The Sorceress(Secrets of the Immortal Nicholas Flamel (Paperback)),Michael Scott,Delacorte Press Books for Young Readers,2010,0385735308,502,$5.79,Dimensions: 5.40 x 8.20 x 1.00 inches,362
+semi-heterr_7480,The Mortal Instruments(Mortal Instruments),Cassandra Clare,Margaret K. McElderry Books,2012,1442472065,2032,$32.20,,
+semi-heterr_7507,Fire(Graceling (Paperback)),Kristin Cashore,Speak,2011,014241591X,461,$4.48,Dimensions: 5.54 x 8.20 x 1.31 inches,370
+semi-heterr_7517,The Contender,Robert Lipsyte,HarperTrophy,1987,0064470393,240,$3.98,Dimensions: 4.10 x 6.70 x 0.80 inches,369
+semi-heterr_7528,Michael Vey(Michael Vey (Quality)),Richard Paul Evans,Simon Pulse/Mercury Ink,2012,1442468122,326,$6.89,Dimensions: 5.90 x 8.90 x 0.90 inches,349
+semi-heterr_7534,Enclave,Ann Aguirre,Square Fish,2012,0312551371,288,$9.09,Dimensions: 5.50 x 8.20 x 0.90 inches,425
+semi-heterr_7538,Twisted(Pretty Little Liars (Quality)),Sara Shepard,Harper Teen,2012,0062081020,305,$3.98,Dimensions: 5.44 x 8.00 x 0.80 inches,436
+semi-heterr_7546,Ruby Red(Ruby Red (Trilogy - Quality)),Kerstin Gier,Square Fish,2012,0312551517,324,$6.85,Dimensions: 5.56 x 8.24 x 0.93 inches,
+semi-heterr_7551,Across Five Aprils,Irene Hunt,Berkley,2002,0425182789,224,$3.98,Dimensions: 5.28 x 7.60 x 0.63 inches,366
+semi-heterr_7552,Max(Maximum Ride (Quality)),James Patterson,"Little, Brown Young Readers",2009,0316002909,309,$5.79,Dimensions: 5.20 x 7.60 x 0.90 inches,358
+semi-heterr_7559,Hate List,Jennifer Brown,"Little, Brown Books for Young Readers",2010,0316041459,408,$3.98,Dimensions: 5.50 x 8.25 x 1.10 inches,373
+semi-heterr_7570,Parallel Journeys,Eleanor H. Ayer,Aladdin Paperbacks,2000,0689832362,244,$3.98,Dimensions: 5.26 x 7.68 x 0.74 inches,412
+semi-heterr_7576,The Iron King(Iron Fey - Trilogy),Julie Kagawa,Harlequin,2010,0373210086,363,$3.98,Dimensions: 5.24 x 8.34 x 1.06 inches,
+semi-heterr_7608,Don't Let Your Emotions Run Your Life for Teens,Sheri Van Dijk,Instant Help Books,2011,1572248831,160,$15.41,Dimensions: 8.14 x 9.97 x 0.41 inches,374
+semi-heterr_7625,Trash,Andy Mulligan,Ember,2011,0385752164,232,$6.89,Dimensions: 5.50 x 8.10 x 0.60 inches,403
+semi-heterr_7633,"Mississippi Trial, 1955",Chris Crowe,Speak,2003,0142501921,240,$3.98,Dimensions: 4.38 x 6.76 x 0.61 inches,430
+semi-heterr_7662,The Atlantis Complex(Artemis Fowl (Quality)),Eoin Colfer,Hyperion Books,2012,1423129725,357,$3.98,Dimensions: 5.10 x 7.50 x 1.00 inches,376
+semi-heterr_7664,"Silence(Hush, Hush Saga)",Becca Fitzpatrick,Simon & Schuster Books for Young Readers,2013,1442426659,464,$8.32,,360
+semi-heterr_7671,Extras(Uglies Trilogy),Scott Westerfeld,Simon Pulse,2011,1442419784,399,$5.79,Dimensions: 5.50 x 8.10 x 1.30 inches,355
+semi-heterr_7679,Hunger(Gone (Paper)),Michael Grant,Katherine Tegen Books,2010,0061449083,590,$5.79,Dimensions: 5.50 x 8.04 x 1.46 inches,340
+semi-heterr_7685,Wicked(Pretty Little Liars (Quality)),Sara Shepard,Harper Teen,2009,0061566101,310,$5.79,Dimensions: 5.20 x 8.10 x 0.90 inches,470
+semi-heterr_7689,Awakened(House of Night Novels (Paperback)),P. C. Cast,St. Martin's Griffin,2012,0312387970,304,$8.26,Dimensions: 5.55 x 8.26 x 0.86 inches,357
+semi-heterr_7698,"Carry On, Mr. Bowditch",Jean Lee Latham,Houghton Mifflin Harcourt (HMH),2003,0618250743,256,$4.48,Dimensions: 5.58 x 7.98 x 0.62 inches,379
+semi-heterr_7700,The Gray Wolf Throne(Seven Realms (Trilogy) (Quality)),Cinda Williams Chima,Hyperion Books,2012,1423121384,517,$7.67,Dimensions: 5.50 x 8.20 x 1.20 inches,345
+semi-heterr_7720,Thirst No. 5(Thirst (Paperback)),Christopher Pike,Simon Pulse,2013,1442467312,528,$7.98,,
+semi-heterr_7733,Identical,Ellen Hopkins,Margaret K. McElderry Books,2010,1416950060,565,$8.90,Dimensions: 4.90 x 6.80 x 1.60 inches,417
+semi-heterr_7734,Deadline,Chris Crutcher,Greenwillow Books,2009,0060850914,316,$3.98,Dimensions: 5.36 x 8.02 x 0.81 inches,416
+semi-heterr_7735,Lock and Key,Sarah Dessen,Speak,2009,0142414727,422,$3.98,Dimensions: 5.40 x 8.30 x 1.30 inches,375
+semi-heterr_7736,The Summer I Turned Pretty,Jenny Han,Simon & Schuster Books for Young Readers,2010,1416968296,304,$3.98,Dimensions: 5.60 x 8.20 x 0.80 inches,385
+semi-heterr_7741,The Dangerous Days of Daniel X(Daniel X (Quality)),James Patterson,"Little, Brown Books for Young Readers",2010,0316119709,234,$3.98,Dimensions: 5.68 x 7.62 x 0.82 inches,
+semi-heterr_7751,A Wrinkle in Time,Madeleine L'Engle,Square Fish,2012,1250004675,236,$5.79,Dimensions: 5.50 x 8.50 x 1.50 inches,
+semi-heterr_7762,The Final Warning(Maximum Ride (Quality)),James Patterson,"Little, Brown Young Readers",2008,0316002879,256,$3.98,Dimensions: 5.28 x 7.56 x 0.81 inches,354
+semi-heterr_7763,A Living Nightmare(Cirque Du Freak: Saga of Darren Shan (Paperback)),Darren Shan,"Little, Brown Books for Young Readers",2002,0316605107,272,$5.79,Dimensions: 5.50 x 8.30 x 0.80 inches,459
+semi-heterr_7768,The Iron Daughter(Iron Fey - Trilogy),Julie Kagawa,Harlequin,2010,0373210132,359,$3.98,Dimensions: 5.40 x 8.20 x 1.10 inches,421
+semi-heterr_7774,The Iron Knight(Iron Fey - Trilogy),Julie Kagawa,Harlequin Teen,2011,0373210361,394,$7.59,Dimensions: 5.30 x 8.20 x 1.20 inches,378
+semi-heterr_7777,The Eternity Code(Artemis Fowl (Quality)),Eoin Colfer,Hyperion Books,2009,1423124537,309,$3.98,Dimensions: 5.10 x 7.50 x 1.00 inches,447
+semi-heterr_7781,The Anxiety Workbook for Teens,Lisa M. Schab,New Harbinger Publications,2008,1572246030,192,$12.93,Dimensions: 7.90 x 10.02 x 0.42 inches,
+semi-heterr_7789,Half-Blood(Covenant),Jennifer L. Armentrout,Spencer Hill Press,2011,0983157200,281,$10.14,Dimensions: 6.00 x 8.90 x 0.90 inches,356
+semi-heterr_7813,The Iron Queen(Iron Fey - Trilogy),Julie Kagawa,Harlequin,2011,0373210183,358,$3.98,Dimensions: 5.42 x 8.24 x 1.00 inches,
+semi-heterr_7816,I Shall Wear Midnight(Discworld),Terry Pratchett,HarperCollins,2011,0061433063,368,$10.51,Dimensions: 5.20 x 7.80 x 1.10 inches,414
+semi-heterr_7831,The Cage,Ruth Minsky Sender,Simon Pulse,1997,068981321X,256,$5.79,Dimensions: 4.17 x 7.06 x 0.67 inches,396
+semi-heterr_7837,Kiss My Math,Danica McKellar,Plume Books,2009,0452295408,331,$5.79,Dimensions: 6.04 x 9.01 x 0.76 inches,464
+semi-heterr_7844,Revolution,Jennifer Donnelly,Ember,2011,0385737645,471,$3.98,Dimensions: 5.58 x 8.19 x 1.12 inches,467
+semi-heterr_7860,The Goddess Legacy(Harlequin Teen),Aimee Carter,Harlequin Teen,2012,0373210752,395,$3.98,Dimensions: 5.40 x 8.10 x 1.20 inches,461
+semi-heterr_7864,The Compound,S. A. Bodeen,Square Fish,2009,0312578601,248,$6.11,Dimensions: 5.40 x 8.20 x 0.80 inches,394
+semi-heterr_7873,Torment(Fallen (Quality) (Delacourte)),Lauren Kate,Ember,2011,038573915X,452,$3.98,Dimensions: 5.62 x 8.18 x 1.07 inches,364
+semi-heterr_7881,Clockwork Prince(Infernal Devices),Cassandra Clare,Margaret K. McElderry Books,2013,1416975896,528,$5.81,,336
+semi-heterr_7888,Betrayed(House of Night Novels (Paperback)),P. C. Cast,St. Martin's Griffin,2007,0312360282,310,$6.48,Dimensions: 5.49 x 8.25 x 0.85 inches,431
+semi-heterr_7910,Scorpia(Alex Rider Adventures (Paperback)),Anthony Horowitz,Puffin Books,2006,0142405787,388,$3.98,Dimensions: 5.26 x 7.70 x 1.26 inches,402
+semi-heterr_7917,The Fury and Dark Reunion(Vampire Diaries),L. J. Smith,Harper Teen,2007,0061140988,528,$6.98,Dimensions: 6.04 x 7.41 x 1.29 inches,409
+semi-heterr_7922,Tempted(House of Night Novels (Paperback)),P. C. Cast,St. Martin's Griffin,2011,0312609388,319,$4.98,Dimensions: 5.54 x 8.29 x 0.88 inches,415
+semi-heterr_7924,My Anxious Mind,Michael A. Tompkins,Magination Press,2009,1433804506,196,$12.65,Dimensions: 5.56 x 8.36 x 0.43 inches,445
+semi-heterr_7931,Surviving the Angel of Death,Eva Mozes Kor,Tanglewood Press,2012,1933718579,141,$9.51,Dimensions: 5.40 x 8.30 x 0.50 inches,451
+semi-heterr_7933,Crocodile Tears(Alex Rider Adventures (Paperback)),Anthony Horowitz,Puffin Books,2010,014241719X,388,$3.98,Dimensions: 5.20 x 7.70 x 1.10 inches,371
+semi-heterr_7937,Untamed(House of Night Novels (Paperback)),P. C. Cast,St. Martin's Griffin,2008,0312379838,338,$6.98,Dimensions: 5.26 x 8.52 x 0.92 inches,408
+semi-heterr_7938,Dreamland,Sarah Dessen,Speak,2004,0142401757,250,$5.79,Dimensions: 5.52 x 8.42 x 0.67 inches,419
+semi-heterr_7955,The Time Paradox(Artemis Fowl (Quality)),Eoin Colfer,Hyperion Books,2009,142310837X,391,$3.98,Dimensions: 5.18 x 7.56 x 1.14 inches,395
+semi-heterr_7960,Lockdown,Walter Dean Myers,Amistad Press,2011,0061214825,272,$8.45,Dimensions: 5.00 x 7.00 x 0.70 inches,468
+semi-heterr_7963,Sleeping Freshmen Never Lie,David Lubar,Puffin Books,2007,0142407801,279,$3.98,Dimensions: 5.51 x 8.23 x 0.77 inches,353
+semi-heterr_7968,Pure(Covenant),Jennifer L. Armentrout,Spencer Hill Press,2012,0983157227,329,$10.18,Dimensions: 6.00 x 8.90 x 1.00 inches,351
+semi-heterr_7972,The Disreputable History of Frankie Landau-Banks,E. Lockhart,Hyperion Books,2009,0786838191,352,$3.98,Dimensions: 5.34 x 8.44 x 0.74 inches,397
+semi-heterr_7980,Under the Never Sky,Veronica Rossi,HarperCollins,2013,0062072048,400,$8.26,,382
+semi-heterr_7991,Pretty Little Liars(Pretty Little Liars),Sara Shepard,Harper Teen,2013,0062125923,480,$3.98,,422
+semi-heterr_7992,The Glory Field,Walter Dean Myers,Scholastic Paperbacks,2008,054505575X,375,$3.98,Dimensions: 5.01 x 7.12 x 0.78 inches,453
+semi-heterr_8000,The Realm of Possibility,David Levithan,Alfred A. Knopf Books for Young Readers,2006,0375836578,210,$4.48,Dimensions: 5.22 x 8.02 x 0.50 inches,441
+semi-heterr_8001,Legend,Marie Lu,Speak,2013,014242207X,336,$3.98,,324
+semi-heterr_8002,Death Cloud(Sherlock Holmes: The Legend Begins (Paperback)),Andy Lane,Square Fish,2011,031256371X,311,$7.44,Dimensions: 5.58 x 8.23 x 0.94 inches,426
+semi-heterr_8007,Alanna(Song of the Lioness (Paperback)),Tamora Pierce,Simon Pulse,2005,0689878559,274,$5.48,Dimensions: 4.20 x 7.02 x 0.82 inches,
+semi-heterr_8018,Someone Like You,Sarah Dessen,Speak,2004,0142401773,281,$3.98,Dimensions: 5.99 x 8.41 x 0.81 inches,449
+semi-heterr_8054,A Great and Terrible Beauty(Readers Circle (Delacorte)),Libba Bray,Delacorte Press Books for Young Readers,2005,0385732317,403,$3.98,Dimensions: 5.26 x 8.06 x 0.98 inches,383
+semi-heterr_8061,That Summer,Sarah Dessen,Speak,2004,0142401722,198,$3.98,Dimensions: 5.40 x 8.63 x 0.57 inches,399
+semi-heterr_8072,Only the Good Spy Young(Gallagher Girls),Ally Carter,Hyperion Books,2012,1423129733,265,$3.98,Dimensions: 5.59 x 8.14 x 0.59 inches,384
+semi-heterr_8082,Redwall(Redwall (Ace Paperback)),Brian Jacques,Ace Books,1998,0441005489,333,$5.79,Dimensions: 4.18 x 6.76 x 0.98 inches,393
+semi-heterr_8091,Witch & Wizard(Witch & Wizard),James Patterson,Grand Central Publishing,2011,0446562432,352,$3.98,Dimensions: 4.20 x 6.70 x 1.30 inches,
+semi-heterr_8095,Shatter Me(Shatter Me (Quality)),Tahereh Mafi,HarperCollins,2012,0062085506,368,$10.19,,332
+semi-heterr_8105,Vampire Mountain(Cirque Du Freak: Saga of Darren Shan (Paperback)),Darren Shan,"Little, Brown Books for Young Readers",2003,0316605425,199,$3.98,Dimensions: 5.47 x 8.25 x 0.60 inches,
+semi-heterr_8159,The Exiled Queen(Seven Realms (Trilogy) (Quality)),Cinda Williams Chima,Hyperion Books,2011,1423121376,586,$5.80,Dimensions: 5.50 x 8.20 x 1.40 inches,429
+semi-heterr_8162,Trials of Death(Cirque Du Freak: Saga of Darren Shan (Paperback)),Darren Shan,"Little, Brown Books for Young Readers",2004,0316603953,207,$3.98,Dimensions: 5.50 x 8.20 x 0.60 inches,
+semi-heterr_8185,Maximum Security(Cherub),Robert Muchamore,Simon Pulse,2012,144241362X,302,$3.98,Dimensions: 5.40 x 8.20 x 1.00 inches,444
+semi-heterr_8221,Frostbite(Vampire Academy (Paperback)),Richelle Mead,Razorbill,2008,1595141758,327,$4.98,Dimensions: 5.50 x 8.26 x 0.86 inches,387
+semi-heterr_8240,The Vampire Prince(Cirque Du Freak: Saga of Darren Shan (Paperback)),Darren Shan,"Little, Brown Books for Young Readers",2004,0316602744,197,$3.98,Dimensions: 5.48 x 8.05 x 0.65 inches,
+semi-heterr_8271,Airborn,Kenneth Oppel,HarperCollins,2005,0060531827,544,$3.98,Dimensions: 5.00 x 6.76 x 1.26 inches,423
+semi-heterr_8281,A Northern Light,Jennifer Donnelly,Harcourt Paperbacks,2004,0152053107,396,$6.48,Dimensions: 5.30 x 7.98 x 1.08 inches,471
+semi-heterr_8283,Left for Dead,Pete Nelson,Delacorte Press,2003,0385730918,201,$3.98,Dimensions: 6.10 x 9.20 x 0.60 inches,390
+semi-heterr_8304,Hunters of the Dusk(Cirque Du Freak: Saga of Darren Shan (Paperback)),Darren Shan,"Little, Brown Books for Young Readers",2005,0316602116,224,$5.79,Dimensions: 5.50 x 8.22 x 0.67 inches,
+semi-heterr_8309,Everlasting(Immortals (Paperback)),Alyson Noel,St. Martin's Griffin,2013,1250025176,336,$13.62,,380
+semi-heterr_8320,In the Hand of the Goddess(Song of the Lioness (Paperback)),Tamora Pierce,Simon Pulse,2005,0689878567,264,$3.98,Dimensions: 4.20 x 7.14 x 0.77 inches,
+semi-heterr_8321,The Goose Girl(Books of Bayern (Paperback)),Shannon Hale,Bloomsbury Publishing PLC,2005,1582349908,383,$5.79,Dimensions: 5.28 x 7.74 x 1.17 inches,427
+semi-heterr_8339,The Lake of Souls(Cirque Du Freak: Saga of Darren Shan (Paperback)),Darren Shan,"Little, Brown Books for Young Readers",2006,0316016659,263,$3.98,Dimensions: 5.49 x 8.21 x 0.80 inches,
+semi-heterr_8363,Allies of the Night(Cirque Du Freak: Saga of Darren Shan (Paperback)),Darren Shan,"Little, Brown Books for Young Readers",2005,0316114375,256,$3.98,Dimensions: 5.49 x 8.22 x 0.67 inches,
+semi-heterr_8370,Annie on My Mind,Nancy Garden,Farrar Straus Giroux,2007,0374400113,263,$5.80,Dimensions: 5.56 x 8.27 x 0.72 inches,420
+semi-heterr_8372,Lord of the Shadows(Cirque Du Freak: Saga of Darren Shan (Paperback)),Darren Shan,"Little, Brown Books for Young Readers",2007,0316016616,220,$3.98,Dimensions: 5.49 x 8.26 x 0.71 inches,570
+semi-heterr_8375,Bloodrose(Nightshade (Paperback)),Andrea Cremer,Speak,2012,014242370X,408,$6.78,Dimensions: 5.40 x 8.10 x 1.20 inches,443
+semi-heterr_8379,Lioness Rampant(Song of the Lioness (Paperback)),Tamora Pierce,Simon Pulse,2005,0689878575,384,$3.98,Dimensions: 4.20 x 7.04 x 1.06 inches,
+semi-heterr_8413,The Wee Free Men(Discworld),Terry Pratchett,HarperTrophy,2004,0060012382,375,$5.79,Dimensions: 4.34 x 6.68 x 1.08 inches,407
+semi-heterr_8427,A Swiftly Tilting Planet(Madeleine L'Engle's Time Quintet),Madeleine L'Engle,Square Fish,2007,0312368569,309,$5.79,Dimensions: 5.28 x 7.64 x 0.83 inches,368
+semi-heterr_8433,Shadow Kiss(Vampire Academy (Paperback)),Richelle Mead,Razorbill,2008,1595141979,444,$5.98,Dimensions: 5.48 x 8.16 x 1.14 inches,392
+semi-heterr_8451,Killers of the Dawn(Cirque Du Freak: Saga of Darren Shan (Paperback)),Darren Shan,"Little, Brown Books for Young Readers",2006,0316106542,208,$5.98,Dimensions: 5.50 x 8.26 x 0.69 inches,
+semi-heterr_8454,The Awakening(Darkest Powers (Paperback)),Kelley Armstrong,HarperCollins,2010,0061450553,360,$3.98,Dimensions: 5.54 x 7.98 x 0.90 inches,465
+semi-heterr_8500,Demons and Druids(Daniel X (Quality)),James Patterson,Little Brown and Company,2011,031603830X,243,$3.98,Dimensions: 5.20 x 7.50 x 0.90 inches,452
+semi-heterr_8505,Raven's Gate(Gatekeepers (Paperback)),Anthony Horowitz,Scholastic Paperbacks,2009,0439680093,254,$5.79,Dimensions: 5.00 x 7.70 x 0.80 inches,455
+semi-heterr_8515,The Princess Diaries(Princess Diaries Books),Meg Cabot,Harper Teen,2008,0061479934,228,$6.48,Dimensions: 5.40 x 8.10 x 0.60 inches,404
+semi-heterr_8521,First Test(Protector of the Small (Paperback)),Tamora Pierce,Random House Children's Books,2000,0679889175,256,$3.98,Dimensions: 4.21 x 6.90 x 0.73 inches,
+semi-heterr_8553,Don't Judge a Girl by Her Cover(Gallagher Girls),Ally Carter,Hyperion Books,2010,1423116607,263,$3.98,Dimensions: 5.60 x 8.20 x 0.60 inches,446
+semi-heterr_8586,The Statistical Probability of Love at First Sight,Jennifer E. Smith,Poppy Books,2013,0316122394,256,$5.79,,391
+semi-heterr_8659,Demonglass(Hex Hall (Quality)),Rachel Hawkins,Hyperion Books,2012,1423128443,359,$6.81,Dimensions: 5.41 x 8.47 x 0.81 inches,386
+semi-heterr_8697,Suicide Notes,Michael Thomas Ford,Harper Teen,2010,0060737573,295,$10.59,Dimensions: 5.28 x 7.86 x 0.73 inches,428
+semi-heterr_8705,Everlost(Skinjacker Trilogy),Neal Shusterman,Simon & Schuster Children's Publishing,2009,1416997490,313,$3.98,Dimensions: 5.50 x 8.30 x 0.90 inches,388
+semi-heterr_8727,City of the Beasts,Isabel Allende,HarperTrophy,2004,0060535032,406,$5.79,Dimensions: 5.06 x 7.66 x 0.97 inches,439
+semi-heterr_8737,Witch & Wizard,James Patterson,Grand Central Publishing,2012,0446562459,352,$3.98,Dimensions: 4.23 x 6.81 x 0.97 inches,
+semi-heterr_8753,The Summoning(Darkest Powers (Paperback)),Kelley Armstrong,HarperCollins,2009,0061450545,390,$5.79,Dimensions: 5.20 x 7.80 x 1.10 inches,418
+semi-heterr_8766,Living Dead Girl,Elizabeth Scott,Simon Pulse,2009,1416960600,170,$4.98,Dimensions: 5.50 x 8.10 x 0.70 inches,405
+semi-heterr_8770,"White Cat(Curse Workers, the Curse Workers)",Holly Black,Margaret K. McElderry Books,2011,1416963979,310,$5.79,Dimensions: 5.65 x 8.22 x 0.89 inches,460
+semi-heterr_8820,Night World #02(Night World (Special Bind-Up Reissues)),L. J. Smith,Simon Pulse,2008,1416974512,662,$6.48,Dimensions: 5.40 x 8.20 x 1.70 inches,457
+semi-heterr_8833,The Fifth of March(Great Episodes (Paperback)),Ann Rinaldi,Gulliver Books,2004,0152050787,333,$3.98,Dimensions: 4.58 x 6.78 x 0.97 inches,440
+semi-heterr_8839,The Wizard Heir,Cinda Williams Chima,Hyperion Books for Children,2008,1423104889,458,$3.98,Dimensions: 5.71 x 8.19 x 0.99 inches,401
+semi-heterr_8856,Last Breath(Morganville Vampires),Rachel Caine,New American Library,2012,0451235800,368,$6.98,Dimensions: 5.54 x 8.19 x 0.81 inches,438
+semi-heterr_8885,Chicken Soup for the Teenage Soul on Tough Stuff(Chicken Soup for the Soul (Paperback Health Communications)),Jack Canfield,Chicken Soup for the Soul,2001,155874942X,400,$6.48,Dimensions: 5.52 x 8.52 x 0.91 inches,
+semi-heterr_8886,The Burn Journals,Brent Runyon,Vintage Books USA,2005,1400096421,325,$3.98,Dimensions: 5.30 x 8.00 x 0.72 inches,432
+semi-heterr_8899,Chicken Soup for the Girl's Soul(Chicken Soup for the Soul (Paperback Health Communications)),Jack Canfield,Chicken Soup for the Soul,2005,0757303137,345,$3.98,Dimensions: 5.54 x 8.60 x 0.85 inches,
+semi-heterr_8916,An Acceptable Time(Madeleine L'Engle's Time Quintet),Madeleine L'Engle,Square Fish,2007,0312368585,373,$3.98,Dimensions: 5.28 x 7.64 x 1.01 inches,
+semi-heterr_8983,Fear(Gone),Michael Grant,Katherine Tegen Books,2013,0061449172,544,$9.09,,347
+semi-heterr_9025,Many Waters(Madeleine L'Engle's Time Quintet),Madeleine L'Engle,Square Fish,2007,0312368577,357,$3.98,Dimensions: 5.20 x 7.50 x 0.90 inches,
+semi-heterr_9070,Messenger,Lois Lowry,Laurel Leaf Library,,0440239125,169,$3.98,Dimensions: 4.26 x 6.86 x 0.53 inches,341
+semi-heterr_9080,The Fledgling Handbook 101(House of Night Novels),P. C. Cast,St. Martin's Griffin,2010,0312595123,176,$5.79,Dimensions: 5.54 x 8.20 x 0.47 inches,462
+semi-heterr_9095,The Mirror of Fate(Merlin (Puffin)),T. A. Barron,Puffin Books,2011,0142419222,245,$8.97,Dimensions: 5.00 x 7.60 x 0.90 inches,406
+semi-heterr_9120,Bite Club(Morganville Vampires),Rachel Caine,New American Library,2011,0451234685,352,$6.98,Dimensions: 5.40 x 8.10 x 0.90 inches,424
+semi-heterr_9174,We All Fall Down,Nic Sheff,"Little, Brown Books for Young Readers",2012,0316080810,362,$9.32,Dimensions: 5.40 x 8.10 x 1.10 inches,454
+semi-heterr_9175,Kissed by an Angel,Elizabeth Chandler,Simon Pulse,2008,1416978836,235,$3.98,Dimensions: 5.20 x 7.60 x 1.90 inches,466
+semi-heterr_9182,Peter and the Secret of Rundoon(Starcatchers (Paperback)),Dave Barry,Hyperion Books,2009,1423123263,482,$3.98,Dimensions: 5.24 x 7.59 x 1.06 inches,413
+semi-heterr_9249,Night World #03(Night World (Special Bind-Up Reissues)),L. J. Smith,Simon Pulse,2009,1416974520,732,$6.98,Dimensions: 5.60 x 8.20 x 1.90 inches,
+semi-heterr_9259,Fever(Chemical Garden Trilogy),Lauren DeStefano,Simon & Schuster Books for Young Readers,2013,1442409088,368,$3.98,,435
+semi-heterr_9294,Ash,Malinda Lo,"Little, Brown Books for Young Readers",2010,031604010X,264,$9.94,Dimensions: 5.50 x 8.25 x 0.75 inches,410
+semi-heterr_9334,Pop,Gordon Korman,Balzer & Bray/Harperteen,2011,0061742619,260,$3.98,Dimensions: 5.35 x 8.01 x 0.69 inches,456
+semi-heterr_9349,Curse of the Bane(Last Apprentice (Paperback)),Joseph Delaney,Greenwillow Books,2007,0060766239,455,$3.98,Dimensions: 5.40 x 8.00 x 1.20 inches,411
+semi-heterr_9358,The Prince of Mist,Carlos Ruiz Zafon,"Little, Brown Books for Young Readers",2011,0316044806,232,$3.98,Dimensions: 5.52 x 8.19 x 0.69 inches,434
+semi-heterr_9363,Darkest Mercy(Wicked Lovely (Paper)),Melissa Marr,HarperCollins,2012,0061659274,327,$7.48,Dimensions: 5.42 x 7.96 x 0.82 inches,469
+semi-heterr_9396,Middle School(Chicken Soup for the Soul (Chicken Soup for the Soul)),Jack Canfield,Chicken Soup for the Soul,2008,1935096265,403,$3.98,Dimensions: 5.54 x 8.42 x 1.03 inches,
+semi-heterr_9434,Allies of the Night(Cirque Du Freak: Saga of Darren Shan (Mass Market)),Darren Shan,"Little, Brown Books for Young Readers",2006,0316106534,209,$5.79,Dimensions: 6.76 x 6.74 x 0.64 inches,
+semi-heterr_9439,The Last Apprentice(Last Apprentice (Paperback)),Joseph Delaney,Greenwillow Books,2011,0061715123,464,$4.98,Dimensions: 5.30 x 7.80 x 1.20 inches,343
+semi-heterr_9505,The Greatest(Greatest),Walter Dean Myers,Scholastic Paperbacks,2001,0590543431,192,$5.79,Dimensions: 5.29 x 7.72 x 0.47 inches,448
+semi-heterr_9537,The Wavering of Haruhi Suzumiya(Melancholy of Haruhi Suzumiya (Paper)),Nagaru Tanigawa,"Little, Brown Books for Young Readers",2011,031603892X,208,$10.48,Dimensions: 5.40 x 8.20 x 0.80 inches,
+semi-heterr_9543,Aristotle and Dante Discover the Secrets of the Universe,Benjamin Alire Saenz,Simon & Schuster Books for Young Readers,2013,1442408936,368,$10.70,,329
+semi-heterr_9556,Chicken Soup for the Soul: Teens Talk High School(Chicken Soup for the Soul (Chicken Soup for the Soul)),Jack Canfield,Chicken Soup for the Soul,2008,1935096257,396,$3.98,Dimensions: 5.54 x 8.44 x 1.06 inches,
+semi-heterr_9604,Under a War-Torn Sky,Laura Malone Elliott,Hyperion Books for Children,2003,0786817534,288,$3.98,Dimensions: 5.44 x 7.42 x 0.76 inches,450
+semi-heterr_9615,Once(Once Upon a Time),Cameron Dokey,Simon Pulse,2012,1442422831,640,$3.98,Dimensions: 5.59 x 8.16 x 1.66 inches,
+semi-heterr_9625,Night of the Soul Stealer(Last Apprentice (Paperback)),Joseph Delaney,HarperTrophy,2008,0060766263,489,$7.35,Dimensions: 5.36 x 7.92 x 1.24 inches,337
+semi-heterr_9674,Palace of the Damned(Saga of Larten Crepsley (Paperback)),Darren Shan,"Little, Brown Books for Young Readers",2012,0316078697,272,$7.60,,
+semi-heterr_9714,Rage of the Fallen(Last Apprentice (Paperback)),Joseph Delaney,Greenwillow Books,2012,0062027581,396,$13.62,Dimensions: 5.30 x 8.02 x 1.02 inches,348
+semi-heterr_9753,Changeling(Order of Darkness (Quality)),Philippa Gregory,Simon Pulse,2013,1442453451,352,$4.48,,590
+semi-heterr_9761,The Rampage of Haruhi Suzumiya(Melancholy of Haruhi Suzumiya (Paper)),Nagaru Tanigawa,"Little, Brown Books for Young Readers",2011,0316038849,229,$12.92,Dimensions: 5.40 x 8.20 x 0.80 inches,
+semi-heterr_9765,Mossflower(Redwall (Ace Paperback)),Brian Jacques,Ace Books,1998,0441005764,373,$3.98,Dimensions: 4.26 x 6.82 x 1.03 inches,437
+semi-heterr_9802,Spell Bound (a Hex Hall Novel)(Hex Hall (Quality)),Rachel Hawkins,Hyperion Books,2013,1423121406,336,$10.19,,398
+semi-heterr_9836,Blood Beast(Demonata (Paperback)),Darren Shan,"Little, Brown Young Readers",2008,0316003786,217,$9.64,Dimensions: 5.40 x 8.25 x 0.60 inches,463
+semi-heterr_10036,Lemonade Mouth,Mark Peter Hughes,Delacorte Press Books for Young Readers,2008,0385735111,338,$5.79,Dimensions: 5.20 x 8.10 x 0.70 inches,433
+semi-heterr_10052,The Lake of Souls(Cirque Du Freak: Saga of Darren Shan (Mass Market)),Darren Shan,"Little, Brown Books for Young Readers",,0316154377,261,$3.98,Dimensions: 4.20 x 6.78 x 0.75 inches,
+semi-heterr_10149,Need,Carrie Jones,Bloomsbury Publishing PLC,2009,1599904535,306,$3.98,Dimensions: 6.86 x 8.18 x 0.88 inches,458
+semi-heterr_10151,The Boredom of Haruhi Suzumiya(Melancholy of Haruhi Suzumiya (Paper)),Nagaru Tanigawa,"Little, Brown Books for Young Readers",2010,0316038873,214,$5.98,Dimensions: 6.58 x 8.24 x 0.65 inches,
+semi-heterr_10239,Chicken Soup for the Teenage Soul Journal(Chicken Soup for the Soul (Paperback Health Communications)),Jack Canfield,Chicken Soup for the Soul,1998,1558746374,300,$3.98,Dimensions: 5.38 x 8.68 x 0.84 inches,
+semi-heterr_10251,Bitter Blood(Morganville Vampires),Rachel Caine,New American Library,2013,0451414241,352,$8.98,,442
+semi-heterr_10302,Wrath of the Bloodeye(Last Apprentice (Paperback)),Joseph Delaney,Greenwillow Books,2009,0061344613,511,$13.62,Dimensions: 5.20 x 7.90 x 1.20 inches,342
+semi-heterr_10309,Windows 10: The Missing Manual,David Pogue,"O'Reilly Media, Incorporated",,978-1491947173,696,$23.41,Product_dimensions: 7.00(w) x 9.20(h) x 1.40(d),
+semi-heterr_10322,Windows 10 For Seniors For Dummies,Peter Weverka,Wiley,,978-1119038597,336,$14.59,Product_dimensions: 7.30(w) x 9.20(h) x 0.80(d),
+semi-heterr_10340,"CompTIA Network+ All-In-One Exam Guide, Sixth Edition (Exam N10-006)",Mike Meyers,McGraw-Hill Professional Publishing,,978-0071848220,872,$34.39,Series: All-in-One Series; Product_dimensions: 7.70(w) x 9.10(h) x 2.00(d),
+semi-heterr_10412,CompTIA A+ Certification All-in-One For Dummies,Glen E. Clarke# Edward Tetz,Wiley,,978-1118098790,1320,$26.97,Series: For Dummies Series; Product_dimensions: 9.10(w) x 7.30(h) x 1.80(d),693
+semi-heterr_10429,"New Perspectives on Microsoft Excel 2013, Comprehensive",June Jamrich Parsons,Cengage Learning,,978-1285169330,968,$180.33,Series: New Perspectives Series; Product_dimensions: 8.50(w) x 10.80(h) x 1.40(d),
+semi-heterr_10432,Windows 8.1 For Dummies,Andy Rathbone,Wiley,,978-1118821213,432,$18.17,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.20(h) x 0.80(d),
+semi-heterr_10449,CompTIA A+ 220-801 and 220-802 Authorized Exam Cram,David L. Prowse,Pearson IT Certification,,978-0789749710,727,$26.99,Product_dimensions: 6.00(w) x 8.90(h) x 1.70(d),
+semi-heterr_10450,Adobe Photoshop CS6 Classroom in a Book / Edition 1,Adobe Creative Team,Adobe Press,,978-0321827333,432,$30.33,Series: Classroom in a Book Series; Product_dimensions: 9.10(w) x 7.28(h) x 0.73(d),
+semi-heterr_10462,"Exploring: Microsoft Excel 2013, Comprehensive / Edition 1",Mary Anne Poatsy# Keith Mulbery# Jason Davidson# Robert T. Grauer,Prentice Hall,,978-0133412185,736,,Series: Exploring for Office 2013 Series; Product_dimensions: 8.80(w) x 10.80(h) x 1.10(d),
+semi-heterr_10467,Excel 2013 Power Programming with VBA,John Walkenbach,Wiley,,978-1118490396,1104,$31.28,Series: Mr. Spreadsheet's Bookshelf Series; Product_dimensions: 7.40(w) x 9.20(h) x 2.30(d),
+semi-heterr_10501,Computer Organization and Design: The Hardware/Software Interface / Edition 5,David A. Patterson,Elsevier Science,,978-0124077263,800,$75.74,Series: Morgan Kaufmann Series in Computer Architecture and Design Series; Product_dimensions: 7.40(w) x 9.10(h) x 1.30(d),
+semi-heterr_10583,iPhone For Seniors For Dummies,Nancy C. Muir,Wiley,,978-1118944448,480,$20.73,Series: For Dummies Series; Product_dimensions: 9.30(w) x 11.50(h) x 1.30(d),
+semi-heterr_10636,Adobe Photoshop CC Classroom in a Book / Edition 1,Adobe Creative Team,Adobe Press,,978-0321928078,389,$36.22,Product_dimensions: 7.30(w) x 9.00(h) x 0.90(d),
+semi-heterr_10640,"Excel 2013 For Dummies, Book + DVD Bundle",Greg Harvey,Wiley,,978-1118559802,408,,Series: For Dummies Series; Product_dimensions: 7.20(w) x 9.30(h) x 1.30(d),
+semi-heterr_10642,Microsoft Excel 2013 Step by Step,Curtis D. Frye,Microsoft Press,,978-0735681019,512,$23.23,Series: Step by Step Series; Product_dimensions: 7.30(w) x 8.90(h) x 1.30(d),
+semi-heterr_10798,iPhone For Dummies,Edward C. Baig# Bob LeVitus,Wiley,,978-1118932162,416,$21.70,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.00(h) x 0.80(d),
+semi-heterr_10863,iPad For Dummies,Edward C. Baig# Bob LeVitus,Wiley,,978-1118932247,384,$14.68,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.00(h) x 0.80(d),
+semi-heterr_10864,"CompTIA Security+ Certification Study Guide, Second Edition (Exam SY0-401)",Glen E. Clarke,McGraw-Hill Professional Publishing,,978-0071841283,880,$37.06,Series: Certification Press Series; Product_dimensions: 7.40(w) x 9.10(h) x 2.00(d),
+semi-heterr_10916,Computers For Seniors For Dummies,Nancy C. Muir,Wiley,,978-1118115534,408,$36.67,Series: For Dummies Series; Product_dimensions: 7.20(w) x 9.10(h) x 1.00(d),
+semi-heterr_10928,Word 2010 For Dummies,Dan Gookin,Wiley,,978-0470487723,408,$19.72,Series: For Dummies Series; Product_dimensions: 7.40(w) x 9.20(h) x 0.90(d),
+semi-heterr_10933,Adobe Illustrator CC Classroom in a Book / Edition 1,Adobe Creative Team,Adobe Press,,978-0321929495,480,$31.83,Product_dimensions: 7.30(w) x 9.00(h) x 1.00(d),
+semi-heterr_10938,SAS For Dummies,Stephen McDaniel# Chris Hemedinger,Wiley,,978-0470539682,388,$23.74,Series: For Dummies Series; Product_dimensions: 7.20(w) x 9.20(h) x 1.00(d),
+semi-heterr_10940,Adobe Dreamweaver CS6 Classroom in a Book / Edition 1,Adobe Creative Team,Adobe Press,,978-0321822451,448,$32.24,Series: Classroom in a Book Series; Product_dimensions: 7.30(w) x 9.00(h) x 0.90(d),
+semi-heterr_10987,Adobe Photoshop CS6 Digital Classroom,Jennifer Smith# AGI Creative Team,Wiley,,978-1118123898,448,$36.12,Series: Digital Classroom Series; Product_dimensions: 7.30(w) x 9.10(h) x 1.00(d),
+semi-heterr_11079,"New Perspectives on Microsoft Access 2013, Brief",Joseph J. Adamski,Cengage Learning,,978-1285099224,280,$70.12,Series: New Perspectives Series; Product_dimensions: 8.40(w) x 10.70(h) x 0.60(d),
+semi-heterr_11106,MOS 2013 Study Guide for Microsoft Outlook,Joan Lambert,Microsoft Press,,978-0735669222,166,$15.71,Product_dimensions: 7.30(w) x 8.90(h) x 0.50(d),683
+semi-heterr_11137,Teach Yourself VISUALLY Windows 7,Paul McFedries,Wiley,,978-0470503867,352,,Series: Teach Yourself VISUALLY (Tech) Series; Product_dimensions: 7.30(w) x 9.10(h) x 0.80(d),
+semi-heterr_11145,Apple Pro Training Series: Logic Pro X 10.1: Professional Music Production,David Nahmani,Peachpit Press,,978-0134185736,576,$39.49,Series: Apple Pro Training Series; Product_dimensions: 7.30(w) x 9.00(h) x 1.10(d),
+semi-heterr_11151,"Mike Meyers' CompTIA A+ Guide to Managing and Troubleshooting PCs Lab Manual, Fourth Edition (Exams 220-801 &amp; 220-802) / Edition 4",Mike Meyers,McGraw-Hill Professional Publishing,,978-0071795555,624,$38.34,Product_dimensions: 8.40(w) x 10.80(h) x 1.30(d),
+semi-heterr_11156,MOS 2013 Study Guide for Microsoft PowerPoint,Joan Lambert,Microsoft Press,,978-0735669239,178,$15.71,Series: MOS Study Guide Series; Product_dimensions: 7.30(w) x 9.00(h) x 0.60(d),
+semi-heterr_11181,"The New Digital Age: Transforming Nations, Businesses, and Our Lives",Eric Schmidt# Jared Cohen,Knopf Doubleday Publishing Group,,978-0307947055,368,$13.19,Product_dimensions: 5.10(w) x 7.90(h) x 0.90(d),
+semi-heterr_11185,Microsoft SharePoint 2013 Inside Out,Darvish Shadravan# Penelope Coventry# Thomas Resing# Christina Wheeler,Microsoft Press,,978-0735666993,904,$36.34,Product_dimensions: 7.40(w) x 9.00(h) x 1.90(d),
+semi-heterr_11210,Microsoft Excel 2013: Illustrated Brief,Elizabeth Eisner Reding,Cengage Learning,,978-1285093215,160,$35.44,Series: Illustrated Series; Product_dimensions: 8.30(w) x 10.70(h) x 0.30(d),
+semi-heterr_11214,"Exploring: Microsoft Word 2013, Comprehensive / Edition 1",Lynn Hogan# Linda Lau# Robert T. Grauer# Mary Anne Poatsy,Prentice Hall,,978-0133412222,560,,Series: Exploring for Office 2013 Series; Product_dimensions: 9.40(w) x 11.10(h) x 1.00(d),
+semi-heterr_11218,"Exploring: Microsoft Office 2013, Plus / Edition 1",Mary Anne Poatsy# Keith Mulbery# Cynthia Krebs# Eric Cameron,Prentice Hall,,978-0133412161,1232,,Series: Exploring for Office 2013 Series; Product_dimensions: 9.70(w) x 11.00(h) x 1.80(d),
+semi-heterr_11247,Excel 2013 VBA and Macros,Bill Jelen# Tracy Syrstad,Que,,978-0789748614,612,$29.74,Series: MrExcel Library Series; Product_dimensions: 8.90(w) x 7.00(h) x 1.40(d),
+semi-heterr_11252,Teach Yourself VISUALLY Android Phones and Tablets,Guy Hart-Davis,Wiley,,978-1118646618,320,$18.53,Series: Teach Yourself VISUALLY (Tech) Series; Product_dimensions: 7.40(w) x 9.00(h) x 0.70(d),
+semi-heterr_11339,Microsoft SQL Server 2012 Unleashed,Ray Rankins# Paul T. Bertucci# Chris Gallelli# Alex T. Silverstein,Sams,,978-0672336928,1872,,Series: Unleashed Series; Product_dimensions: 7.14(w) x 9.02(h) x 2.16(d),
+semi-heterr_11370,Dreamweaver CC: Visual QuickStart Guide,Tom Negrino# Dori Smith,Peachpit Press,,978-0321929518,528,$25.96,Product_dimensions: 6.90(w) x 8.90(h) x 1.10(d),
+semi-heterr_11374,Health Information Technology & Management / Edition 1,Richard Gartee,Prentice Hall,,978-0131592674,352,$73.58,Series: MyHealthProfessionsKit Series; Product_dimensions: 8.50(w) x 10.80(h) x 0.60(d),
+semi-heterr_11385,New Perspectives on Microsoft Excel 2010: Comprehensive,June Jamrich Parsons# Roy Ageloff# Patrick Carey# Dan Oja,Cengage Learning,,978-0538742917,992,,Series: Advanced Spreadsheet Applications Series; Product_dimensions: 8.50(w) x 10.80(h) x 1.40(d),
+semi-heterr_11403,C++ For Dummies,Stephen R. Davis,Wiley,,978-1118823774,480,$18.31,Series: For Dummies Series; Product_dimensions: 7.40(w) x 9.20(h) x 1.10(d),
+semi-heterr_11407,Windows 8.1 All-in-One For Dummies,Woody Leonhard,Wiley,,978-1118820872,1056,$33.70,Series: For Dummies Series; Product_dimensions: 7.40(w) x 9.20(h) x 2.00(d),
+semi-heterr_11411,Excel 2007 For Dummies,Greg Harvey,Wiley,,978-0470037379,416,$17.44,Series: For Dummies Series; Product_dimensions: 7.46(w) x 9.04(h) x 0.92(d),
+semi-heterr_11623,Microsoft Outlook 2013 Plain & Simple,Jim Boyce,Microsoft Press,,978-0735669352,288,$19.37,Series: Plain & Simple Series; Product_dimensions: 7.30(w) x 9.10(h) x 0.60(d),
+semi-heterr_11658,Adobe InDesign CS6 Digital Classroom,Christopher Smith# AGI Creative Team,Wiley,,978-1118124062,498,$35.81,Series: Digital Classroom Series; Product_dimensions: 7.30(w) x 9.10(h) x 1.00(d),
+semi-heterr_11684,Programming in Ada 2012,John Barnes,Cambridge University Press,,978-1107424814,976,$74.70,Product_dimensions: 7.40(w) x 9.70(h) x 1.70(d),
+semi-heterr_11695,Wireless Communications: Principles and Practice / Edition 2,Theodore S. Rappaport,Prentice Hall,,978-0130422323,736,$93.97,Series: Prentice Hall Communications Engineering and Emerging Technologies Series from T; Product_dimensions: 7.38(w) x 9.56(h) x 1.67(d),
+semi-heterr_11720,GO! with Microsoft Office 2013 Getting Started / Edition 1,Shelley Gaskin# Robert Ferrett# Alicia Vargas# Carolyn McLellan,Prentice Hall,,978-0133349788,352,,Product_dimensions: 8.50(w) x 10.70(h) x 0.60(d),
+semi-heterr_11739,"Microsoft Office 2010: Illustrated Introductory, First Course / Edition 1",David W. Beskeen# Carol Cram# Jennifer Duffy# Lisa Friedrichsen,Cengage Learning,,978-0538747158,680,,Series: Available Titles Skills Assessment Manager (SAM) - Office 2010 Series; Product_dimensions: 8.90(w) x 10.80(h) x 1.00(d),
+semi-heterr_11804,"CompTIA Network+ Certification Study Guide, 5th Edition (Exam N10-005)",Glen E. Clarke,McGraw-Hill Education,,978-0071799829,800,$37.50,Series: CompTIA Authorized,
+semi-heterr_11838,Adobe Fireworks CS6 Classroom in a Book,Adobe Creative Team,Adobe Press,,978-0321822444,352,$36.07,Series: Classroom in a Book Series; Product_dimensions: 7.30(w) x 9.00(h) x 0.90(d),
+semi-heterr_11909,Surface For Dummies,Andy Rathbone,Wiley,,978-1118898635,336,$21.76,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.20(h) x 0.40(d),
+semi-heterr_12125,Microsoft SharePoint 2013 Plain & Simple,Johnathan Lightfoot# Michelle Lopez# Scott Metker,Microsoft Press,,978-0735667006,464,$23.04,Product_dimensions: 9.10(w) x 7.30(h) x 0.75(d),
+semi-heterr_12165,MCSA Windows Server 2012 R2 Administration Study Guide: Exam 70-411,William Panek,Wiley,,978-1118870181,420,$29.02,Product_dimensions: 7.20(w) x 9.10(h) x 1.00(d),
+semi-heterr_12175,Microsoft Office Project 2007 Step by Step [With CDROM],Carl Chatfield# Timothy Johnson D.,Microsoft Press,,978-0735623057,560,$18.42,Series: Microsoft Step by Step Series; Product_dimensions: 7.40(w) x 8.90(h) x 1.30(d),
+semi-heterr_12187,Adobe Illustrator CS5 Classroom in a Book,Adobe Creative Team,Adobe Press,,978-0321701787,463,$30.22,Series: Classroom in a Book Series; Product_dimensions: 7.30(w) x 9.00(h) x 1.00(d),
+semi-heterr_12249,Getting Started with MATLAB / Edition 8,Rudra Pratap,"Oxford University Press, USA",,978-0199731244,288,$37.85,Product_dimensions: 9.24(w) x 7.52(h) x 0.51(d),
+semi-heterr_12314,Charts and Graphs: Microsoft Excel 2010,Bill Jelen,Que,,978-0789743121,459,$25.97,Series: MrExcel Library Series; Product_dimensions: 6.90(w) x 9.00(h) x 1.00(d),
+semi-heterr_12359,"Mike Meyers' CompTIA Network+ Guide to Managing and Troubleshooting Networks, 3rd Edition (Exam N10-005)",Mike Meyers,McGraw-Hill Education,,978-0071799812,684,$62.49,Series: CompTIA Authorized,
+semi-heterr_12369,"New Perspectives on Microsoft Windows 8, Comprehensive",June Jamrich Parsons,Cengage Learning,,978-1285080871,680,$145.93,Series: New Perspectives Series; Product_dimensions: 8.60(w) x 10.80(h) x 1.00(d),
+semi-heterr_12532,GO! with Microsoft Excel 2013 Brief / Edition 1,Shelley Gaskin# Alicia Vargas,Prentice Hall,,978-0133414424,272,,Series: GO! Series; Product_dimensions: 8.70(w) x 10.70(h) x 0.60(d),
+semi-heterr_12592,Adobe Photoshop Elements 10 Classroom in a Book,Adobe Creative Team,Adobe Press,,978-0321811004,320,$29.05,Series: Classroom in a Book Series; Product_dimensions: 7.20(w) x 9.00(h) x 0.90(d),
+semi-heterr_12619,My Samsung Galaxy Tab 2,Eric Butow# Lonzell Watson,Que,,978-0789750389,318,$16.22,Series: My... Series; Product_dimensions: 5.90(w) x 8.90(h) x 0.70(d),
+semi-heterr_12634,"New Perspectives on Microsoft PowerPoint 2013, Comprehensive",S. Scott Zimmerman,Cengage Learning,,978-1285161822,480,$106.54,Series: New Perspectives Series; Product_dimensions: 8.50(w) x 10.80(h) x 0.90(d),
+semi-heterr_12661,Managing Information Security,John R. Vacca,Elsevier Science,,978-0124166882,372,$43.06,Product_dimensions: 7.50(w) x 9.40(h) x 0.70(d),
+semi-heterr_12682,"Mike Meyers' CompTIA Network+ Guide to Managing and Troubleshooting Networks Lab Manual, Fourth Edition (Exam N10-006)",Mike Meyers# Jonathan Weissman,McGraw-Hill Professional Publishing,,978-0071844604,496,$50.00,Product_dimensions: 10.70(w) x 8.30(h) x 0.90(d),
+semi-heterr_12704,Office 2011 for Macintosh: The Missing Manual,Chris Grover,"O'Reilly Media, Incorporated",,978-1449393359,789,$22.23,Series: Missing Manual Series; Product_dimensions: 9.20(w) x 6.88(h) x 1.61(d),
+semi-heterr_12981,Windows 10 For Dummies,Andy Rathbone,Hoepli,,978-8820371135,428,,,
+semi-heterr_12991,Excel 2003 For Dummies,Greg Harvey,Wiley,,978-0764537561,408,$16.75,Series: For Dummies Series; Product_dimensions: 7.22(w) x 9.22(h) x 0.87(d),
+semi-heterr_13066,Beginning T-SQL with Microsoft SQL Server 2005 and 2008,Paul Turley# Dan Wood,Wiley,,978-0470257036,672,$25.02,Product_dimensions: 7.40(w) x 9.10(h) x 1.40(d),
+semi-heterr_13134,"Microsoft Office 2010: A Case Approach, Introductory / Edition 1",Linda O'Leary# Timothy O'Leary# O'Leary Linda,McGraw-Hill Higher Education,,978-0073519302,1304,,Product_dimensions: 8.50(w) x 10.90(h) x 1.50(d),
+semi-heterr_13170,Exploring Adobe InDesign CS6,Terry Rydberg,Cengage Learning,,978-1133693284,416,$42.40,Series: Computing Exploring Series; Product_dimensions: 7.80(w) x 9.90(h) x 0.80(d),
+semi-heterr_13206,AARP Word 2010 For Dummies,Dan Gookin,Wiley,,978-1118232620,64,,,
+semi-heterr_13305,Professional Microsoft SQL Server 2012 Reporting Services,Paul Turley# Robert M. Bruckner# Thiago Silva# Ken Withee,Wiley,,978-1118101117,912,$30.40,Product_dimensions: 7.30(w) x 9.20(h) x 1.70(d),
+semi-heterr_13342,Windows Server 2008 R2 Unleashed,Rand Morimoto# Michael Noel# Omar Droubi# Ross Mistry,Sams,,978-0672330926,1653,$38.15,Series: Unleashed Series; Product_dimensions: 7.10(w) x 9.30(h) x 2.40(d),
+semi-heterr_13370,"Mike Meyers' CompTIA Network+ Guide to Managing and Troubleshooting Networks, Fourth Edition (Exam N10-006)",Mike Meyers,McGraw-Hill Professional Publishing,,978-0071848275,1,$85.00,Series: Mike Meyers' Computer Skills Series; Product_dimensions: 8.40(w) x 10.70(h) x 1.20(d),
+semi-heterr_13405,"New Perspectives on Microsoft Office Access 2010, Introductory",Joseph J. Adamski# Dan Oja# Kathy T. Finnegan,Cengage Learning,,978-0538798488,560,$100.77,Series: New Perspectives Series: Individual Office Applications Series; Product_dimensions: 8.40(w) x 10.70(h) x 0.80(d),
+semi-heterr_13507,Windows 8.1 for Seniors Quicksteps,Marty Matthews,McGraw-Hill Professional Publishing,,978-0071832588,272,$19.39,Series: QuickSteps Series; Product_dimensions: 7.70(w) x 9.90(h) x 0.60(d),
+semi-heterr_13598,Teach Yourself VISUALLY Windows 8,Paul McFedries,Wiley,,978-1118135280,352,$19.27,Series: Teach Yourself VISUALLY (Tech) Series; Product_dimensions: 7.30(w) x 9.10(h) x 0.70(d),
+semi-heterr_13643,Mac OS X Lion: The Missing Manual,David Pogue,"O'Reilly Media, Incorporated",,978-1449397494,932,$22.90,Product_dimensions: 7.00(w) x 9.10(h) x 2.10(d),
+semi-heterr_13654,Adobe Acrobat 6 PDF For Dummies,Greg Harvey,Wiley,,978-0764537608,412,$17.61,Series: For Dummies Series; Product_dimensions: 7.42(w) x 9.02(h) x 0.95(d),
+semi-heterr_13655,Microsoft Project 2010: The Missing Manual,Bonnie Biafore,"O'Reilly Media, Incorporated",,978-1449381950,745,$28.41,Series: Missing Manual Series; Product_dimensions: 7.00(w) x 9.10(h) x 1.80(d),
+semi-heterr_13697,Microsoft Excel 2013: Introductory,Steven M. Freund,Cengage Learning,,978-1285168562,320,$73.89,Series: Shelly Cashman Series; Product_dimensions: 8.40(w) x 10.70(h) x 0.40(d),
+semi-heterr_13708,Interactive Computer Graphics with WebGL / Edition 7,Edward Angel# Dave Shreiner,Pearson,,978-0133574845,864,$117.31,Product_dimensions: 8.20(w) x 10.10(h) x 1.20(d),
+semi-heterr_13730,Excel 2007 Power Programming with VBA / Edition 1,John Walkenbach,Wiley,,978-0470044018,1104,$26.65,Series: Mr. Spreadsheet's Bookshelf Series; Product_dimensions: 9.20(w) x 7.22(h) x 2.05(d),
+semi-heterr_13818,Analog Interfacing to Embedded Microprocessor Systems / Edition 2,Stuart Ball,Elsevier Science,,978-0750677233,320,,Series: Embedded Technology Series; Product_dimensions: 6.90(w) x 9.10(h) x 0.90(d),
+semi-heterr_13904,AARP Outlook 2010 For Dummies,Bill Dyszel,Wiley,,978-1118232316,64,,,
+semi-heterr_14002,Macs For Dummies,Edward C. Baig,Wiley,,978-1118898697,456,$18.26,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.20(h) x 0.90(d),
+semi-heterr_14003,Windows 7 Simplified,Paul McFedries,Wiley,,978-0470503874,272,$17.80,Series: Simplified Series; Product_dimensions: 8.40(w) x 9.90(h) x 0.70(d),
+semi-heterr_14008,Laptops For Dummies,Dan Gookin,Wiley,,978-1118115336,384,$19.26,Series: For Dummies Series; Product_dimensions: 7.40(w) x 9.20(h) x 0.90(d),
+semi-heterr_14029,MacBook Air Portable Genius,Paul McFedries,Wiley,,978-1118370209,320,$19.64,Series: Portable Genius Series; Product_dimensions: 5.90(w) x 8.90(h) x 0.70(d),
+semi-heterr_14035,Office 2010: The Missing Manual,Nancy Conner# Matthew MacDonald,"O'Reilly Media, Incorporated",,978-1449382407,926,$26.36,Series: Missing Manual Series; Product_dimensions: 7.00(w) x 9.10(h) x 2.10(d),
+semi-heterr_14134,Photoshop Elements 12: The Missing Manual,Barbara Brundage,"O'Reilly Media, Incorporated",,978-1449341657,648,$33.12,Product_dimensions: 7.00(w) x 9.10(h) x 1.10(d),
+semi-heterr_14184,The Garmin nuvi Pocket Guide,Jason D. O'Grady,Peachpit Press,,978-0321658593,192,$13.45,Series: Pearson Pocket Guide Series; Product_dimensions: 5.10(w) x 7.10(h) x 0.80(d),
+semi-heterr_14284,Word 2010 All-in-One For Dummies,Doug Lowe,Wiley,,978-0470487662,648,$25.32,Series: For Dummies Series; Product_dimensions: 7.40(w) x 9.20(h) x 1.50(d),
+semi-heterr_14296,Digital Image Processing / Edition 3,Rafael C. Gonzalez# Richard E. Woods# Richard E. Woods,Prentice Hall,,978-0131687288,976,$178.32,Series: Alternative eText Formats Series; Product_dimensions: 6.60(w) x 9.40(h) x 1.50(d),
+semi-heterr_14339,PowerPoint 2007 For Dummies,Doug Lowe,Wiley,,978-0470040591,360,$15.68,Series: For Dummies Series; Product_dimensions: 7.40(w) x 9.20(h) x 1.10(d),
+semi-heterr_14374,Modern Digital and Analog Communication Systems.,B. P. Lathi,Oxford University Press,,978-0195384932,,$170.84,,
+semi-heterr_14382,Exploring Microsoft Office Access 2010 Comprehensive,Robert Grauer# Mary Anne Poatsy# Keith Mast# Lynn Hogan,Prentice Hall,,978-0135098257,740,$121.32,Series: Custom PHIT: the Pearson Custom Program for CIS Series; Product_dimensions: 9.00(w) x 10.70(h) x 0.90(d),
+semi-heterr_14411,"Exploring: Microsoft Access 2013, Introductory / Edition 1",Mary Anne Poatsy# Cynthia Krebs# Eric Cameron# Robert T. Grauer,Prentice Hall,,978-0133412192,352,,Series: Exploring Series; Product_dimensions: 8.90(w) x 10.80(h) x 0.60(d),
+semi-heterr_14437,"Exploring: Microsoft Excel 2013, Introductory / Edition 1",Mary Anne Poatsy# Keith Mulbery# Robert T. Grauer,Prentice Hall,,978-0133412178,352,,Series: Exploring Series; Product_dimensions: 8.80(w) x 10.70(h) x 0.60(d),
+semi-heterr_14440,"The Web Collection, Revealed Premium Edition: Adobe Dreamweaver CS6, Flash CS6 and Photoshop CS6",Sherry Bishop# Shuman# Reding,Cengage Learning,,978-1133815143,984,$85.47,Series: Adobe CS6 Series; Product_dimensions: 7.50(w) x 9.50(h) x 1.90(d),
+semi-heterr_14528,"New Perspectives on Microsoft Windows 8, Introductory",June Jamrich Parsons,Cengage Learning,,978-1285080888,376,$111.64,Series: New Perspectives Series; Product_dimensions: 8.20(w) x 10.70(h) x 0.60(d),
+semi-heterr_14603,Microsoft .NET - Architecting Applications for the Enterprise,Dino Esposito# Andrea Saltarello,Microsoft Press,,978-0735685352,416,$28.31,Product_dimensions: 7.40(w) x 8.90(h) x 1.00(d),
+semi-heterr_14711,Excel 2007 VBA Programmer's Reference,John Green# Michael Alexander# Stephen Bullen# Rob Bovey,Wiley,,978-0470046432,1176,$24.79,Series: Programmer to Programmer Series; Product_dimensions: 7.46(w) x 9.20(h) x 2.12(d),
+semi-heterr_14712,Samsung Galaxy Note For Dummies,Dan Gookin,Wiley,,978-1118388464,384,$15.54,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.10(h) x 0.80(d),
+semi-heterr_14720,Microsoft Office Word 2010: Illustrated Brief / Edition 1,Jennifer Duffy,Cengage Learning,,978-0538748223,152,$47.95,Series: Available Titles Skills Assessment Manager (SAM) - Office 2010 Series; Product_dimensions: 8.30(w) x 10.70(h) x 0.30(d),
+semi-heterr_14722,Microsoft PowerPoint 2010: Illustrated Brief / Edition 1,David W. Beskeen,Cengage Learning,,978-0538748308,144,$45.07,Series: Available Titles Skills Assessment Manager (SAM) - Office 2010 Series; Product_dimensions: 8.40(w) x 10.60(h) x 0.30(d),
+semi-heterr_14723,Inside Microsoft SharePoint 2013,Scot Hillier# Ted Pattison# Mirjam van Olst# Andrew Connell,Microsoft Press,,978-0735674479,776,$31.05,Series: Developer Reference Series; Product_dimensions: 7.40(w) x 8.90(h) x 1.70(d),
+semi-heterr_14750,JavaScript: Visual QuickStart Guide,Dori Smith# Tom Negrino,Peachpit Press,,978-0321996701,552,$29.02,Product_dimensions: 7.00(w) x 9.00(h) x 1.10(d),
+semi-heterr_14751,Dreamweaver CC: The Missing Manual: Covers 2014 release,David Sawyer McFarland# Chris Grover,"O'Reilly Media, Incorporated",,978-1491947203,1028,$36.34,Product_dimensions: 6.90(w) x 9.10(h) x 1.90(d),
+semi-heterr_14920,CompTIA Security+ Certification Study Guide (Exam SY0-301),Glen E. Clarke,McGraw-Hill Education,,978-0071771399,864,$28.99,Series: Official CompTIA Guide,
+semi-heterr_14924,Beginning Microsoft SQL Server 2012 Programming,Paul Atkinson# Robert Vieira,Wiley,,978-1118102282,864,$25.72,Product_dimensions: 7.40(w) x 9.20(h) x 1.60(d),
+semi-heterr_14933,Droid 4 For Dummies,John Wiley & Sons,Wiley,,978-1118336748,256,$18.99,Series: For Dummies Series; Product_dimensions: 6.00(w) x 8.90(h) x 0.30(d),
+semi-heterr_14948,Essential C# 5.0,Mark Michaelis# Eric Lippert,Addison-Wesley,,978-0321877581,1032,$41.13,Series: Microsoft Windows Development Series; Product_dimensions: 7.00(w) x 9.00(h) x 2.10(d),
+semi-heterr_15154,Adobe Photoshop Elements 11 Classroom in a Book,Sandee Adobe Creative Team,Adobe Press,,978-0321883681,320,$31.77,Product_dimensions: 7.30(w) x 9.10(h) x 0.70(d),
+semi-heterr_15179,Mobile Marketing For Dummies,Michael Becker# John Arnold,Wiley,,978-0470616680,384,$20.19,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.20(h) x 0.90(d),
+semi-heterr_15198,Excel 2007 VBA Programming For Dummies,John Walkenbach,Wiley,,978-0470046746,388,$22.65,Series: For Dummies Series; Product_dimensions: 7.40(w) x 9.20(h) x 0.81(d),
+semi-heterr_15206,"New Perspectives on Microsoft PowerPoint 2010, Comprehensive",S. Scott Zimmerman# Beverly B. Zimmerman# Katherine T. Pinard,Cengage Learning,,978-0538753722,600,$134.95,Series: New Perspectives Series: Individual Office Applications Series; Product_dimensions: 8.40(w) x 10.70(h) x 0.90(d),
+semi-heterr_15359,Computer Forensics: Hard Disk and Operating Systems / Edition 1,EC-Council,Cengage Learning,,978-1435483507,608,$46.42,Series: EC-Council Press Series; Product_dimensions: 8.40(w) x 10.80(h) x 0.70(d),711
+semi-heterr_15515,Microsoft Windows 7: Illustrated Essentials / Edition 1,Barbara Clemens,Cengage Learning,,978-0538750776,64,$31.07,Series: Available Titles Skills Assessment Manager (SAM) - Office 2010 Series; Product_dimensions: 8.10(w) x 10.60(h) x 0.20(d),
+semi-heterr_15594,"Microsoft Office 2013: Illustrated, Second Course",David W. Beskeen# Carol M. Cram# Jennifer Duffy,Cengage Learning,,978-1285082264,512,,Series: Illustrated Series; Product_dimensions: 9.20(w) x 10.60(h) x 1.00(d),
+semi-heterr_15671,"New Perspectives on Microsoft Windows 7, Introductory / Edition 2",June Jamrich Parsons# Lisa Ruffolo# Patrick Carey# Dan Oja,Cengage Learning,,978-0538746014,328,$134.36,Series: Available Titles Skills Assessment Manager (SAM) - Office 2010 Series; Product_dimensions: 8.40(w) x 10.70(h) x 0.80(d),
+semi-heterr_15691,"Switching to the Mac: The Missing Manual, Mavericks Edition",David Pogue,"O'Reilly Media, Incorporated",,978-1449372262,800,$18.53,Product_dimensions: 7.00(w) x 9.20(h) x 1.70(d),
+semi-heterr_15755,How to Do Everything iCloud,Jason R. Rich,McGraw-Hill Education,,978-0071790185,272,$15.06,Series: How to Do Everything Series,
+semi-heterr_15807,Photoshop Elements 12 For Dummies,Barbara Obermeier# Ted Padova,Wiley,,978-1118727140,448,$18.92,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.10(h) x 1.00(d),
+semi-heterr_15840,"New Perspectives on Adobe Photoshop CS6, Comprehensive",Jane Hosie-Bounar# Kelly Hart# Mitch Geller,Cengage Learning,,978-1133526315,520,$144.95,Series: Adobe CS6 by Course Technology Series; Product_dimensions: 8.50(w) x 10.70(h) x 0.90(d),
+semi-heterr_15880,The Adobe Photoshop Lightroom Book for Digital Photographers,Scott Kelby,Pearson Education,,978-0132798167,416,$18.49,Series: Voices That Matter,
+semi-heterr_15882,Mac OS X Snow Leopard For Dummies,Bob LeVitus# Levitus,Wiley,,978-0470435434,456,$22.09,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.20(h) x 1.10(d),
+semi-heterr_15886,Cleaning Windows XP For Dummies,Allen Wyatt,Wiley,,978-0764575495,360,$21.99,Series: For Dummies Series; Product_dimensions: 7.40(w) x 9.20(h) x 0.79(d),
+semi-heterr_15989,Applied Microsoft Business Intelligence,Patrick LeBlanc# Jessica M. Moss# Dejan Sarka# Dustin Ryan,Wiley,,978-1118961773,432,$39.43,Product_dimensions: 7.30(w) x 9.20(h) x 0.90(d),
+semi-heterr_16182,"Exploring: Microsoft PowerPoint 2013, Comprehensive / Edition 1",Mary Anne Poatsy# Amy M. Rutledge# Rebecca Lawson# Robert T. Grauer,Prentice Hall,,978-0133406443,560,,Series: Exploring Series; Product_dimensions: 9.20(w) x 10.90(h) x 0.50(d),
+semi-heterr_16201,Teach Yourself VISUALLY Complete Mac Pro,Paul McFedries,Wiley,,978-1118826454,552,$25.37,Series: Teach Yourself VISUALLY (Tech) Series; Product_dimensions: 7.30(w) x 9.20(h) x 1.10(d),
+semi-heterr_16208,Getting an Information Security Job For Dummies,Peter H. Gregory,Wiley,,978-1119002819,336,$18.17,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.20(h) x 0.90(d),
+semi-heterr_16220,iPad Portable Genius,Paul McFedries,Wiley,,978-1118932148,352,$16.17,Series: Portable Genius Series; Product_dimensions: 5.90(w) x 8.90(h) x 0.80(d),
+semi-heterr_16284,Teach Yourself VISUALLY PCs,Elaine Marmel,Wiley,,978-0470888469,352,$23.85,Series: Teach Yourself VISUALLY (Tech) Series; Product_dimensions: 7.30(w) x 9.10(h) x 0.90(d),
+semi-heterr_16428,QuickBooks 2010 For Dummies,Stephen L. Nelson,Wiley,,978-0470505359,408,$17.06,Series: For Dummies Series; Product_dimensions: 7.40(w) x 9.20(h) x 1.00(d),
+semi-heterr_16517,Photoshop Elements 11: Visual QuickStart Guide,Jeff Carlson,Peachpit Press,,978-0321885159,400,$29.82,Product_dimensions: 6.90(w) x 8.90(h) x 0.90(d),
+semi-heterr_16579,How To Do Everything With Your Scanner,Dave Huss# Jill Gilbert# Jill How Gilbert,McGraw-Hill/OsborneMedia,,978-0072228915,324,,Series: How to Do Everything Series; Product_dimensions: 0.68(w) x 7.50(h) x 9.25(d),
+semi-heterr_16584,OS X Mountain Lion For Dummies,Bob LeVitus,Wiley,,978-1118394182,480,$19.82,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.10(h) x 1.00(d),
+semi-heterr_16668,C# 2008 For Dummies,Chuck Sphar# Stephen Randy Davis,Wiley,,978-0470191095,456,$29.99,Series: For Dummies Series; Product_dimensions: 9.00(w) x 7.38(h) x 0.97(d),
+semi-heterr_16690,Knight's 24-Hour Trainer: Microsoft SQL Server 2008 Integration Services [With DVD],Brian Knight# Devin Knight# Mike Davis,Wiley,,978-0470496923,384,$33.23,Product_dimensions: 7.30(w) x 9.10(h) x 1.20(d),
+semi-heterr_16738,Professional Team Foundation Server 2010,Ed Blankenship# Martin Woodward# Grant Holliday# Brian Keller,Wiley,,978-0470943328,720,$48.26,Product_dimensions: 7.40(w) x 9.20(h) x 1.40(d),
+semi-heterr_16751,AppleScript: The Missing Manual: The Missing Manual,Adam Goldstein# David Reynolds# Tonya Engst,"O'Reilly Media, Incorporated",,978-0596008505,352,$23.54,Series: Missing Manual Series; Product_dimensions: 7.04(w) x 9.18(h) x 0.88(d),
+semi-heterr_16775,Windows Vista for Starters: The Missing Manual,David Pogue,"O'Reilly Media, Incorporated",,978-0596528263,426,$24.99,Series: Missing Manual Series; Product_dimensions: 7.06(w) x 9.16(h) x 0.98(d),
+semi-heterr_16784,Enterprise Security Architecture: A Business-Driven Approach,Nicholas A Sherwood# Andrew Clark# David Lynas,Taylor & Francis,,978-1578203185,608,$72.18,Product_dimensions: 8.30(w) x 10.28(h) x 1.68(d),
+semi-heterr_16797,Mac OS X Lion For Dummies,Bob LeVitus,Wiley,,978-1118022054,480,$24.99,Series: For Dummies Series; Product_dimensions: 9.10(w) x 7.40(h) x 1.00(d),
+semi-heterr_16856,Windows Small Business Server 2011 Administrator's Companion,Charlie Russel# Sharon Crawford,Microsoft Press,,978-0735649118,832,$37.91,Series: Admin Companion Series; Product_dimensions: 7.40(w) x 8.90(h) x 1.40(d),
+semi-heterr_16989,GO! with Microsoft Office 2010 Volume 1,Shelley Gaskin# Robert Ferrett# Alicia Vargas# Carolyn E. McLellan,Prentice Hall,,978-0132454469,1000,$156.16,Series: Custom PHIT: the Pearson Custom Program for CIS Series; Product_dimensions: 9.40(w) x 10.90(h) x 1.40(d),
+semi-heterr_17056,Microsoft Office Access 2007 Inside Out,Jeff Conrad# John Viescas,Microsoft Press,,978-0735623255,1488,$33.41,Series: Microsoft Inside Out Series; Product_dimensions: 7.20(w) x 8.92(h) x 2.50(d),
+semi-heterr_17084,Information Systems Auditing: The IS Audit Follow-up Process,Robert E. Davis,Robert E. Davis,,294-0032859956,,,Series: Information Systems Auditing,
+semi-heterr_17099,New Perspectives on Microsoft Word 2010: Comprehensive,S. Scott Zimmerman# Beverly B. Zimmerman# Ann Shaffer# Katherine T. Pinard,Cengage Learning,,978-0538748926,760,$170.41,Series: New Perspectives Series: Individual Office Applications Series; Product_dimensions: 8.40(w) x 10.70(h) x 1.10(d),
+semi-heterr_17189,The iPad Pocket Guide,Jeff Carlson,Peachpit Press,,978-0321717580,223,$14.99,Series: Pearson Pocket Guide Series; Product_dimensions: 5.00(w) x 6.90(h) x 0.50(d),
+semi-heterr_17216,Cisco QOS Exam Certification Guide,Wendell Odom# Michael J. Cavanaugh,Cisco Press,,978-1587201240,768,$61.59,Series: Exam Certification Guide; Product_dimensions: 7.56(w) x 9.42(h) x 1.88(d),
+semi-heterr_17270,Managing Software Requirements: A Use Case Approach (Addison-Wesley Object Technology Series) / Edition 2,Dean Leffingwell# Don Widrig# Don Widrig,Addison-Wesley,,978-0321122476,502,,Series: Addison-Wesley Object Technology Series; Product_dimensions: 7.60(w) x 9.60(h) x 1.32(d),
+semi-heterr_17439,Internet Marketing Personal Development,Alan Smith,Alan Smith,,294-0015946208,43,,,
+semi-heterr_17510,Introduction to UNIX / Edition 2,David I. Schwartz,Prentice Hall,,978-0130613080,272,$52.49,Series: ESource Series; Product_dimensions: 7.95(w) x 9.84(h) x 0.55(d),
+semi-heterr_17596,Police Technology / Edition 1,Raymond E. Foster LAPD Retired# MPA,Prentice Hall,,978-0131149571,464,$69.35,Series: Pearson Criminal Justice Series; Product_dimensions: 7.90(w) x 9.90(h) x 1.30(d),
+semi-heterr_17786,David Pogue's Digital Photography: The Missing Manual,David Pogue,"O'Reilly Media, Incorporated",,978-0596154035,304,$19.76,Series: Missing Manual Series; Product_dimensions: 5.90(w) x 8.90(h) x 0.80(d),
+semi-heterr_17799,"The O'Leary Series: Microsoft Office Word 2013, Introductory / Edition 1",Linda O'Leary# Timothy O'Leary,McGraw-Hill Professional Publishing,,978-0077400217,360,,,
+semi-heterr_17868,CompTIA A+ Quick Reference (220-801 and 220-802),Mark Edward Soper,Pearson Education,,978-0133134377,240,,Series: Quick Reference,
+semi-heterr_17884,JavaScript: Visual QuickStart Guide,Tom Negrino# Dori Smith,Peachpit Press,,978-0321772978,544,$21.49,Series: Visual QuickStart Guide Series; Product_dimensions: 7.00(w) x 8.90(h) x 1.20(d),
+semi-heterr_18221,iPhoto 6: The Missing Manual,David Pogue# Derrick Story,"O'Reilly Media, Incorporated",,978-0596527259,408,$29.99,Series: Missing Manual Series; Product_dimensions: 7.09(w) x 9.13(h) x 1.00(d),
+semi-heterr_18325,Adobe Premiere Pro CS5 Classroom in a Book,Adobe Creative Team,Pearson Education,,978-0321717825,416,$27.99,Series: Classroom in a Book Series,
+semi-heterr_18695,"How to Do Everything iPod, iPhone & iTunes, Fifth Edition",Guy Hart-Davis,McGraw-Hill Education,,978-0071630238,512,$14.49,Series: How to Do Everything Series,
+semi-heterr_18907,Programming C# 4.0,Ian Griffiths# Matthew Adams# Jesse Liberty,"O'Reilly Media, Incorporated",,978-0596159832,830,$34.64,Series: Animal Guide Series; Product_dimensions: 6.90(w) x 9.10(h) x 1.60(d),
+semi-heterr_19360,Exploring Microsoft SharePoint 2013: New Features & Functions,Penelope Coventry,Microsoft Press,,978-0735675520,200,$16.03,Product_dimensions: 7.20(w) x 9.10(h) x 0.60(d),
+semi-heterr_19371,iPhoto '11: The Missing Manual,David Pogue# Lesa Snider,"O'Reilly Media, Incorporated",,978-1449393236,384,$21.36,Series: Missing Manual Series; Product_dimensions: 7.00(w) x 9.10(h) x 0.60(d),
+semi-heterr_19751,C# 2010 All-in-One For Dummies,Bill Sempf# Stephen Randy Davis# Charles Sphar,Wiley,,978-0470563489,864,$23.80,Series: For Dummies Series; Product_dimensions: 7.30(w) x 9.20(h) x 1.80(d),
+semi-heterr_19851,How To Do Everything With Your Digital Camera,Dave Johnson,McGraw-Hill/OsborneMedia,,978-0072127720,416,$26.95,Series: How to Do Everything Series; Product_dimensions: 0.85(w) x 7.50(h) x 9.25(d),
+semi-heterr_19858,Optical Filter Design and Analysis: A Signal Processing Approach / Edition 1,Christi K. Madsen# Jian H. Zhao,Wiley,,978-0471183730,432,,Series: Wiley Series in Microwave and Optical Engineering Series; Product_dimensions: 6.46(w) x 9.76(h) x 1.01(d),
+semi-heterr_19915,Adobe Premiere Elements 2.0 Classroom in a Book,Adobe Creative Team,Pearson Education,,978-0132798068,264,$21.07,Series: Classroom in a Book Series,
+semi-heterr_20000,"Mac OS X, Panther Edition: The Missing Manual",David Pogue,"O'Reilly Media, Incorporated",,978-0596006150,776,$29.95,Series: Missing Manual Series; Product_dimensions: 7.04(w) x 9.20(h) x 1.84(d),
+semi-heterr_20042,Schaum's Outline of XML,Ed Tittel,McGraw-Hill Education,,978-0071398350,160,$9.99,,
+semi-heterr_20212,Adobe Analytics with SiteCatalyst Classroom in a Book,Sandee Adobe Creative Team# Vidya Subramanian,Adobe Press,,978-0321926937,313,$55.87,Product_dimensions: 7.40(w) x 9.00(h) x 0.60(d),

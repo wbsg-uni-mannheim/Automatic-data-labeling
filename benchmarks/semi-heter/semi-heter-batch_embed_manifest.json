@@ -1,0 +1,33 @@
+{
+  "dataset": "semi-heter",
+  "model": "text-embedding-3-small",
+  "dimensions": 256,
+  "left_csv": "benchmarks/semi-heter/semi-heter-train-left.csv",
+  "right_csv": "benchmarks/semi-heter/semi-heter-train-right.csv",
+  "left_unique_rows": 994,
+  "right_unique_rows": 1049,
+  "embed_fields": {
+    "left": [
+      "title",
+      "authors",
+      "publisher",
+      "year",
+      "isbn",
+      "pages",
+      "price"
+    ],
+    "right": [
+      "title",
+      "authors",
+      "publisher",
+      "year",
+      "isbn",
+      "pages",
+      "price"
+    ]
+  },
+  "left_batch_jsonl": "benchmarks/semi-heter/semi-heter-batch_embed_left.jsonl",
+  "right_batch_jsonl": "benchmarks/semi-heter/semi-heter-batch_embed_right.jsonl",
+  "left_map_csv": "benchmarks/semi-heter/semi-heter-batch_embed_left_map.csv",
+  "right_map_csv": "benchmarks/semi-heter/semi-heter-batch_embed_right_map.csv"
+}

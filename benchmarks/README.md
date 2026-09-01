@@ -33,3 +33,14 @@ The two WDC embedding matrices are about 117 MB each, which is over GitHub's 100
 - `benchmarks/wdc/embeddings/wdc_right_embeddings.npy`
 
 To rebuild them, embed the records in `benchmarks/wdc/batch_embed_left.jsonl` and `benchmarks/wdc/batch_embed_right.jsonl` with the same model. Each line is an OpenAI `/v1/embeddings` request keyed by `custom_id` (`left-0`, `left-1`, and so on). Stack the returned vectors in `custom_id` order into a `(rows × 256)` float array and save each side as the `.npy` file named above. The embeddings for the other four benchmarks are small and are included directly.
+
+## Added for the revision (2026-09)
+
+- `dn7-walmart-amazon/` — Walmart-Amazon re-blocked with DeepBlocker (Papadakis et al., ICDE 2024).
+- `semi-heter/` — Machamp Semi-HETER, book domain, heterogeneous schemas canonicalized.
+- `billiger-de/`, `billiger-en/` — billiger.de Products in the WDC layout (German / English).
+
+These ship without `embeddings/*.npy`; build them with
+`python scripts/labeling/build_embeddings.py --benchmark <name>` (writes the same batch request files,
+row maps and manifest as above). Converters live in `scripts/benchmarks/`, the run order in
+`docs/NEW_BENCHMARKS_RUNBOOK.md`.
