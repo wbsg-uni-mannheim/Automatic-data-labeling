@@ -1,12 +1,10 @@
 # Scripts
 
-The public workflow, plus an archive of everything else.
-
-| Directory | Purpose |
+| Path | Purpose |
 |---|---|
-| `labeling/` | The three workflows that build machine-labeled training sets. |
-| `training/` | Student-model training: XGBoost, Ditto, Qwen. |
-| `post_processing/` | Relabeling and post-filter variants. |
-| `archive/` | Earlier scripts and internals, kept for reference. |
-
-Start with `labeling/`, then `training/`. Reach for `post_processing/` only to build the relabel and filter variants.
+| `labeling/` | The three pair-selection workflows that build machine-labeled training sets. |
+| `post_processing/` | Relabeling with the review prompt and closure-based filtering. |
+| `training/` | Training and evaluation of the XGBoost, Ditto, and Qwen3 students. |
+| `benchmarks/` | Converters that build Dn7, billiger.de, and Semi-HETER from their original releases. |
+| `archive/` | Helpers that the entry points call, and the scripts that cut the acquired sets to the reported sizes. |
+| `compute_composition.py` | Computes the training-set composition of Table 10. |

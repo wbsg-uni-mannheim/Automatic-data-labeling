@@ -90,12 +90,14 @@ def evaluate_loop(
     ctx: DistContext,
     tokenizer=None,
     threshold: float | None = None,
+    loader: DataLoader | None = None,
 ) -> Dict[str, object]:
     if tokenizer is None:
         raise ValueError("tokenizer is required")
 
-    dataset = PairDataset(examples, tokenizer=tokenizer, max_len=cfg.max_len, da=None)
-    loader, _ = _make_loader(dataset, cfg, ctx, train=False)
+    if loader is None:
+        dataset = PairDataset(examples, tokenizer=tokenizer, max_len=cfg.max_len, da=None)
+        loader, _ = _make_loader(dataset, cfg, ctx, train=False)
 
     model.eval()
     local_records: List[Tuple[int, float, int]] = []
@@ -181,6 +183,8 @@ def train_loop(
         da=cfg.da,
     )
     train_loader, train_sampler = _make_loader(train_dataset, cfg, ctx, train=True)
+    val_dataset = PairDataset(val_examples, tokenizer=tokenizer, max_len=cfg.max_len, da=None)
+    val_loader, _ = _make_loader(val_dataset, cfg, ctx, train=False)
 
     optimizer = AdamW(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
     total_steps = max(1, (len(train_loader) * cfg.epochs) // max(1, cfg.grad_accum_steps))
@@ -257,7 +261,9 @@ def train_loop(
             epoch_loss += float(loss.detach().cpu().item()) * len(y) * max(1, cfg.grad_accum_steps)
             epoch_items += len(y)
 
-        val_metrics_raw = evaluate_loop(model, val_examples, cfg, ctx, tokenizer=tokenizer, threshold=0.5)
+        val_metrics_raw = evaluate_loop(
+            model, val_examples, cfg, ctx, tokenizer=tokenizer, threshold=0.5, loader=val_loader
+        )
 
         if is_rank0(ctx):
             tuned_th, tuned_metrics = tune_threshold_for_f1(val_metrics_raw["labels"], val_metrics_raw["probs"])

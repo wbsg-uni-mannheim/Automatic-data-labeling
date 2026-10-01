@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path("/work/aasteine/Automatic-data-labeling")
+ROOT = Path(__file__).resolve().parents[3]
 
 # benchmark train-only size = max useful chronological N (we floor to 1k below benchmark size)
 BENCHMARK_TRAIN_SIZE = {

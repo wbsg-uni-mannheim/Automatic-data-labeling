@@ -424,6 +424,8 @@ def _build_seed_master(
     left_emb = np.load(embeddings_dir / str(benchmark_cfg["left_emb"]))
     right_emb = np.load(embeddings_dir / str(benchmark_cfg["right_emb"]))
 
+    pool_method = str(labeling_args.get("pool_method", "embedding") or "embedding").strip().lower()
+    pool_fields = [c for c in left_df.columns if c not in {"id", "__rid"} and not str(c).startswith("cluster")]
     candidates, faiss_stats = _build_candidates(
         left_ids=left_df["__rid"].astype(str).to_numpy(),
         right_ids=right_df["__rid"].astype(str).to_numpy(),
@@ -434,6 +436,9 @@ def _build_seed_master(
         candidate_cap=int(labeling_args.get("candidate_cap", 0) or 0),
         bottom_k=int(labeling_args.get("seed_bottom_k", 2) or 2),
         random_state=int(labeling_args.get("faiss_random_state", 42) or 42),
+        method=pool_method,
+        left_text=simple_module._pool_texts(left_df, pool_fields) if pool_method != "embedding" else None,
+        right_text=simple_module._pool_texts(right_df, pool_fields) if pool_method != "embedding" else None,
     )
     candidates_dedup = candidates.copy()
     candidates_dedup["src_id1"] = candidates_dedup["id1"].astype(str).map(left_rid_to_id)

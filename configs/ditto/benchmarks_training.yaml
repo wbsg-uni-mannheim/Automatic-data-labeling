@@ -23,7 +23,8 @@ defaults:
 
 benchmarks:
   wdc:
-    train: benchmarks/wdc/wdcproducts80cc20rnd000un_train_medium.json.gz
+    # Benchmark reference of the paper: the large training set (19,835 pairs), see configs/ditto/revision/wdc_large_seed*.yaml.
+    train: benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz
     valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
     test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
     fields: [title, brand, description, price, priceCurrency]
@@ -38,13 +39,6 @@ benchmarks:
     profiles: [small, medium, large, all]
     field_aliases:
       title: [name]
-
-  amazon-google:
-    train: data/amazon-google/amazon-google-train.json
-    valid: data/amazon-google/amazon-google-train-validation.csv
-    test: data/amazon-google/amazon-google-gs.json.gz
-    fields: [title, manufacturer, price]
-    profiles: [small, medium, large, all]
 
   dblp-acm:
     train: benchmarks/dblp-acm/dblp-acm-train.json.gz
@@ -65,4 +59,27 @@ benchmarks:
     valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
     test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
     fields: [title, category, brand, modelno, price]
+    profiles: [small, medium, large, all]
+
+  dn7-walmart-amazon:
+    train: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    profiles: [medium, large, all]
+
+  semi-heter:
+    train: benchmarks/semi-heter/semi-heter-train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    profiles: [large, xl, all]
+
+  billiger-de:
+    # Benchmark reference: official medium training split (5,897 pairs).
+    # The large split (billiger-de-train.json.gz) only provides the source tables.
+    train: benchmarks/billiger-de/billiger-de-train-medium.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
     profiles: [small, medium, large, all]

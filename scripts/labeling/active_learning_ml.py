@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
+import sys
 import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
@@ -49,6 +50,8 @@ try:
     from xgboost import XGBClassifier  # type: ignore
 except Exception:
     XGBClassifier = None  # type: ignore
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 CANONICAL_SCHEMA_FIELDS: Tuple[str, ...] = (
     "id",
@@ -250,7 +253,7 @@ def _load_df(path: Path, side: str, schema_map: Dict[str, str], strict_schema: b
     return out
 
 
-def _build_candidates(
+def _build_candidates_embedding(
     left_ids: np.ndarray,
     right_ids: np.ndarray,
     right_source_ids: np.ndarray,
@@ -389,6 +392,47 @@ def _build_candidates(
         "unique_pairs_after_cap": int(len(c)),
     }
     return c, stats
+
+
+def _build_candidates(
+    left_ids: np.ndarray,
+    right_ids: np.ndarray,
+    right_source_ids: np.ndarray,
+    left_emb: np.ndarray,
+    right_emb: np.ndarray,
+    k: int,
+    candidate_cap: int,
+    bottom_k: int,
+    random_state: int,
+    method: str = "embedding",
+    left_text: Sequence[str] | None = None,
+    right_text: Sequence[str] | None = None,
+) -> Tuple[pd.DataFrame, Dict[str, int]]:
+    """Candidate pool. ``method`` selects the construction (embedding | bm25 | rrf);
+    the default reproduces the original FAISS pool exactly."""
+    from pool_builders import build_candidates as _pool_build
+
+    return _pool_build(
+        method=method,
+        left_ids=left_ids,
+        right_ids=right_ids,
+        right_source_ids=right_source_ids,
+        left_emb=left_emb,
+        right_emb=right_emb,
+        left_text=left_text,
+        right_text=right_text,
+        k=k,
+        candidate_cap=candidate_cap,
+        bottom_k=bottom_k,
+        random_state=random_state,
+        embedding_builder=_build_candidates_embedding,
+    )
+
+
+def _pool_texts(df: pd.DataFrame, fields: Sequence[str]) -> List[str]:
+    from pool_builders import record_text
+
+    return [record_text(r, fields) for r in df.to_dict("records")]
 
 
 def _label_pair(
@@ -1796,6 +1840,8 @@ def main() -> None:
     parser.add_argument("--faiss-k", type=int, default=20)
     parser.add_argument("--faiss-random-state", type=int, default=42)
     parser.add_argument("--candidate-cap", type=int, default=0, help="0 means no cap (query all left entities)")
+    parser.add_argument("--pool-method", default="embedding", choices=["embedding", "bm25", "rrf", "union"],
+                        help="Candidate-pool construction: embedding (default, paper), bm25, rrf (size-controlled fusion), union (uncapped).")
 
     parser.add_argument("--seed-size", type=int, default=100)
     parser.add_argument("--seed-positives", type=int, default=30)
@@ -1938,6 +1984,9 @@ def main() -> None:
         candidate_cap=args.candidate_cap,
         bottom_k=args.seed_bottom_k,
         random_state=args.faiss_random_state,
+        method=args.pool_method,
+        left_text=_pool_texts(left_df.iloc[: len(left_query_ids)], feature_fields) if args.pool_method != "embedding" else None,
+        right_text=_pool_texts(right_df, feature_fields) if args.pool_method != "embedding" else None,
     )
     # Always dedupe by source-id pair before any labeling.
     candidates_dedup = candidates.copy()

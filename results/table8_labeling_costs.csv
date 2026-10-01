@@ -1,0 +1,33 @@
+benchmark,item,prompt_tokens,completion_tokens,value,usage
+abt-buy,SS,1576203,66840,3.6941,recorded
+abt-buy,AL-ML,1207311,49512,2.8060,recorded
+abt-buy,AL-Ditto,1210313,51592,2.8403,recorded
+walmart-amazon,SS,2316610,105600,5.5325,recorded
+walmart-amazon,AL-ML,1400219,62776,3.3292,recorded
+walmart-amazon,AL-Ditto,1126054,51336,2.6893,recorded
+wdc,SS,6024131,214072,13.5392,recorded
+wdc,AL-ML,4808758,172464,10.8298,recorded
+wdc,AL-Ditto,5828648,208960,13.1256,recorded
+dblp-acm,SS,2774736,128664,6.6571,recorded
+dblp-acm,AL-ML,1660767,76608,3.9789,recorded
+dblp-acm,AL-Ditto,1249953,58280,3.0033,recorded
+dblp-scholar,SS,4888742,238688,11.8969,recorded
+dblp-scholar,AL-ML,3799106,183944,9.2237,recorded
+dblp-scholar,AL-Ditto,3084169,150504,7.5044,recorded
+semi-heter,SS,2030895,80000,4.6741,recorded
+billiger-de,SS,2917795,93008,6.4083,recorded
+semi-heter,AL-Ditto,441705,17456,1.0174,recorded
+billiger-de,AL-Ditto,3092442,96936,6.7689,recorded
+semi-heter,AL-ML,350889,13736,0.8064,recorded
+billiger-de,AL-ML,1555554,48936,3.4073,estimated
+dn7-walmart-amazon,SS,5446925,208400,12.4497,estimated
+dn7-walmart-amazon,AL-ML,5495008,208400,12.5339,estimated
+dn7-walmart-amazon,AL-Ditto,5431266,208400,12.4223,estimated
+abt-buy,AL-Ditto committee fit hours,,,4.729179,
+walmart-amazon,AL-Ditto committee fit hours,,,3.095104,
+wdc,AL-Ditto committee fit hours,,,81.485645,
+dblp-acm,AL-Ditto committee fit hours,,,2.893662,
+dblp-scholar,AL-Ditto committee fit hours,,,16.351724,
+semi-heter,AL-Ditto committee fit hours,,,1.596179,
+billiger-de,AL-Ditto committee fit hours,,,30.230270,
+dn7-walmart-amazon,AL-Ditto committee fit hours,,,16.916356,

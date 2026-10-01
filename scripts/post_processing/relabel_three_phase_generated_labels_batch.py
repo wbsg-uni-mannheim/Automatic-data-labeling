@@ -24,16 +24,7 @@ import run_benchmark_batch_eval as batch_eval  # noqa: E402
 DEFAULT_INPUT_ROOT = ROOT / "generated_labels" / "three_phase_labeling_ditto_only_v2"
 DEFAULT_OUTPUT_ROOT = ROOT / "generated_labels" / "three_phase_labeling_ditto_only_v2_relabel_batch_gpt-5-mini_agent_precision"
 DEFAULT_MODEL = "gpt-5-mini"
-DEFAULT_PROMPT_FILE = (
-    ROOT
-    / "scripts"
-    / "archive"
-    / "review_workflows"
-    / "experiments"
-    / "evidence_first_abstain"
-    / "prompts"
-    / "agent_precision_system_prompt.txt"
-)
+DEFAULT_PROMPT_FILE = ROOT / "artifacts" / "prompts" / "review_system_prompt.txt"
 DEFAULT_MAX_FIELD_LENGTH = 100000
 DEFAULT_COMPLETION_WINDOW = "24h"
 DEFAULT_ENDPOINT = "/v1/chat/completions"

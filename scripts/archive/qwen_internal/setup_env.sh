@@ -18,10 +18,10 @@ python -m pip install --upgrade pip==26.0.1 wheel==0.45.1 setuptools==80.9.0
 # different CUDA wheel index.
 TORCH_INDEX_URL="${TORCH_INDEX_URL:-https://download.pytorch.org/whl/cu128}"
 python -m pip install --index-url "${TORCH_INDEX_URL}" \
-  torch==2.11.0 \
-  torchvision==0.26.0
+  torch==2.10.0 \
+  torchvision==0.25.0
 
-python -m pip install -r "${SCRIPT_DIR}/requirements.txt"
+python -m pip install -r "${SCRIPT_DIR}/requirements.lock.txt"
 
 python "${SCRIPT_DIR}/check_env.py"
 

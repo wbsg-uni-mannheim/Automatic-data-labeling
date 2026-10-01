@@ -1,91 +1,30 @@
-# Qwen3.5 Entity Matching Fine-Tuning
+# Qwen3 Students
 
-This directory is isolated from the Ditto environment. It fine-tunes `Qwen/Qwen3.5-9B`
-on existing entity-matching splits exported in the repo's WDC/Ditto-style JSONL gzip
-format.
+Helper scripts for the Qwen3 students of the paper (Qwen3-0.6B, 1.7B, and 8B): LoRA fine-tuning on a training set in chat format, evaluation of the adapter, and zero-shot evaluation. Training itself runs through `scripts/training/train_qwen.py`.
 
-## Model And Tooling Choices
+## Environment
 
-- Model: `Qwen/Qwen3.5-9B`
-- License: Apache-2.0
-- Training method: bf16 LoRA, no quantization
-- Default task format: direct `Yes` / `No` chat SFT
-- Primary training stack: Unsloth + TRL + pinned Transformers main commit
-
-The Qwen model card says Qwen3.5 needs current serving/runtime support and recommends
-latest framework versions. The Unsloth Qwen3.5 guide says to use Transformers v5,
-estimates bf16 LoRA VRAM for Qwen3.5-9B at about 22GB, and does not recommend 4-bit
-QLoRA for Qwen3.5. With 48GB VRAM, this setup intentionally uses bf16 LoRA.
-
-Pinned volatile upstream refs captured on 2026-04-22:
-
-- `transformers` main: `77c0e6e7ce5537558f07bb9147d0df4a0132e6f3`
-- `unsloth` PyPI: `2026.4.6`
-- `unsloth_zoo` PyPI: `2026.4.8`
-
-Official references:
-
-- Qwen3.5 model card: https://huggingface.co/Qwen/Qwen3.5-9B
-- Unsloth Qwen3.5 guide: https://unsloth.ai/docs/models/qwen3.5/fine-tune
-- Unsloth install guide: https://unsloth.ai/docs/get-started/install-and-update
-
-## Create The Separate Environment
-
-Run this on the CUDA machine, not on a CPU-only laptop:
+The Qwen3 runs use a separate Python 3.12 environment with Unsloth, TRL, and Transformers 5.5. On a CUDA machine:
 
 ```bash
-cd /Users/aaronsteiner/Documents/GitHub/Automatic-data-labeling.
 bash scripts/archive/qwen_internal/setup_env.sh
 source scripts/archive/qwen_internal/.venv/bin/activate
 python scripts/archive/qwen_internal/check_env.py
 ```
 
-The setup script installs CUDA PyTorch first, then the pinned LLM stack from
-`requirements.txt`.
+The setup script installs CUDA PyTorch 2.10.0 first and then the package versions of `requirements.lock.txt`, the environment used for the paper.
 
-## Prepare A Dataset
+## Scripts
 
-Example using the relabeled ABT-Buy small split:
+| Script | What it does |
+|---|---|
+| `convert_wdc_to_sft.py` | Converts training, validation, and test pairs into chat examples that ask for a `Yes` or `No` answer. |
+| `evaluate_lora.py` | Evaluates a trained adapter on the converted test file and writes `metrics.json` and `predictions.csv`. |
+| `baseline_zero_shot_eval.py` | Evaluates a Qwen3 model without fine-tuning. |
+| `check_env.py`, `setup_env.sh` | Create and check the environment. |
 
-```bash
-source scripts/archive/qwen_internal/.venv/bin/activate
-python scripts/archive/qwen_internal/convert_wdc_to_sft.py \
-  --train-json-gz analysis/three_phase_relabel_benchmark_abt-buy_20260323_202820/small/active_labels_latest_abt-buy_small_train.json.gz \
-  --valid-json-gz output/baseline/abt-buy/splits/valid.json.gz \
-  --test-json-gz output/baseline/abt-buy/splits/test.json.gz \
-  --fields title,description,price \
-  --output-dir output/qwen35_em/abt-buy_small/sft_data
-```
+Both evaluators strip `<think>...</think>` blocks and parse the first clear `Yes` or `No`.
 
-For other benchmarks, use the same fields as `configs/ditto/benchmarks_training.yaml`.
+## Settings of the paper
 
-## Train
-
-```bash
-python scripts/training/train_qwen.py \
-  --data-dir output/qwen35_em/abt-buy_small/sft_data \
-  --output-dir output/qwen35_em/abt-buy_small/qwen35_9b_lora \
-  --model-name Qwen/Qwen3.5-9B \
-  --max-seq-length 2048 \
-  --per-device-train-batch-size 2 \
-  --gradient-accumulation-steps 8 \
-  --num-train-epochs 3 \
-  --learning-rate 2e-4 \
-  --lora-r 16
-```
-
-Start with rank 16 and sequence length 2048. With 48GB VRAM, batch size 2 should be
-reasonable; increase only after the first smoke run.
-
-## Evaluate
-
-```bash
-python scripts/archive/qwen_internal/evaluate_lora.py \
-  --data-path output/qwen35_em/abt-buy_small/sft_data/test.jsonl \
-  --model-path output/qwen35_em/abt-buy_small/qwen35_9b_lora/final_adapter \
-  --output-dir output/qwen35_em/abt-buy_small/eval
-```
-
-The evaluator strips `<think>...</think>` blocks if the model emits them and parses
-the first clear `Yes` or `No`.
-
+LoRA rank 16 on all attention and MLP projections, learning rate 2e-4, warmup ratio 0.05, batch size 2 with 8 gradient-accumulation steps, maximum sequence length 2,048, attribute values cut at 350 characters, evaluation every 50 steps, and early stopping on the validation loss with patience 10. Qwen3-8B trains for up to 3 epochs, Qwen3-0.6B and 1.7B for up to 10. `artifacts/USAGE.md` shows the full command sequence.
