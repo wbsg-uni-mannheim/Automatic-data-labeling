@@ -1,0 +1,43 @@
+{
+  "dataset": "billiger-de",
+  "model": "text-embedding-3-small",
+  "dimensions": 256,
+  "left_csv": "benchmarks/billiger-de/billiger-de-train-left.csv",
+  "right_csv": "benchmarks/billiger-de/billiger-de-train-right.csv",
+  "left_unique_rows": 3494,
+  "right_unique_rows": 3495,
+  "embed_fields": {
+    "left": [
+      "name",
+      "desc",
+      "brand",
+      "price"
+    ],
+    "right": [
+      "name",
+      "desc",
+      "brand",
+      "price"
+    ]
+  },
+  "left_batch_jsonl": "benchmarks/billiger-de/billiger-de-batch_embed_left.jsonl",
+  "right_batch_jsonl": "benchmarks/billiger-de/billiger-de-batch_embed_right.jsonl",
+  "left_map_csv": "benchmarks/billiger-de/billiger-de-batch_embed_left_map.csv",
+  "right_map_csv": "benchmarks/billiger-de/billiger-de-batch_embed_right_map.csv",
+  "pulled_embeddings": {
+    "left": {
+      "mode": "sync",
+      "saved_file": "benchmarks/billiger-de/embeddings/billiger-de_left_embeddings.npy",
+      "rows": 3494,
+      "dim": 256,
+      "pulled_at_utc": "2026-09-01T23:03:51.508094+00:00"
+    },
+    "right": {
+      "mode": "sync",
+      "saved_file": "benchmarks/billiger-de/embeddings/billiger-de_right_embeddings.npy",
+      "rows": 3495,
+      "dim": 256,
+      "pulled_at_utc": "2026-09-01T23:03:53.341917+00:00"
+    }
+  }
+}

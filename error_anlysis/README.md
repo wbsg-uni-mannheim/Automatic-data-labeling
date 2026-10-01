@@ -1,6 +1,6 @@
 # Human Audit of Teacher Labels
 
-To measure teacher-label quality, we manually reviewed samples of teacher-labeled test pairs across the five benchmarks.
+To measure teacher-label quality, we reviewed 1,028 test pairs across five benchmarks: all 778 pairs where at least one teacher disagrees with the gold label, plus 25 gold-positive and 25 gold-negative controls per benchmark on which every teacher agrees with gold. Five ambiguous judgments are excluded from error-rate calculation.
 
 ## Annotations
 
@@ -14,7 +14,7 @@ To measure teacher-label quality, we manually reviewed samples of teacher-labele
 
 ## Error rates
 
-`labeler_error_rates.csv` summarizes the audit: the share of audited pairs (in percent) where each label source disagrees with the human decision, per benchmark.
+`labeler_error_rates.csv` reports inverse-probability-weighted population error estimates, not the unweighted share of audited pairs. [`sampling_manifest.csv`](sampling_manifest.csv) supplies the pair identities, strata, weights, and evaluated labels. A disagreement pair has weight 1; each control receives its positive/negative stratum population divided by the 25 sampled controls. Each rate is the weighted number of errors divided by the total weight of unambiguous judgments.
 
 | Column | Meaning |
 |---|---|

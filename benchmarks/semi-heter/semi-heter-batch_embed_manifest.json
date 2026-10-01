@@ -1,0 +1,49 @@
+{
+  "dataset": "semi-heter",
+  "model": "text-embedding-3-small",
+  "dimensions": 256,
+  "left_csv": "benchmarks/semi-heter/semi-heter-train-left.csv",
+  "right_csv": "benchmarks/semi-heter/semi-heter-train-right.csv",
+  "left_unique_rows": 994,
+  "right_unique_rows": 1049,
+  "embed_fields": {
+    "left": [
+      "title",
+      "authors",
+      "publisher",
+      "year",
+      "isbn",
+      "pages",
+      "price"
+    ],
+    "right": [
+      "title",
+      "authors",
+      "publisher",
+      "year",
+      "isbn",
+      "pages",
+      "price"
+    ]
+  },
+  "left_batch_jsonl": "benchmarks/semi-heter/semi-heter-batch_embed_left.jsonl",
+  "right_batch_jsonl": "benchmarks/semi-heter/semi-heter-batch_embed_right.jsonl",
+  "left_map_csv": "benchmarks/semi-heter/semi-heter-batch_embed_left_map.csv",
+  "right_map_csv": "benchmarks/semi-heter/semi-heter-batch_embed_right_map.csv",
+  "pulled_embeddings": {
+    "left": {
+      "mode": "sync",
+      "saved_file": "benchmarks/semi-heter/embeddings/semi-heter_left_embeddings.npy",
+      "rows": 994,
+      "dim": 256,
+      "pulled_at_utc": "2026-09-01T23:03:46.310950+00:00"
+    },
+    "right": {
+      "mode": "sync",
+      "saved_file": "benchmarks/semi-heter/embeddings/semi-heter_right_embeddings.npy",
+      "rows": 1049,
+      "dim": 256,
+      "pulled_at_utc": "2026-09-01T23:03:46.899940+00:00"
+    }
+  }
+}

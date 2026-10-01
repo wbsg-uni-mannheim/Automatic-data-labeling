@@ -26,7 +26,7 @@ from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
 
-ROOT = Path("/work/aasteine/Automatic-data-labeling")
+ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "scripts" / "labeling"))
 from active_learning_ml import _label_pair, _make_openai_client  # type: ignore
 

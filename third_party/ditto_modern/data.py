@@ -166,6 +166,9 @@ class PairDataset(Dataset):
         self.weights = weights or {}
         self.da = da
         self.augmenter = Augmenter() if da else None
+        # Encode before DataLoader workers are spawned so the cache survives
+        # worker recreation each epoch. Augmented views remain stochastic.
+        self._original_tokens = [self._encode_pair(ex.left, ex.right) for ex in self.examples]
 
     def __len__(self) -> int:
         return len(self.examples)
@@ -180,7 +183,7 @@ class PairDataset(Dataset):
 
     def __getitem__(self, idx: int):
         ex = self.examples[idx]
-        x = self._encode_pair(ex.left, ex.right)
+        x = list(self._original_tokens[idx])
         sample_weight = float(self.weights.get(ex.idx, 1.0))
 
         if self.augmenter is not None:

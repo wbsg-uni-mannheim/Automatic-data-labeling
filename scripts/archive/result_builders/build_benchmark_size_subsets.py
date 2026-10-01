@@ -19,7 +19,7 @@ from pathlib import Path
 import pandas as pd
 import gzip
 
-ROOT = Path("/work/aasteine/Automatic-data-labeling")
+ROOT = Path(__file__).resolve().parents[3]
 OUT_ROOT = ROOT / "output/benchmark_size_runs"
 OUT_ROOT.mkdir(parents=True, exist_ok=True)
 

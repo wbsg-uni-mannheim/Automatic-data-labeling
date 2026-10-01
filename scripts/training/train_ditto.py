@@ -163,6 +163,29 @@ def _normalize_pair_id(df: pd.DataFrame) -> pd.Series:
     return pd.Series([f"idx-{i}" for i in range(len(df))], index=df.index, dtype="object")
 
 
+def _pair_identity(pair_ids: pd.Series) -> pd.Series:
+    """Reduce a pair_id to a canonical "<left>|<right>" identity.
+
+    Two conventions coexist and never matched each other, so exclude_valid_from_train
+    silently dropped nothing for machine-labeled training sets:
+      - labeling exports:            "<left>__<right>__<i>_<j>_<label>"
+      - benchmark valid/gs splits:   "<left>#<right>"  (or built from id_left/id_right)
+    Anything that fits neither is passed through unchanged, so identical-format ids
+    still compare exactly as before.
+    """
+    s = pair_ids.astype(str).str.strip()
+    parts = s.str.split("__", n=2, expand=True)
+    if parts.shape[1] >= 2:
+        export = parts[0] + "|" + parts[1]
+        out = s.where(parts[1].isna(), export)
+    else:
+        out = s
+    hashed = s.str.split("#", n=1, expand=True)
+    if hashed.shape[1] == 2:
+        out = out.where(hashed[1].isna(), hashed[0] + "|" + hashed[1])
+    return out
+
+
 def _resolve_field_source(df: pd.DataFrame, field: str, aliases: Dict[str, List[str]]) -> str:
     candidates = [field] + aliases.get(field, [])
     seen = set()
@@ -407,8 +430,11 @@ def main() -> None:
             dropped_for_valid = 0
             if exclude_valid:
                 before = len(train_df)
-                valid_ids = set(valid_df["pair_id"].astype(str).tolist())
-                train_df = train_df[~train_df["pair_id"].astype(str).isin(valid_ids)].reset_index(drop=True)
+                # Compare on canonical (left, right) identity: the two splits use different
+                # pair_id conventions, so a plain string match never removed anything.
+                valid_ids = set(_pair_identity(valid_df["pair_id"]).tolist())
+                keep = ~_pair_identity(train_df["pair_id"]).isin(valid_ids)
+                train_df = train_df[keep].reset_index(drop=True)
                 dropped_for_valid = int(before - len(train_df))
 
             splits_dir = bench_dir / "splits"

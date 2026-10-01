@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-"""Train traditional ML student models (XGBoost + RandomForest) on each
-(benchmark × selection-method) training set at ±5% benchmark size, evaluate
-on the official test set.
+"""Train the feature-based students of Table 6 (XGBoost; RandomForest on request) on each
+benchmark training set and GPT-5.2 training set, and evaluate them on the benchmark test set.
 
 Features per pair: per-field token-jaccard/exact-match/numeric-diff +
 embedding cosine similarity (same feature extraction as AL ML pipeline in
@@ -12,8 +11,8 @@ Models:
   - RandomForestClassifier (300 trees, class_weight=balanced)
 
 Output:
-  output/results_summary/traditional_students_<seed>.csv
-  output/traditional_students/<benchmark>_<method>_<model>_seed<seed>.json
+  output/results_summary/traditional_students.csv
+  output/traditional_students/<benchmark>_<method>_seed<seed>.json
 """
 from __future__ import annotations
 import argparse
@@ -30,42 +29,27 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 import xgboost as xgb
 
-ROOT = Path("/work/aasteine/Automatic-data-labeling")
+ROOT = Path(__file__).resolve().parents[2]
 OUT_RESULTS_DIR = ROOT / "output/traditional_students"
-OUT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-# Train file paths.
-#   3 selection methods (sim, alml, alditto) at ±5% benchmark size
-#   5 post-filter variants (applied to AL Ditto)
-SOURCES = {
-    # ─── selection methods ───
-    ("abt-buy",        "sim"):     ROOT / "output/learning_curve_abtbuy/similarity_selection/N6000/abt-buy_N6000_train.json.gz",
-    ("abt-buy",        "alml"):    ROOT / "output/learning_curve_abtbuy/simple_active_learning/N6000/abt-buy_N6000_train.json.gz",
-    ("abt-buy",        "alditto"): ROOT / "output/learning_curve_abtbuy/ditto_active_learning/N6000/abt-buy_N6000_train.json.gz",
-    ("walmart-amazon", "sim"):     ROOT / "output/benchmark_size_runs/sim/walmart-amazon/walmart-amazon_train.json.gz",
-    ("walmart-amazon", "alml"):    ROOT / "output/simple_active_learning_labeling/benchmark_walmart-amazon_20260302_113733/profiles/large/active_labels_latest_walmart-amazon_large_train.json.gz",
-    ("walmart-amazon", "alditto"): ROOT / "output/three_phase_labeling_ditto_only_v2/benchmark_walmart-amazon_20260323_202820/profiles/all/active_labels_latest_walmart-amazon_all_train.json.gz",
-    ("dblp-acm",       "sim"):     ROOT / "output/benchmark_size_runs/sim/dblp-acm/dblp-acm_train.json.gz",
-    ("dblp-acm",       "alml"):    ROOT / "output/benchmark_size_runs/al_ml/dblp-acm/dblp-acm_train.json.gz",
-    ("dblp-acm",       "alditto"): ROOT / "output/three_phase_labeling_ditto_only_v2/benchmark_dblp-acm_20260323_202820/profiles/all_plus20random/active_labels_latest_dblp-acm_all_plus20random_train.json.gz",
-    ("dblp-scholar",   "sim"):     ROOT / "output/benchmark_size_runs/sim/dblp-scholar/dblp-scholar_train.json.gz",
-    ("dblp-scholar",   "alml"):    ROOT / "output/benchmark_size_runs/al_ml/dblp-scholar/dblp-scholar_train.json.gz",
-    ("dblp-scholar",   "alditto"): ROOT / "output/three_phase_labeling_ditto_only_v2/benchmark_dblp-scholar_20260323_202820/profiles/large/active_labels_latest_dblp-scholar_large_train.json.gz",
-    ("wdc",            "sim"):     ROOT / "output/seed_round_only_profiles/benchmark_wdc_20260415_190530/profiles/all/active_labels_latest_wdc_all_train.json.gz",
-    ("wdc",            "alml"):    ROOT / "output/simple_active_learning_labeling/benchmark_wdc_20260413_152105/profiles/large/active_labels_latest_wdc_large_train.json.gz",
-    ("wdc",            "alditto"): ROOT / "output/benchmark_size_runs/al_ditto/wdc/wdc_train.json.gz",
-}
-# Add 5 post-filter variants per benchmark (all 5 benchmarks)
-for bm in ["abt-buy", "walmart-amazon", "dblp-acm", "dblp-scholar", "wdc"]:
-    for variant in ["v_relabel", "v_relabel_drop", "v_closure_drop", "v_closure_and_relabel", "v_closure_or_relabel"]:
-        SOURCES[(bm, variant)] = ROOT / f"output/postfilter_variants/{bm}/{variant}/train.json.gz"
+# Training sets of Table 6: the released GPT-5.2 sets of the three selection strategies and the
+# benchmark training files. billiger.de uses the 5,897-pair sets.
+BENCHMARKS = ["abt-buy", "walmart-amazon", "dn7-walmart-amazon", "wdc", "billiger-de", "dblp-acm", "dblp-scholar", "semi-heter"]
+METHOD_DIRS = {"sim": "similarity_search", "alml": "active_learning_ml", "alditto": "active_learning_ditto"}
+SOURCES = {}
+for bm in BENCHMARKS:
+    suffix = "_5897" if bm == "billiger-de" else ""
+    for method, folder in METHOD_DIRS.items():
+        SOURCES[(bm, method)] = ROOT / f"artifacts/training_data/{bm}/gpt-5.2/{folder}{suffix}/{bm}_train.json.gz"
 
-# Official benchmark train sets (paper baselines) — each released with the benchmark.
-SOURCES[("abt-buy",        "benchmark")] = ROOT / "benchmarks/abt-buy/abt-buy-train.json"
-SOURCES[("walmart-amazon", "benchmark")] = ROOT / "benchmarks/walmart-amazon/walmart-amazon-train.json.gz"
-SOURCES[("dblp-acm",       "benchmark")] = ROOT / "benchmarks/dblp-acm/dblp-acm-train.json.gz"
-SOURCES[("dblp-scholar",   "benchmark")] = ROOT / "benchmarks/dblp-scholar/dblp-scholar-train.json.gz"
-SOURCES[("wdc",            "benchmark")] = ROOT / "benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz"
+SOURCES[("abt-buy",            "benchmark")] = ROOT / "benchmarks/abt-buy/abt-buy-train.json"
+SOURCES[("walmart-amazon",     "benchmark")] = ROOT / "benchmarks/walmart-amazon/walmart-amazon-train.json.gz"
+SOURCES[("dn7-walmart-amazon", "benchmark")] = ROOT / "benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train.json.gz"
+SOURCES[("wdc",                "benchmark")] = ROOT / "benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz"
+SOURCES[("billiger-de",        "benchmark")] = ROOT / "benchmarks/billiger-de/billiger-de-train-medium.json.gz"
+SOURCES[("dblp-acm",           "benchmark")] = ROOT / "benchmarks/dblp-acm/dblp-acm-train.json.gz"
+SOURCES[("dblp-scholar",       "benchmark")] = ROOT / "benchmarks/dblp-scholar/dblp-scholar-train.json.gz"
+SOURCES[("semi-heter",         "benchmark")] = ROOT / "benchmarks/semi-heter/semi-heter-train.json.gz"
 
 # Benchmarks where pre-computed embeddings can't be used for test (test entities are
 # distinct from train pool, e.g., wdc's "unseen entities" split). For these we drop
@@ -117,6 +101,19 @@ BENCHMARK_CONFIGS = {
         "fields":    ["title", "brand", "description", "price", "priceCurrency"],
     },
 }
+
+
+for _bm, _fields in [("dn7-walmart-amazon", ["title", "modelno", "price", "shipweight", "brand", "dimensions"]),
+                    ("billiger-de", ["name", "desc", "brand", "price"]),
+                    ("semi-heter", ["title", "authors", "publisher", "year", "isbn", "pages", "price"])]:
+    BENCHMARK_CONFIGS[_bm] = {
+        "test":      ROOT / f"benchmarks/{_bm}/{_bm}-gs.json.gz",
+        "left_csv":  ROOT / f"benchmarks/{_bm}/{_bm}-train-left.csv",
+        "right_csv": ROOT / f"benchmarks/{_bm}/{_bm}-train-right.csv",
+        "left_emb":  ROOT / f"benchmarks/{_bm}/embeddings/{_bm}_left_embeddings.npy",
+        "right_emb": ROOT / f"benchmarks/{_bm}/embeddings/{_bm}_right_embeddings.npy",
+        "fields":    _fields,
+    }
 
 
 # ─── Feature helpers (copied from active_learning_ml.py for consistency) ──
@@ -261,41 +258,49 @@ def _load_jsonl_gz(p: Path) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def train_eval_one(benchmark, method, train_file, seed, models_to_train):
-    print(f"\n=== {benchmark} × {method}  seed={seed} ===")
-    print(f"  train: {train_file.relative_to(ROOT)}")
-    bm_cfg = BENCHMARK_CONFIGS[benchmark]
+def prepare_benchmark(benchmark):
+    """Load seed-independent inputs and test features once per benchmark."""
+    cfg = BENCHMARK_CONFIGS[benchmark]
+    side_l = _load_canonical_csv(cfg["left_csv"])
+    side_r = _load_canonical_csv(cfg["right_csv"])
+    feature_args = (
+        cfg, side_l, side_r, np.load(cfg["left_emb"]), np.load(cfg["right_emb"]),
+        {str(rid): i for i, rid in enumerate(side_l["id"].tolist())},
+        {str(rid): i for i, rid in enumerate(side_r["id"].tolist())},
+    )
+    # As for WDC: if test records lie outside the embedding pool, drop the cosine feature
+    # in both train and test instead of introducing a shift.
+    test_frame = _load_jsonl_gz(cfg["test"])
+    if "id_left" in test_frame.columns:
+        test_ids = zip(test_frame["id_left"].astype(str), test_frame["id_right"].astype(str))
+    else:
+        test_ids = (re.split(r"#|__", pid)[:2] for pid in test_frame["pair_id"].astype(str))
+    if any(a not in feature_args[5] or b not in feature_args[6] for a, b in test_ids):
+        DROP_EMBEDDING_FEATURE.add(benchmark)
+    test = prepare_features(cfg["test"], feature_args, benchmark)
+    return feature_args, test
 
-    side_l = _load_canonical_csv(bm_cfg["left_csv"])
-    side_r = _load_canonical_csv(bm_cfg["right_csv"])
-    left_id_to_idx = {str(rid): i for i, rid in enumerate(side_l["id"].tolist())}
-    right_id_to_idx = {str(rid): i for i, rid in enumerate(side_r["id"].tolist())}
-    left_emb = np.load(bm_cfg["left_emb"])
-    right_emb = np.load(bm_cfg["right_emb"])
 
-    # Train data
-    train_df = _load_jsonl_gz(train_file)
-    print(f"  train rows: {len(train_df)}")
-    X_train, m_train = _build_features(train_df, bm_cfg, side_l, side_r, left_emb, right_emb, left_id_to_idx, right_id_to_idx)
-    y_train = (train_df["label"].astype(int) == 1).astype(int).to_numpy()
-    if (~m_train).any():
-        print(f"  ⚠ skipped {(~m_train).sum()} train rows with missing canonical match")
-    X_train = X_train[m_train]; y_train = y_train[m_train]
-
-    # Test data
-    test_df = _load_jsonl_gz(bm_cfg["test"])
-    print(f"  test rows: {len(test_df)}")
-    X_test, m_test = _build_features(test_df, bm_cfg, side_l, side_r, left_emb, right_emb, left_id_to_idx, right_id_to_idx)
-    y_test = (test_df["label"].astype(int) == 1).astype(int).to_numpy()
-    if (~m_test).any():
-        print(f"  ⚠ skipped {(~m_test).sum()} test rows with missing canonical match")
-    X_test = X_test[m_test]; y_test_eval = y_test[m_test]
-
-    # Drop embedding feature for benchmarks where test entities aren't in pre-computed pool
+def prepare_features(path, feature_args, benchmark):
+    frame = _load_jsonl_gz(path)
+    features, valid = _build_features(frame, *feature_args)
+    labels = (frame["label"].astype(int) == 1).astype(int).to_numpy()
+    if (~valid).any():
+        print(f"  skipped {(~valid).sum()} rows with missing canonical match: {path}")
+    features, labels = features[valid], labels[valid]
     if benchmark in DROP_EMBEDDING_FEATURE:
-        X_train = _drop_embedding_column(X_train)
-        X_test = _drop_embedding_column(X_test)
-        print(f"  → dropped embedding feature (using {X_train.shape[1]} per-field features only)")
+        features = _drop_embedding_column(features)
+    return features, labels
+
+
+def train_eval_one(benchmark, method, train_file, seed, models_to_train, prepared_data=None):
+    print(f"\n=== {benchmark} × {method}  seed={seed} ===")
+    print(f"  train: {train_file}")
+    if prepared_data is None:
+        feature_args, test = prepare_benchmark(benchmark)
+        prepared_data = (*prepare_features(train_file, feature_args, benchmark), *test)
+    X_train, y_train, X_test, y_test_eval = prepared_data
+    print(f"  train rows: {len(X_train)}, test rows: {len(X_test)}")
 
     results = {"benchmark": benchmark, "method": method, "seed": seed, "n_train": int(len(X_train)), "n_test": int(len(X_test)), "models": {}}
     n_pos = int(y_train.sum()); n_neg = int(len(y_train) - n_pos)
@@ -346,8 +351,8 @@ def train_eval_one(benchmark, method, train_file, seed, models_to_train):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seeds", default="42,52,62")
-    parser.add_argument("--models", default="xgboost,random_forest")
-    parser.add_argument("--combos", default="", help="comma-separated 'bm:method' filter (default all 15)")
+    parser.add_argument("--models", default="xgboost", help="Comma-separated models; random_forest is opt-in")
+    parser.add_argument("--combos", default="", help="comma-separated 'bm:method' filter (default: all benchmarks and sources)")
     args = parser.parse_args()
     seeds = [int(s) for s in args.seeds.split(",") if s.strip()]
     models = [m.strip() for m in args.models.split(",") if m.strip()]
@@ -358,17 +363,31 @@ def main():
     else:
         combos = list(SOURCES.keys())
 
+    OUT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     all_results = []
-    for (bm, method) in combos:
-        for seed in seeds:
+    # Keep only one benchmark's embeddings and one source's train matrix in
+    # memory. Every seed reuses exactly these arrays; no persistent stale cache.
+    for bm in dict.fromkeys(bm for bm, _ in combos):
+        try:
+            feature_args, test = prepare_benchmark(bm)
+        except Exception as e:
+            print(f"  FAILED {bm}: {e!r}")
+            continue
+        for _, method in (combo for combo in combos if combo[0] == bm):
+            train_file = SOURCES[(bm, method)]
             try:
-                res = train_eval_one(bm, method, SOURCES[(bm, method)], seed, models)
-                # Save per-run JSON
-                out_p = OUT_RESULTS_DIR / f"{bm}_{method}_seed{seed}.json"
-                out_p.write_text(json.dumps(res, indent=2))
-                all_results.append(res)
+                prepared_data = (*prepare_features(train_file, feature_args, bm), *test)
             except Exception as e:
-                print(f"  FAILED: {e!r}")
+                print(f"  FAILED {bm}:{method}: {e!r}")
+                continue
+            for seed in seeds:
+                try:
+                    res = train_eval_one(bm, method, train_file, seed, models, prepared_data)
+                    out_p = OUT_RESULTS_DIR / f"{bm}_{method}_seed{seed}.json"
+                    out_p.write_text(json.dumps(res, indent=2))
+                    all_results.append(res)
+                except Exception as e:
+                    print(f"  FAILED: {e!r}")
 
     # Aggregate to CSV
     rows = []
@@ -384,6 +403,7 @@ def main():
     if rows:
         df = pd.DataFrame(rows)
         out_csv = ROOT / "output/results_summary/traditional_students_raw.csv"
+        out_csv.parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(out_csv, index=False)
         print(f"\nWrote raw: {out_csv.relative_to(ROOT)}")
         # mean+std per (benchmark, method, model)

@@ -1,14 +1,23 @@
 # Benchmarks
 
-The five entity-matching benchmarks used in the paper, one directory each:
+The eight entity-matching benchmarks used in the paper, one directory each:
 
 - `abt-buy/`
 - `walmart-amazon/`
-- `wdc/` (WDC Products)
 - `dblp-acm/`
 - `dblp-scholar/`
+- `dn7-walmart-amazon/` (Dn7 Walmart-Amazon from Papadakis et al., ICDE 2024)
+- `wdc/` (WDC Products, test set with 100% unseen entities)
+- `billiger-de/` (billiger.de Products, German offers, test set with 50% unseen entities)
+- `semi-heter/` (Semi-HETER from Machamp)
 
-The datasets are publicly available. Their splits and precomputed embeddings, in the form the runners read, are included here.
+The datasets are publicly available. Their splits and precomputed embeddings, in the form the runners read, are included here. [`scripts/benchmarks/`](../scripts/benchmarks/) converts Dn7, billiger.de, and Semi-HETER from their original releases into this layout.
+
+Notes on the three benchmarks added in the PVLDB version:
+
+- **billiger.de:** the source tables come from the large training split (`billiger-de-train.json.gz`). The benchmark reference is trained on the official medium training split with 5,897 pairs (`billiger-de-train-medium.json.gz`). The test set is the default test set with 50% unseen products (4,437 pairs).
+- **Semi-HETER:** the attribute names of the five book sources are mapped to shared attributes (title, authors, publisher, year, isbn, pages, price). Unmapped keys are kept in an `extra` field.
+- **Dn7 Walmart-Amazon:** uses the same Walmart and Amazon records as Walmart-Amazon with the imbalanced splits of Papadakis et al.
 
 ## Layout
 
@@ -32,4 +41,4 @@ The two WDC embedding matrices are about 117 MB each, which is over GitHub's 100
 - `benchmarks/wdc/embeddings/wdc_left_embeddings.npy`
 - `benchmarks/wdc/embeddings/wdc_right_embeddings.npy`
 
-To rebuild them, embed the records in `benchmarks/wdc/batch_embed_left.jsonl` and `benchmarks/wdc/batch_embed_right.jsonl` with the same model. Each line is an OpenAI `/v1/embeddings` request keyed by `custom_id` (`left-0`, `left-1`, and so on). Stack the returned vectors in `custom_id` order into a `(rows × 256)` float array and save each side as the `.npy` file named above. The embeddings for the other four benchmarks are small and are included directly.
+To rebuild them, embed the records in `benchmarks/wdc/batch_embed_left.jsonl` and `benchmarks/wdc/batch_embed_right.jsonl` with the same model. Each line is an OpenAI `/v1/embeddings` request keyed by `custom_id` (`left-0`, `left-1`, and so on). Stack the returned vectors in `custom_id` order into a `(rows × 256)` float array and save each side as the `.npy` file named above. The embeddings for the other seven benchmarks are small and are included directly.

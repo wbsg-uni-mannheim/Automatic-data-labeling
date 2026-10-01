@@ -424,7 +424,7 @@ def _train_ditto_bagged_ensemble(
     return members, {"summary_path": str(summary_path), "members": summary_rows}
 
 
-def _predict_ditto_scores(
+def _prepare_ditto_score_dataset(
     *,
     member: DittoMember,
     pool: pd.DataFrame,
@@ -433,12 +433,7 @@ def _predict_ditto_scores(
     left_rid_to_id: Dict[str, str],
     right_rid_to_id: Dict[str, str],
     fields: Sequence[str],
-    inference_batch_size: int,
-    device: torch.device,
-) -> pd.DataFrame:
-    if pool.empty:
-        return pd.DataFrame(columns=["id1", "id2", "score"])
-
+) -> PairDataset:
     pool_wdc = _pairs_to_ditto_df(
         pool[["id1", "id2"]],
         left_map=left_map,
@@ -456,14 +451,37 @@ def _predict_ditto_scores(
         cfg=member.cfg,
     )
     if examples is None:
-        return pd.DataFrame(columns=["id1", "id2", "score"])
+        raise ValueError("Candidate transforms returned no examples")
 
     tokenizer = load_tokenizer(str(member.checkpoint_dir))
+    return PairDataset(examples, tokenizer=tokenizer, max_len=member.cfg.max_len, da=None)
+
+
+def _predict_ditto_scores(
+    *,
+    member: DittoMember,
+    pool: pd.DataFrame,
+    left_map: Dict[str, Dict[str, object]],
+    right_map: Dict[str, Dict[str, object]],
+    left_rid_to_id: Dict[str, str],
+    right_rid_to_id: Dict[str, str],
+    fields: Sequence[str],
+    inference_batch_size: int,
+    device: torch.device,
+    prepared_dataset: PairDataset | None = None,
+) -> pd.DataFrame:
+    if pool.empty:
+        return pd.DataFrame(columns=["id1", "id2", "score"])
+    dataset = prepared_dataset
+    if dataset is None:
+        dataset = _prepare_ditto_score_dataset(
+            member=member, pool=pool, left_map=left_map, right_map=right_map,
+            left_rid_to_id=left_rid_to_id, right_rid_to_id=right_rid_to_id, fields=fields,
+        )
     model = load_model(str(member.checkpoint_dir), alpha_aug=member.cfg.alpha_aug)
     model.to(device)
     model.eval()
 
-    dataset = PairDataset(examples, tokenizer=tokenizer, max_len=member.cfg.max_len, da=None)
     loader = DataLoader(
         dataset,
         batch_size=max(1, int(inference_batch_size)),
@@ -804,8 +822,18 @@ def _run_phase3_active_learning(
         )
 
         correspondences_list: List[Dict[str, object]] = []
+        # All members in this round are trained from the same train_cfg and
+        # save its unchanged tokenizer. Only their model weights differ.
+        # Scope the prepared data to this round: candidate order can change.
+        score_dataset = None
         for member in ditto_members:
             score_t0 = time.perf_counter()
+            if score_dataset is None:
+                score_dataset = _prepare_ditto_score_dataset(
+                    member=member, pool=pool, left_map=left_map, right_map=right_map,
+                    left_rid_to_id=left_rid_to_id, right_rid_to_id=right_rid_to_id,
+                    fields=feature_fields,
+                )
             corr = _predict_ditto_scores(
                 member=member,
                 pool=pool,
@@ -816,6 +844,7 @@ def _run_phase3_active_learning(
                 fields=feature_fields,
                 inference_batch_size=ditto_inference_batch_size,
                 device=device,
+                prepared_dataset=score_dataset,
             )
             correspondences_list.append(
                 {
@@ -1077,6 +1106,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--faiss-k", type=int, default=20)
     parser.add_argument("--faiss-random-state", type=int, default=42)
     parser.add_argument("--candidate-cap", type=int, default=0)
+    parser.add_argument("--pool-method", default="embedding", choices=["embedding", "bm25", "rrf", "union"],
+                        help="Candidate-pool construction: embedding (default, paper), bm25, rrf (size-controlled fusion), union (uncapped).")
 
     parser.add_argument("--seed-size", type=int, default=100)
     parser.add_argument("--seed-positives", type=int, default=30)
@@ -1238,6 +1269,9 @@ def main() -> None:
         candidate_cap=args.candidate_cap,
         bottom_k=args.seed_bottom_k,
         random_state=args.faiss_random_state,
+        method=args.pool_method,
+        left_text=base._pool_texts(left_df, feature_fields) if args.pool_method != "embedding" else None,
+        right_text=base._pool_texts(right_df, feature_fields) if args.pool_method != "embedding" else None,
     )
     candidates_dedup = candidates.copy()
     candidates_dedup["src_id1"] = candidates_dedup["id1"].astype(str).map(left_rid_to_id)
