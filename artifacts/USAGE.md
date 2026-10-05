@@ -136,7 +136,11 @@ benchmarks:
 python scripts/training/train_ditto.py --config my_config.yaml --run-name abt-buy_alditto_seed42
 ```
 
-The run folder holds `benchmark_report.json` with the test F1 and the resolved splits in `splits/`. `configs/ditto/benchmarks_training.yaml` trains the benchmark references and lists the validation and test files and attributes of all eight benchmarks. The other configs in `configs/ditto/` are those of the paper runs. Their training paths name the original run folders, and the released file of every run is listed in the `training_file` column of `results/*.csv`. The paper reports seeds 42, 52, and 62.
+The run folder holds `benchmark_report.json` with the test F1 and the resolved splits in `splits/`. `configs/ditto/benchmarks_training.yaml` lists the validation and test files and attributes of all eight benchmarks. The paper's Ditto runs are in one config per table: `table2_training_sources.yaml`, `table3_benchmark_pairs_gpt52_labels.yaml`, `table4_teachers.yaml`, `table5_post_processing.yaml`, and `figure2_label_budget.yaml`. Each holds one entry per released training set and seed, matching the rows of the corresponding file in `results/`, for example:
+
+```bash
+python scripts/training/train_ditto.py --config configs/ditto/table2_training_sources.yaml --benchmarks abt-buy__active_learning_ditto__seed42
+```
 
 **XGBoost** trains on the released sets of Table 6 and evaluates on the test sets:
 

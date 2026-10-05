@@ -52,6 +52,7 @@ except Exception:
     XGBClassifier = None  # type: ignore
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from embeddings_io import load_embeddings  # noqa: E402
 
 CANONICAL_SCHEMA_FIELDS: Tuple[str, ...] = (
     "id",
@@ -1909,8 +1910,8 @@ def main() -> None:
         )
 
     emb_dir = Path(args.embeddings_dir)
-    left_emb = np.load(emb_dir / args.left_emb).astype(np.float32)
-    right_emb = np.load(emb_dir / args.right_emb).astype(np.float32)
+    left_emb = load_embeddings(emb_dir / args.left_emb).astype(np.float32)
+    right_emb = load_embeddings(emb_dir / args.right_emb).astype(np.float32)
 
     if len(left_df) != left_emb.shape[0]:
         raise ValueError(f"Left rows {len(left_df)} != left embedding rows {left_emb.shape[0]}")

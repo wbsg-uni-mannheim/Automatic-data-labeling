@@ -1,6 +1,6 @@
 # ditto_modern
 
-This vendored module provides a modernized Ditto-style training/evaluation runtime for entity matching.
+This module provides the Ditto training and evaluation runtime used for all Ditto students of the paper. `ORIGIN.md` describes its relation to the original Ditto implementation.
 
 Scope:
 - Keep Ditto-style pair-text formulation (`COL <attr> VAL <value>`)
@@ -8,4 +8,3 @@ Scope:
 - Support single-GPU and DDP (`torchrun`)
 - Keep WDC json.gz schema compatibility
 
-This is a pragmatic modernization layer intended for cluster training workflows.

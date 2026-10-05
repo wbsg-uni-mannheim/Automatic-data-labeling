@@ -19,6 +19,7 @@ import argparse
 import gzip
 import json
 import re
+import sys
 import time
 from pathlib import Path
 from typing import Dict, List, Sequence
@@ -30,6 +31,8 @@ from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_sc
 import xgboost as xgb
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts" / "labeling"))
+from embeddings_io import load_embeddings  # noqa: E402
 OUT_RESULTS_DIR = ROOT / "output/traditional_students"
 
 # Training sets of Table 6: the released GPT-5.2 sets of the three selection strategies and the
@@ -264,7 +267,7 @@ def prepare_benchmark(benchmark):
     side_l = _load_canonical_csv(cfg["left_csv"])
     side_r = _load_canonical_csv(cfg["right_csv"])
     feature_args = (
-        cfg, side_l, side_r, np.load(cfg["left_emb"]), np.load(cfg["right_emb"]),
+        cfg, side_l, side_r, load_embeddings(cfg["left_emb"]), load_embeddings(cfg["right_emb"]),
         {str(rid): i for i, rid in enumerate(side_l["id"].tolist())},
         {str(rid): i for i, rid in enumerate(side_r["id"].tolist())},
     )

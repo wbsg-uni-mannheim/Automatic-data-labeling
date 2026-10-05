@@ -21,6 +21,8 @@ POSITIVE_LABELS = {"TRUE", "1", "YES", "Y", "T"}
 NEGATIVE_LABELS = {"FALSE", "0", "NO", "N", "F"}
 RESERVED_FEATURE_FIELDS = {"id", "__rid", "pair_id", "label", "is_hard_negative", "rid1", "rid2", "similarity"}
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "scripts" / "labeling"))
+from embeddings_io import load_embeddings  # noqa: E402
 
 
 def _load_base_module():
@@ -492,8 +494,8 @@ def _candidate_paths_for_random_profiles(
     right_map = {str(row["__rid"]): row.to_dict() for _, row in right_df.iterrows()}
 
     embeddings_dir = Path(str(benchmark_cfg["embeddings_dir"]))
-    left_emb = np.load(embeddings_dir / str(benchmark_cfg["left_emb"]))
-    right_emb = np.load(embeddings_dir / str(benchmark_cfg["right_emb"]))
+    left_emb = load_embeddings(embeddings_dir / str(benchmark_cfg["left_emb"]))
+    right_emb = load_embeddings(embeddings_dir / str(benchmark_cfg["right_emb"]))
 
     candidates, _faiss_stats = _build_candidates(
         left_ids=left_df["__rid"].astype(str).to_numpy(),

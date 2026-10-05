@@ -1,6 +1,6 @@
 # Benchmark Labeling Config
 
-`benchmarks_active.yaml` defines each benchmark for the labeling workflows: source files, schema mappings, profile targets, and output settings. `benchmarks_active_kimi.yaml` is the same setup with Kimi K2.6 as the teacher.
+`benchmarks_active.yaml` defines each benchmark for the labeling workflows: source files, schema mappings, profile targets, and output settings. `benchmarks_active_kimi.yaml` and `benchmarks_active_qwen.yaml` are the same setup with Kimi K2.6 and Qwen 3.6 Plus as the teacher, called through OpenRouter.
 
 ## Use
 
