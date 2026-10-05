@@ -13,7 +13,7 @@ The eight entity-matching benchmarks used in the paper, one directory each:
 
 The datasets are publicly available. Their splits and precomputed embeddings, in the form the runners read, are included here. [`scripts/benchmarks/`](../scripts/benchmarks/) converts Dn7, billiger.de, and Semi-HETER from their original releases into this layout.
 
-Notes on the three benchmarks added in the PVLDB version:
+Notes on Dn7 Walmart-Amazon, billiger.de, and Semi-HETER:
 
 - **billiger.de:** the source tables come from the large training split (`billiger-de-train.json.gz`). The benchmark reference is trained on the official medium training split with 5,897 pairs (`billiger-de-train-medium.json.gz`). The test set is the default test set with 50% unseen products (4,437 pairs).
 - **Semi-HETER:** the attribute names of the five book sources are mapped to shared attributes (title, authors, publisher, year, isbn, pages, price). Unmapped keys are kept in an `extra` field.
