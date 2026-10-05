@@ -17,6 +17,8 @@ from openai import OpenAI
 from tqdm.auto import tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts" / "labeling"))
+from embeddings_io import load_embeddings  # noqa: E402
 DEFAULT_CONFIG = ROOT / "configs" / "labeling" / "benchmarks_active.yaml"
 
 
@@ -421,8 +423,8 @@ def _build_seed_master(
     right_map = {str(row["__rid"]): row.to_dict() for _, row in right_df.iterrows()}
 
     embeddings_dir = _resolve_repo_path(benchmark_cfg["embeddings_dir"])
-    left_emb = np.load(embeddings_dir / str(benchmark_cfg["left_emb"]))
-    right_emb = np.load(embeddings_dir / str(benchmark_cfg["right_emb"]))
+    left_emb = load_embeddings(embeddings_dir / str(benchmark_cfg["left_emb"]))
+    right_emb = load_embeddings(embeddings_dir / str(benchmark_cfg["right_emb"]))
 
     pool_method = str(labeling_args.get("pool_method", "embedding") or "embedding").strip().lower()
     pool_fields = [c for c in left_df.columns if c not in {"id", "__rid"} and not str(c).startswith("cluster")]

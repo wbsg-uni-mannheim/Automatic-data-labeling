@@ -1,0 +1,780 @@
+# Ditto runs behind Table 2 (and the Ditto rows of Table 6): one entry per training set and seed, as listed in results/table2_training_sources.csv.
+# Run with: python scripts/training/train_ditto.py --config configs/ditto/table2_training_sources.yaml
+# Add --benchmarks <entry>[,<entry>...] to run selected entries.
+defaults:
+  output_root: output/ditto_table2_training_sources
+  active_profiles: [all]
+  model_name: roberta-base
+  batch_size: 64
+  max_len: 256
+  epochs: 50
+  lr: 5.0e-05
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  grad_accum_steps: 1
+  early_stopping_patience: 10
+  seed: 42
+  num_workers: 2
+  fp16: true
+  da: del
+  alpha_aug: 0.8
+  summarize: false
+  dk: null
+  spacy_model: en_core_web_sm
+  max_field_len: 350
+benchmarks:
+  abt-buy__benchmark__seed42:
+    train: benchmarks/abt-buy/abt-buy-train.json
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: true
+    training: {seed: 42}
+  abt-buy__benchmark__seed52:
+    train: benchmarks/abt-buy/abt-buy-train.json
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: true
+    training: {seed: 52}
+  abt-buy__benchmark__seed62:
+    train: benchmarks/abt-buy/abt-buy-train.json
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: true
+    training: {seed: 62}
+  abt-buy__similarity_search__seed42:
+    train: artifacts/training_data/abt-buy/gpt-5.2/similarity_search/abt-buy_train.json.gz
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  abt-buy__similarity_search__seed52:
+    train: artifacts/training_data/abt-buy/gpt-5.2/similarity_search/abt-buy_train.json.gz
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  abt-buy__similarity_search__seed62:
+    train: artifacts/training_data/abt-buy/gpt-5.2/similarity_search/abt-buy_train.json.gz
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  abt-buy__active_learning_ml__seed42:
+    train: artifacts/training_data/abt-buy/gpt-5.2/active_learning_ml/abt-buy_train.json.gz
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  abt-buy__active_learning_ml__seed52:
+    train: artifacts/training_data/abt-buy/gpt-5.2/active_learning_ml/abt-buy_train.json.gz
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  abt-buy__active_learning_ml__seed62:
+    train: artifacts/training_data/abt-buy/gpt-5.2/active_learning_ml/abt-buy_train.json.gz
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  abt-buy__active_learning_ditto__seed42:
+    train: artifacts/training_data/abt-buy/gpt-5.2/active_learning_ditto/abt-buy_train.json.gz
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  abt-buy__active_learning_ditto__seed52:
+    train: artifacts/training_data/abt-buy/gpt-5.2/active_learning_ditto/abt-buy_train.json.gz
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  abt-buy__active_learning_ditto__seed62:
+    train: artifacts/training_data/abt-buy/gpt-5.2/active_learning_ditto/abt-buy_train.json.gz
+    valid: benchmarks/abt-buy/abt-buy-valid.csv
+    valid_pair_id_only: true
+    valid_lookup_train: benchmarks/abt-buy/abt-buy-train.json
+    test: benchmarks/abt-buy/abt-buy-gs.json.gz
+    fields: [title, description, price]
+    field_aliases:
+      title: [name]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  walmart-amazon__benchmark__seed42:
+    train: benchmarks/walmart-amazon/walmart-amazon-train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: true
+    training: {seed: 42}
+  walmart-amazon__benchmark__seed52:
+    train: benchmarks/walmart-amazon/walmart-amazon-train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: true
+    training: {seed: 52}
+  walmart-amazon__benchmark__seed62:
+    train: benchmarks/walmart-amazon/walmart-amazon-train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: true
+    training: {seed: 62}
+  walmart-amazon__similarity_search__seed42:
+    train: artifacts/training_data/walmart-amazon/gpt-5.2/similarity_search/walmart-amazon_train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  walmart-amazon__similarity_search__seed52:
+    train: artifacts/training_data/walmart-amazon/gpt-5.2/similarity_search/walmart-amazon_train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  walmart-amazon__similarity_search__seed62:
+    train: artifacts/training_data/walmart-amazon/gpt-5.2/similarity_search/walmart-amazon_train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  walmart-amazon__active_learning_ml__seed42:
+    train: artifacts/training_data/walmart-amazon/gpt-5.2/active_learning_ml/walmart-amazon_train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  walmart-amazon__active_learning_ml__seed52:
+    train: artifacts/training_data/walmart-amazon/gpt-5.2/active_learning_ml/walmart-amazon_train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  walmart-amazon__active_learning_ml__seed62:
+    train: artifacts/training_data/walmart-amazon/gpt-5.2/active_learning_ml/walmart-amazon_train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  walmart-amazon__active_learning_ditto__seed42:
+    train: artifacts/training_data/walmart-amazon/gpt-5.2/active_learning_ditto/walmart-amazon_train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  walmart-amazon__active_learning_ditto__seed52:
+    train: artifacts/training_data/walmart-amazon/gpt-5.2/active_learning_ditto/walmart-amazon_train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  walmart-amazon__active_learning_ditto__seed62:
+    train: artifacts/training_data/walmart-amazon/gpt-5.2/active_learning_ditto/walmart-amazon_train.json.gz
+    valid: benchmarks/walmart-amazon/walmart-amazon-valid.csv
+    test: benchmarks/walmart-amazon/walmart-amazon-gs.json.gz
+    fields: [title, category, brand, modelno, price]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  dn7-walmart-amazon__benchmark__seed42:
+    train: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: true
+    training: {seed: 42}
+  dn7-walmart-amazon__benchmark__seed52:
+    train: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: true
+    training: {seed: 52}
+  dn7-walmart-amazon__benchmark__seed62:
+    train: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: true
+    training: {seed: 62}
+  dn7-walmart-amazon__similarity_search__seed42:
+    train: artifacts/training_data/dn7-walmart-amazon/gpt-5.2/similarity_search/dn7-walmart-amazon_train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  dn7-walmart-amazon__similarity_search__seed52:
+    train: artifacts/training_data/dn7-walmart-amazon/gpt-5.2/similarity_search/dn7-walmart-amazon_train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  dn7-walmart-amazon__similarity_search__seed62:
+    train: artifacts/training_data/dn7-walmart-amazon/gpt-5.2/similarity_search/dn7-walmart-amazon_train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  dn7-walmart-amazon__active_learning_ml__seed42:
+    train: artifacts/training_data/dn7-walmart-amazon/gpt-5.2/active_learning_ml/dn7-walmart-amazon_train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  dn7-walmart-amazon__active_learning_ml__seed52:
+    train: artifacts/training_data/dn7-walmart-amazon/gpt-5.2/active_learning_ml/dn7-walmart-amazon_train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  dn7-walmart-amazon__active_learning_ml__seed62:
+    train: artifacts/training_data/dn7-walmart-amazon/gpt-5.2/active_learning_ml/dn7-walmart-amazon_train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  dn7-walmart-amazon__active_learning_ditto__seed42:
+    train: artifacts/training_data/dn7-walmart-amazon/gpt-5.2/active_learning_ditto/dn7-walmart-amazon_train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  dn7-walmart-amazon__active_learning_ditto__seed52:
+    train: artifacts/training_data/dn7-walmart-amazon/gpt-5.2/active_learning_ditto/dn7-walmart-amazon_train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  dn7-walmart-amazon__active_learning_ditto__seed62:
+    train: artifacts/training_data/dn7-walmart-amazon/gpt-5.2/active_learning_ditto/dn7-walmart-amazon_train.json.gz
+    valid: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.json.gz
+    test: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    fields: [title, modelno, price, shipweight, brand, dimensions]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  wdc__benchmark__seed42:
+    train: benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  wdc__benchmark__seed52:
+    train: benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  wdc__benchmark__seed62:
+    train: benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  wdc__similarity_search__seed42:
+    train: artifacts/training_data/wdc/gpt-5.2/similarity_search/wdc_train.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  wdc__similarity_search__seed52:
+    train: artifacts/training_data/wdc/gpt-5.2/similarity_search/wdc_train.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  wdc__similarity_search__seed62:
+    train: artifacts/training_data/wdc/gpt-5.2/similarity_search/wdc_train.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  wdc__active_learning_ml__seed42:
+    train: artifacts/training_data/wdc/gpt-5.2/active_learning_ml/wdc_train.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  wdc__active_learning_ml__seed52:
+    train: artifacts/training_data/wdc/gpt-5.2/active_learning_ml/wdc_train.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  wdc__active_learning_ml__seed62:
+    train: artifacts/training_data/wdc/gpt-5.2/active_learning_ml/wdc_train.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  wdc__active_learning_ditto__seed42:
+    train: artifacts/training_data/wdc/gpt-5.2/active_learning_ditto/wdc_train.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  wdc__active_learning_ditto__seed52:
+    train: artifacts/training_data/wdc/gpt-5.2/active_learning_ditto/wdc_train.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  wdc__active_learning_ditto__seed62:
+    train: artifacts/training_data/wdc/gpt-5.2/active_learning_ditto/wdc_train.json.gz
+    valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
+    test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    fields: [title, brand, description, price, priceCurrency]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  billiger-de__benchmark__seed42:
+    train: benchmarks/billiger-de/billiger-de-train-medium.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: true
+    training: {seed: 42}
+  billiger-de__benchmark__seed52:
+    train: benchmarks/billiger-de/billiger-de-train-medium.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: true
+    training: {seed: 52}
+  billiger-de__benchmark__seed62:
+    train: benchmarks/billiger-de/billiger-de-train-medium.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: true
+    training: {seed: 62}
+  billiger-de__similarity_search__seed42:
+    train: artifacts/training_data/billiger-de/gpt-5.2/similarity_search/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  billiger-de__similarity_search__seed52:
+    train: artifacts/training_data/billiger-de/gpt-5.2/similarity_search/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  billiger-de__similarity_search__seed62:
+    train: artifacts/training_data/billiger-de/gpt-5.2/similarity_search/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  billiger-de__active_learning_ml__seed42:
+    train: artifacts/training_data/billiger-de/gpt-5.2/active_learning_ml/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  billiger-de__active_learning_ml__seed52:
+    train: artifacts/training_data/billiger-de/gpt-5.2/active_learning_ml/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  billiger-de__active_learning_ml__seed62:
+    train: artifacts/training_data/billiger-de/gpt-5.2/active_learning_ml/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  billiger-de__active_learning_ditto__seed42:
+    train: artifacts/training_data/billiger-de/gpt-5.2/active_learning_ditto/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  billiger-de__active_learning_ditto__seed62:
+    train: artifacts/training_data/billiger-de/gpt-5.2/active_learning_ditto/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  billiger-de__active_learning_ditto__seed72:
+    train: artifacts/training_data/billiger-de/gpt-5.2/active_learning_ditto/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 72}
+  billiger-de__active_learning_ditto__seed82:
+    train: artifacts/training_data/billiger-de/gpt-5.2/active_learning_ditto/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 82}
+  billiger-de__active_learning_ditto__seed92:
+    train: artifacts/training_data/billiger-de/gpt-5.2/active_learning_ditto/billiger-de_train.json.gz
+    valid: benchmarks/billiger-de/billiger-de-valid.json.gz
+    test: benchmarks/billiger-de/billiger-de-gs.json.gz
+    fields: [name, desc, brand, price]
+    exclude_valid_from_train: false
+    training: {seed: 92}
+  dblp-acm__benchmark__seed42:
+    train: benchmarks/dblp-acm/dblp-acm-train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: true
+    training: {seed: 42}
+  dblp-acm__benchmark__seed52:
+    train: benchmarks/dblp-acm/dblp-acm-train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: true
+    training: {seed: 52}
+  dblp-acm__benchmark__seed62:
+    train: benchmarks/dblp-acm/dblp-acm-train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: true
+    training: {seed: 62}
+  dblp-acm__similarity_search__seed42:
+    train: artifacts/training_data/dblp-acm/gpt-5.2/similarity_search/dblp-acm_train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  dblp-acm__similarity_search__seed52:
+    train: artifacts/training_data/dblp-acm/gpt-5.2/similarity_search/dblp-acm_train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  dblp-acm__similarity_search__seed62:
+    train: artifacts/training_data/dblp-acm/gpt-5.2/similarity_search/dblp-acm_train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  dblp-acm__active_learning_ml__seed42:
+    train: artifacts/training_data/dblp-acm/gpt-5.2/active_learning_ml/dblp-acm_train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  dblp-acm__active_learning_ml__seed52:
+    train: artifacts/training_data/dblp-acm/gpt-5.2/active_learning_ml/dblp-acm_train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  dblp-acm__active_learning_ml__seed62:
+    train: artifacts/training_data/dblp-acm/gpt-5.2/active_learning_ml/dblp-acm_train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  dblp-acm__active_learning_ditto__seed42:
+    train: artifacts/training_data/dblp-acm/gpt-5.2/active_learning_ditto/dblp-acm_train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  dblp-acm__active_learning_ditto__seed52:
+    train: artifacts/training_data/dblp-acm/gpt-5.2/active_learning_ditto/dblp-acm_train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  dblp-acm__active_learning_ditto__seed62:
+    train: artifacts/training_data/dblp-acm/gpt-5.2/active_learning_ditto/dblp-acm_train.json.gz
+    valid: benchmarks/dblp-acm/dblp-acm-valid.csv
+    test: benchmarks/dblp-acm/dblp-acm-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  dblp-scholar__benchmark__seed42:
+    train: benchmarks/dblp-scholar/dblp-scholar-train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: true
+    training: {seed: 42}
+  dblp-scholar__benchmark__seed52:
+    train: benchmarks/dblp-scholar/dblp-scholar-train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: true
+    training: {seed: 52}
+  dblp-scholar__benchmark__seed62:
+    train: benchmarks/dblp-scholar/dblp-scholar-train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: true
+    training: {seed: 62}
+  dblp-scholar__similarity_search__seed42:
+    train: artifacts/training_data/dblp-scholar/gpt-5.2/similarity_search/dblp-scholar_train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  dblp-scholar__similarity_search__seed52:
+    train: artifacts/training_data/dblp-scholar/gpt-5.2/similarity_search/dblp-scholar_train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  dblp-scholar__similarity_search__seed62:
+    train: artifacts/training_data/dblp-scholar/gpt-5.2/similarity_search/dblp-scholar_train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  dblp-scholar__active_learning_ml__seed42:
+    train: artifacts/training_data/dblp-scholar/gpt-5.2/active_learning_ml/dblp-scholar_train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  dblp-scholar__active_learning_ml__seed52:
+    train: artifacts/training_data/dblp-scholar/gpt-5.2/active_learning_ml/dblp-scholar_train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  dblp-scholar__active_learning_ml__seed62:
+    train: artifacts/training_data/dblp-scholar/gpt-5.2/active_learning_ml/dblp-scholar_train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  dblp-scholar__active_learning_ditto__seed42:
+    train: artifacts/training_data/dblp-scholar/gpt-5.2/active_learning_ditto/dblp-scholar_train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  dblp-scholar__active_learning_ditto__seed52:
+    train: artifacts/training_data/dblp-scholar/gpt-5.2/active_learning_ditto/dblp-scholar_train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  dblp-scholar__active_learning_ditto__seed62:
+    train: artifacts/training_data/dblp-scholar/gpt-5.2/active_learning_ditto/dblp-scholar_train.json.gz
+    valid: benchmarks/dblp-scholar/dblp-scholar-valid.csv
+    test: benchmarks/dblp-scholar/dblp-scholar-gs.json.gz
+    fields: [title, authors, venue, year]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  semi-heter__benchmark__seed42:
+    train: benchmarks/semi-heter/semi-heter-train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: true
+    training: {seed: 42}
+  semi-heter__benchmark__seed52:
+    train: benchmarks/semi-heter/semi-heter-train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: true
+    training: {seed: 52}
+  semi-heter__benchmark__seed62:
+    train: benchmarks/semi-heter/semi-heter-train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: true
+    training: {seed: 62}
+  semi-heter__benchmark__seed72:
+    train: benchmarks/semi-heter/semi-heter-train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: true
+    training: {seed: 72}
+  semi-heter__benchmark__seed82:
+    train: benchmarks/semi-heter/semi-heter-train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: true
+    training: {seed: 82}
+  semi-heter__benchmark__seed92:
+    train: benchmarks/semi-heter/semi-heter-train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: true
+    training: {seed: 92}
+  semi-heter__similarity_search__seed42:
+    train: artifacts/training_data/semi-heter/gpt-5.2/similarity_search/semi-heter_train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  semi-heter__similarity_search__seed52:
+    train: artifacts/training_data/semi-heter/gpt-5.2/similarity_search/semi-heter_train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  semi-heter__similarity_search__seed62:
+    train: artifacts/training_data/semi-heter/gpt-5.2/similarity_search/semi-heter_train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  semi-heter__active_learning_ml__seed42:
+    train: artifacts/training_data/semi-heter/gpt-5.2/active_learning_ml/semi-heter_train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  semi-heter__active_learning_ml__seed52:
+    train: artifacts/training_data/semi-heter/gpt-5.2/active_learning_ml/semi-heter_train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  semi-heter__active_learning_ml__seed62:
+    train: artifacts/training_data/semi-heter/gpt-5.2/active_learning_ml/semi-heter_train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: false
+    training: {seed: 62}
+  semi-heter__active_learning_ditto__seed42:
+    train: artifacts/training_data/semi-heter/gpt-5.2/active_learning_ditto/semi-heter_train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: false
+    training: {seed: 42}
+  semi-heter__active_learning_ditto__seed52:
+    train: artifacts/training_data/semi-heter/gpt-5.2/active_learning_ditto/semi-heter_train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: false
+    training: {seed: 52}
+  semi-heter__active_learning_ditto__seed62:
+    train: artifacts/training_data/semi-heter/gpt-5.2/active_learning_ditto/semi-heter_train.json.gz
+    valid: benchmarks/semi-heter/semi-heter-valid.json.gz
+    test: benchmarks/semi-heter/semi-heter-gs.json.gz
+    fields: [title, authors, publisher, year, isbn, pages, price]
+    exclude_valid_from_train: false
+    training: {seed: 62}

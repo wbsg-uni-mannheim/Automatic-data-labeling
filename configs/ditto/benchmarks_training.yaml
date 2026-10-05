@@ -23,7 +23,7 @@ defaults:
 
 benchmarks:
   wdc:
-    # Benchmark reference of the paper: the large training set (19,835 pairs), see configs/ditto/revision/wdc_large_seed*.yaml.
+    # Benchmark reference of the paper: the large training set (19,835 pairs).
     train: benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz
     valid: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_medium.json.gz
     test: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz

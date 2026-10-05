@@ -5,15 +5,16 @@ defaults:
   random_profile_enabled: true
   random_profile_fraction: 0.20
   random_profile_model: moonshotai/kimi-k2.6
-  random_profile_seed: 42
   random_profile_api_base_url: https://openrouter.ai/api/v1
   random_profile_api_key_env_var: OPEN_ROUTER_API_KEY
+  random_profile_seed: 42
   labeling_args:
     model: moonshotai/kimi-k2.6
     api_base_url: https://openrouter.ai/api/v1
     api_key_env_var: OPEN_ROUTER_API_KEY
     faiss_k: 20
     faiss_random_state: 42
+    pool_method: embedding   # embedding | bm25 | rrf | union  (see scripts/labeling/pool_builders.py)
     seed_size: 100
     seed_positives: 30
     seed_max_calls: 400
@@ -40,6 +41,7 @@ benchmarks:
     right_csv: benchmarks/wdc/wdc_train_large_right.csv
     valid_path: benchmarks/wdc/wdcproducts80cc20rnd000un_valid_large.json.gz
     test_path: benchmarks/wdc/wdcproducts80cc20rnd100un_gs.json.gz
+    train_pairs: benchmarks/wdc/wdcproducts80cc20rnd000un_train_large.json.gz   # pool_recall.py only
     id_col: id
     fields:
       title: title
@@ -75,36 +77,10 @@ benchmarks:
       phase2_target_size: 1000
       phase3_batch_size: 500
       phase3_ensemble_mode: ditto_only
-      model: moonshotai/kimi-k2.6
-      api_base_url: https://openrouter.ai/api/v1
-      api_key_env_var: OPEN_ROUTER_API_KEY
-    random_profile_model: moonshotai/kimi-k2.6
-    random_profile_api_base_url: https://openrouter.ai/api/v1
-    random_profile_api_key_env_var: OPEN_ROUTER_API_KEY
     profiles:
       small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
       medium: {target_total: 3000, target_pos: 600, target_neg: 2400, label_budget: 4500}
       large:  {target_total: 5000, target_pos: 800, target_neg: 4200, label_budget: 7500}
-      all:    {all_examples: true}
-
-  amazon-google:
-    left_csv: data/amazon-google/amazon-google-train-left.csv
-    right_csv: data/amazon-google/amazon-google-train-right.csv
-    valid_path: data/amazon-google/amazon-google-valid.csv
-    test_path: data/amazon-google/amazon-google-gs.json.gz
-    id_col: id
-    fields:
-      title: title
-      manufacturer: manufacturer
-      price: price
-    embeddings:
-      dir: data/amazon-google/embeddings
-      left_file: amazon-google_left_embeddings.npy
-      right_file: amazon-google_right_embeddings.npy
-    profiles:
-      small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
-      medium: {target_total: 4000, target_pos: 700, target_neg: 3300, label_budget: 6000}
-      large:  {target_total: 7000, target_pos: 900, target_neg: 6100, label_budget: 10500}
       all:    {all_examples: true}
 
   dblp-acm:
@@ -146,7 +122,9 @@ benchmarks:
     profiles:
       small:  {target_total: 2500, target_pos: 500, target_neg: 2000, label_budget: 4000}
       medium: {target_total: 10000, target_pos: 2000, target_neg: 8000, label_budget: 15000}
-      large:  {target_total: 20000, target_pos: 4000, target_neg: 16000, label_budget: 30000}
+      # large bumped to match the dblp-scholar benchmark train size after stripping
+      # the 5,742 validation pairs (22,965 -> 17,223).
+      large:  {target_total: 17200, target_pos: 3440, target_neg: 13760, label_budget: 25800}
       all:    {all_examples: true}
 
   walmart-amazon:
@@ -170,7 +148,89 @@ benchmarks:
       phase3_batch_size: 500
       phase3_ensemble_mode: ditto_only
     profiles:
-      small:  {target_total: 1000, target_pos: 200, target_neg: 800,  label_budget: 1500}
-      medium: {target_total: 3000, target_pos: 500, target_neg: 2500, label_budget: 4500}
-      large:  {target_total: 6000, target_pos: 750, target_neg: 5250, label_budget: 9000}
+      small:
+        target_total: 1000
+        target_pos: 200
+        target_neg: 800
+        label_budget: 1500
+      medium:
+        target_total: 3000
+        target_pos: 500
+        target_neg: 2500
+        label_budget: 4500
+      large:
+        target_total: 6000
+        target_pos: 750
+        target_neg: 5250
+        label_budget: 9000
+      all:
+        all_examples: true
+
+  dn7-walmart-amazon:
+    left_csv: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-left.csv
+    right_csv: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-train-right.csv
+    valid_path: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-valid.csv
+    test_path: benchmarks/dn7-walmart-amazon/dn7-walmart-amazon-gs.json.gz
+    id_col: id
+    fields:
+      title: title
+      modelno: modelno
+      price: price
+      shipweight: shipweight
+      brand: brand
+      dimensions: dimensions
+    embeddings:
+      dir: benchmarks/dn7-walmart-amazon/embeddings
+      left_file: dn7-walmart-amazon_left_embeddings.npy
+      right_file: dn7-walmart-amazon_right_embeddings.npy
+    profiles:
+      medium: {target_total: 8000, target_pos: 300, target_neg: 7700, label_budget: 12000}
+      large: {target_total: 26050, target_pos: 457, target_neg: 25593, label_budget: 39000}
+      all:    {all_examples: true}
+
+  semi-heter:
+    left_csv: benchmarks/semi-heter/semi-heter-train-left.csv
+    right_csv: benchmarks/semi-heter/semi-heter-train-right.csv
+    valid_path: benchmarks/semi-heter/semi-heter-valid.csv
+    test_path: benchmarks/semi-heter/semi-heter-gs.json.gz
+    id_col: id
+    fields:
+      title: title
+      authors: authors
+      publisher: publisher
+      year: year
+      isbn: isbn
+      pages: pages
+      price: price
+    embeddings:
+      dir: benchmarks/semi-heter/embeddings
+      left_file: semi-heter_left_embeddings.npy
+      right_file: semi-heter_right_embeddings.npy
+    labeling_args:
+      phase2_target_size: 1000
+      phase3_batch_size: 250
+    profiles:
+      large: {target_total: 1240, target_pos: 474, target_neg: 766, label_budget: 1860}
+      xl: {target_total: 5000, target_pos: 1900, target_neg: 3100, label_budget: 7500}
+      all:    {all_examples: true}
+
+  billiger-de:
+    left_csv: benchmarks/billiger-de/billiger-de-train-left.csv
+    right_csv: benchmarks/billiger-de/billiger-de-train-right.csv
+    valid_path: benchmarks/billiger-de/billiger-de-valid.csv
+    test_path: benchmarks/billiger-de/billiger-de-gs.json.gz
+    id_col: id
+    fields:
+      name: name
+      desc: desc
+      brand: brand
+      price: price
+    embeddings:
+      dir: benchmarks/billiger-de/embeddings
+      left_file: billiger-de_left_embeddings.npy
+      right_file: billiger-de_right_embeddings.npy
+    profiles:
+      small: {target_total: 2500, target_pos: 500, target_neg: 2000, label_budget: 4000}
+      medium: {target_total: 10000, target_pos: 2500, target_neg: 7500, label_budget: 15000}
+      large: {target_total: 20000, target_pos: 5000, target_neg: 15000, label_budget: 30000}
       all:    {all_examples: true}

@@ -34,11 +34,6 @@ The paths here match what the labeling and training configs expect, for example 
 
 ## Embeddings
 
-The embeddings are OpenAI `text-embedding-3-small` vectors at 256 dimensions, computed over the concatenated record fields (for example `title`, `description`, `price`). The exact fields and the submitted batch jobs are recorded in each `*-batch_embed_manifest.json`.
+The embeddings are OpenAI `text-embedding-3-small` vectors computed over the concatenated record fields (for example `title`, `description`, `price`), at 256 dimensions for seven benchmarks and at the model's default 1,536 dimensions for WDC Products. The exact fields and the submitted batch requests are recorded in each `*-batch_embed_manifest.json` and in `benchmarks/wdc/batch_embed_*.jsonl`.
 
-The two WDC embedding matrices are about 117 MB each, which is over GitHub's 100 MB file limit, so they are excluded from the repository:
-
-- `benchmarks/wdc/embeddings/wdc_left_embeddings.npy`
-- `benchmarks/wdc/embeddings/wdc_right_embeddings.npy`
-
-To rebuild them, embed the records in `benchmarks/wdc/batch_embed_left.jsonl` and `benchmarks/wdc/batch_embed_right.jsonl` with the same model. Each line is an OpenAI `/v1/embeddings` request keyed by `custom_id` (`left-0`, `left-1`, and so on). Stack the returned vectors in `custom_id` order into a `(rows × 256)` float array and save each side as the `.npy` file named above. The embeddings for the other seven benchmarks are small and are included directly.
+The two WDC Products matrices are stored in two parts each (`wdc_left_embeddings.part1.npy`, `wdc_left_embeddings.part2.npy`, and the same for the right table) to stay below GitHub's file size limit. The scripts read embeddings through `scripts/labeling/embeddings_io.py`, which concatenates the parts into the full matrix, so the configured path `benchmarks/wdc/embeddings/wdc_left_embeddings.npy` works unchanged.

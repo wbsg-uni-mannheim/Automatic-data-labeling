@@ -2,9 +2,9 @@
 
 This repository is the code and data release for the paper:
 
-> **Labeling Training Data for Entity Matching Using Large Language Models [Experiment, Analysis & Benchmark]**  
+> **Labeling Training Data for Entity Matching Using Large Language Models**  
 > Aaron Steiner and Christian Bizer, Data and Web Science Group, University of Mannheim.  
-> Under submission to PVLDB Vol. 20. An earlier version is available as [arXiv:2606.28823](https://arxiv.org/abs/2606.28823).
+> Preprint: [arXiv:2606.28823](https://arxiv.org/abs/2606.28823).
 
 It contains the benchmarks, the machine-labeled training sets, the prompts, the code to build training sets and to train and evaluate the students, and the per-run results behind every table and figure of the paper.
 
